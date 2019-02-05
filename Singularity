@@ -6,7 +6,7 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   export JULIAVER=julia-1.1.0
   export JULIADL=julia.tar.gz
   export JULIAPATH=/opt/julia
-  export PATH=${JULIAPATH}/${JULIAVER}/bin:${PATH}
+  export PATH=/opt/tinytex/bin/x86_64-linux:${JULIAPATH}/${JULIAVER}/bin:${PATH}
   export LD_LIBRARY_PATH=${JULIAPATH}/${JULIAVER}/lib:${LD_LIBRARY_PATH}
 
 %post
@@ -23,11 +23,11 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   apt-get update
 
   # Install R, Python, misc. utilities
-  apt-get install -y build-essential r-base r-base-core r-recommended libopenmpi-dev openmpi-bin openmpi-common openmpi-doc openssh-client openssh-server libssh-dev libcurl4-gnutls-dev libgit2-dev libssl-dev python python-pip python-dev ftp screen curl man vim less locales 
+  apt-get install -y build-essential r-base r-base-core r-recommended libopenmpi-dev openmpi-bin openmpi-common openmpi-doc openssh-client openssh-server libssh-dev libcurl4-gnutls-dev libgit2-dev libssl-dev python python-pip python-dev ftp screen curl man vim less locales time pandoc rsync
   apt-get clean
 
   # Install required R packages
-  R --slave -e 'install.packages(c("devtools","doParallel", "e1071", "foreach","gridExtra","ggplot2","MASS","plyr","stringdist","stringr","dplyr","rmarkdown","knitr"), repos="https://cloud.r-project.org/")'
+  R --slave -e 'install.packages(c("devtools","doParallel", "e1071", "foreach","gridExtra","ggplot2","MASS","plyr","stringdist","stringr","dplyr","rmarkdown","knitr","tinytex"), repos="https://cloud.r-project.org/");tinytex::install_tinytex(dir = "/opt/tinytex")'
 
   # Install jula from git
   curl -sSL "https://julialang-s3.julialang.org/bin/linux/x64/1.1/julia-1.1.0-linux-x86_64.tar.gz" > julia.tar.gz 
