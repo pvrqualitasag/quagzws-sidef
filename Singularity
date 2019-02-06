@@ -23,7 +23,7 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   apt-get update
 
   # Install R, Python, misc. utilities
-  apt-get install -y build-essential r-base r-base-core r-recommended libopenmpi-dev openmpi-bin openmpi-common openmpi-doc openssh-client openssh-server libssh-dev libcurl4-gnutls-dev libgit2-dev libssl-dev python python-pip python-dev ftp screen curl man vim less locales time pandoc rsync
+  apt-get install -y build-essential r-base r-base-core r-recommended libopenmpi-dev openmpi-bin openmpi-common openmpi-doc openssh-client openssh-server libssh-dev libcurl4-gnutls-dev libgit2-dev libssl-dev python python-pip python-dev ftp screen curl man vim less locales time pandoc rsync gawk
   apt-get clean
 
   # Install required R packages
