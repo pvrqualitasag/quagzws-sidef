@@ -2,13 +2,6 @@ BootStrap: debootstrap
 OSVersion: bionic
 MirrorURL: http://archive.ubuntu.com/ubuntu/
 
-%environment
-  export JULIAVER=julia-1.1.0
-  export JULIADL=julia.tar.gz
-  export JULIAPATH=/opt/julia
-  export PATH=/opt/tinytex/bin/x86_64-linux:${JULIAPATH}/${JULIAVER}/bin:${PATH}
-  export LD_LIBRARY_PATH=${JULIAPATH}/${JULIAVER}/lib:${LD_LIBRARY_PATH}
-
 %post
   sed -i 's/main/main restricted universe/g' /etc/apt/sources.list
   apt-get update
@@ -23,7 +16,7 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   apt-get update
 
   # Install R, Python, misc. utilities
-  apt-get install -y build-essential r-base r-base-core r-recommended libopenmpi-dev openmpi-bin openmpi-common openmpi-doc openssh-client openssh-server libssh-dev libcurl4-gnutls-dev libgit2-dev libssl-dev python python-pip python-dev ftp screen curl man vim less locales time pandoc rsync gawk
+  apt-get install -y build-essential r-base r-base-core r-recommended libopenmpi-dev openmpi-bin openmpi-common openmpi-doc openssh-client openssh-server libssh-dev libcurl4-gnutls-dev libgit2-dev libssl-dev python python-pip python-dev ftp screen curl man vim less locales time pandoc rsync gawk sudo tzdata 
   apt-get clean
 
   # Install required R packages
@@ -35,6 +28,24 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   tar -C /opt/julia -zxf julia.tar.gz 
   rm -f julia.tar.gz
 
+  # Install jdk8 from oracle
+  curl -L -b "oraclelicense=a" -O https://download.oracle.com/otn-pub/java/jdk/8u201-b09/42970487e3af4f5aa5bca3f542482c60/jdk-8u201-linux-x64.tar.gz
+  mkdir -p /opt/oracle-jdk8
+  tar -C /opt/oracle-jdk8 -zxf jdk-8u201-linux-x64.tar.gz
+  rm -rf jdk-8u201-linux-x64.tar.gz
+
   # locales
   locale-gen en_US.UTF-8
+  locale-gen de_CH.UTF-8
+
+  # timezone
+  echo 'Europe/Berlin' > /etc/timezone
+
+%environment
+  export JULIAVER=julia-1.1.0
+  export JULIADL=julia.tar.gz
+  export JULIAPATH=/opt/julia
+  export PATH=/opt/tinytex/bin/x86_64-linux:${JULIAPATH}/${JULIAVER}/bin:/opt/oracle-jdk8/jdk1.8.0_201/bin:/qualstorzws01/data_projekte/linuxBin:${PATH}
+  export LD_LIBRARY_PATH=${JULIAPATH}/${JULIAVER}/lib:/opt/oracle-jdk8/jdk1.8.0_201/lib:${LD_LIBRARY_PATH}
+  export TZ=$(cat /etc/timezone)
 
