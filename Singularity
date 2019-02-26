@@ -45,7 +45,7 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   export JULIAVER=julia-1.1.0
   export JULIADL=julia.tar.gz
   export JULIAPATH=/opt/julia
-  export PATH=/opt/tinytex/bin/x86_64-linux:${JULIAPATH}/${JULIAVER}/bin:/opt/oracle-jdk8/jdk1.8.0_201/bin:/qualstorzws01/data_projekte/linuxBin:${PATH}
+  export PATH=/opt/tinytex/bin/x86_64-linux:${JULIAPATH}/${JULIAVER}/bin:/opt/oracle-jdk8/jdk1.8.0_201/bin:${PATH}:/qualstorzws01/data_projekte/linuxBin
   export LD_LIBRARY_PATH=${JULIAPATH}/${JULIAVER}/lib:/opt/oracle-jdk8/jdk1.8.0_201/lib:${LD_LIBRARY_PATH}
   export TZ=$(cat /etc/timezone)
 
