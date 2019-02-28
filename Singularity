@@ -16,7 +16,7 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   apt-get update
 
   # Install R, Python, misc. utilities
-  apt-get install -y build-essential r-base r-base-core r-recommended libopenmpi-dev openmpi-bin openmpi-common openmpi-doc openssh-client openssh-server libssh-dev libcurl4-gnutls-dev libgit2-dev libssl-dev python python-pip python-dev ftp screen curl man vim less locales time pandoc rsync gawk sudo tzdata 
+  apt-get install -y build-essential r-base r-base-core r-recommended libopenmpi-dev openmpi-bin openmpi-common openmpi-doc openssh-client openssh-server libssh-dev libcurl4-gnutls-dev libgit2-dev libssl-dev python python-pip python-numpy python-pandas python-dev python3-pip ftp screen curl man vim less locales time pandoc rsync gawk sudo tzdata git gnuplot
   apt-get clean
 
   # Install required R packages
@@ -33,6 +33,10 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   mkdir -p /opt/oracle-jdk8
   tar -C /opt/oracle-jdk8 -zxf jdk-8u201-linux-x64.tar.gz
   rm -rf jdk-8u201-linux-x64.tar.gz
+
+  # numpy and pandas for py3
+  /usr/bin/pip3 install pandas
+  /usr/bin/pip3 install numpy
 
   # locales
   locale-gen en_US.UTF-8
