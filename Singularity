@@ -16,11 +16,11 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   apt-get update
 
   # Install R, Python, misc. utilities
-  apt-get install -y build-essential r-base r-base-core r-recommended libopenmpi-dev openmpi-bin openmpi-common openmpi-doc openssh-client openssh-server libssh-dev libcurl4-gnutls-dev libgit2-dev libssl-dev python python-pip python-numpy python-pandas python-dev python3-pip ftp screen curl man vim less locales time pandoc rsync gawk sudo tzdata git gnuplot
+  apt-get install -y build-essential r-base r-base-core r-recommended xserver-xorg-dev freeglut3 freeglut3-dev libopenmpi-dev openmpi-bin openmpi-common openmpi-doc openssh-client openssh-server libssh-dev libgit2-dev libssl-dev libxml2-dev libfreetype6-dev libmagick++-dev python python-pip python-numpy python-pandas python-dev python3-pip ftp screen curl man vim less locales time pandoc rsync gawk sudo tzdata git gnuplot ssmtp mailutils cargo dos2unix doxygen
   apt-get clean
 
   # Install required R packages
-  R --slave -e 'install.packages(c("devtools","doParallel", "e1071", "foreach","gridExtra","ggplot2","MASS","plyr","stringdist","stringr","dplyr","rmarkdown","knitr","tinytex"), repos="https://cloud.r-project.org/");tinytex::install_tinytex(dir = "/opt/tinytex")'
+  R --slave -e 'install.packages(c("tidyverse", "devtools", "BiocInstaller","doParallel", "e1071", "foreach","gridExtra","MASS","plyr","stringdist","rmarkdown","knitr","tinytex", "openxlsx"), repos="https://cloud.r-project.org/", dependencies=TRUE);tinytex::install_tinytex(dir = "/opt/tinytex")'
 
   # Install jula from git
   curl -sSL "https://julialang-s3.julialang.org/bin/linux/x64/1.1/julia-1.1.0-linux-x86_64.tar.gz" > julia.tar.gz 
@@ -45,11 +45,14 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   # timezone
   echo 'Europe/Berlin' > /etc/timezone
 
+  # hostname
+  echo '1-htz.quagzws.com' > /etc/hostname
+
 %environment
   export JULIAVER=julia-1.1.0
   export JULIADL=julia.tar.gz
   export JULIAPATH=/opt/julia
-  export PATH=/opt/tinytex/bin/x86_64-linux:${JULIAPATH}/${JULIAVER}/bin:/opt/oracle-jdk8/jdk1.8.0_201/bin:${PATH}:/qualstorzws01/data_projekte/linuxBin
+  export PATH=/qualstorzws01/data_projekte/linuxBin:/opt/tinytex/bin/x86_64-linux:${JULIAPATH}/${JULIAVER}/bin:/opt/oracle-jdk8/jdk1.8.0_201/bin:${PATH}
   export LD_LIBRARY_PATH=${JULIAPATH}/${JULIAVER}/lib:/opt/oracle-jdk8/jdk1.8.0_201/lib:${LD_LIBRARY_PATH}
   export TZ=$(cat /etc/timezone)
 
