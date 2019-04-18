@@ -4,18 +4,21 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
 
 %post
   sed -i 's/main/main restricted universe/g' /etc/apt/sources.list
-  apt update
+  apt-get update
 
   # install softwaree properties commons for add-apt-repository
-  apt install -y software-properties-common
-  apt update
+  apt-get install -y software-properties-common
+  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
+  add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/'
+  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 51716619E084DAB9
+  apt-get update
 
   # Install libraries and other pre-requisites
-  apt install -y build-essential xserver-xorg-dev freeglut3 freeglut3-dev libopenmpi-dev openmpi-bin openmpi-common openssh-client openssh-server libssh-dev libgit2-dev libssl-dev libxml2-dev libfreetype6-dev libmagick++-dev ftp screen curl man vim less locales time rsync gawk sudo tzdata git ssmtp mailutils cargo dos2unix doxygen wget
+  apt-get install -y build-essential xserver-xorg-dev freeglut3 freeglut3-dev libopenmpi-dev openmpi-bin openmpi-common openssh-client openssh-server libssh-dev libgit2-dev libssl-dev libxml2-dev libfreetype6-dev libmagick++-dev ftp screen curl man vim less locales time rsync gawk sudo tzdata git ssmtp mailutils cargo dos2unix doxygen wget
   apt update
 
   # Install R, Python, pandas and gnuplot
-  apt install -y r-base r-base-core r-recommended python python-pip python-numpy python-pandas python-dev python3-pip pandoc gnuplot 
+  apt-get install -y r-base r-base-core r-recommended python python-pip python-numpy python-pandas python-dev python3-pip pandoc gnuplot 
   apt clean
 
   # Install required R packages
