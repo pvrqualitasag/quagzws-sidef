@@ -87,19 +87,10 @@ while getopts ":d:w:h" FLAG; do
       usage "Help message for $SCRIPT"
       ;;
     d)
-      if test -f $OPTARG; then
-       SIMGDEF=$OPTARG
-     else
-       usage "$OPTARG isn't a regular file"
-     fi
+      SIMGDEF=$OPTARG
       ;;
     w)
-      if [ -d "$OPTARG" ]
-      then
-        SWORKDIR=$OPTARG
-      else
-        log_msg $SCRIPT "CANNOT FIND specified work directory $OPTARG -- leaving default: $SWORKDIR"
-      fi
+      SWORKDIR=$OPTARG
       ;;
     :)
       usage "-$OPTARG requires an argument"
@@ -118,9 +109,25 @@ if test "$SIMGDEF" == ""; then
 fi
 
 
+### # check whether working directory exists
+if [ ! -d "$SWORKDIR" ]
+then
+  log_msg $SCRIPT " * ERROR: Cannot find working directory: $SWORKDIR"
+  exit 1
+fi
+
 ### # change to work directory
 CURRWD=`pwd`
 cd $SWORKDIR
+
+### # check whether definition file can still be found after cd
+if [ ! -f "$SIMGDEF" ]
+then
+  log_msg $SCRIPT " * ERROR: Cannot find definition file: $SIMGDEF"
+  exit 1
+fi
+
+
 
 ### # create the image file
 SIMGFN=`date +"%Y%m%d%H%M%S"`_quagzws_ubuntu1804lts.img
