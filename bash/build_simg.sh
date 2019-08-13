@@ -146,20 +146,3 @@ cd $CURRWD
 ### # Script ends here
 end_msg
 
-
-
-### # ====================================================================== #
-### # What comes below is documentation that can be used with perldoc
-
-: <<=cut
-=pod
-
-=head1 NAME
-
-    - 
-
-=head1 SYNOPSIS
-
-
-=head1 DESCRIPTION
-
