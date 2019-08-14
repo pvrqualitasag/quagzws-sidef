@@ -114,9 +114,6 @@ done
 shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 
 # Check whether required arguments have been defined
-if test "$BINDPATH" == ""; then
-  usage "variable bind_path not defined"
-fi
 if test "$INSTANCENAME" == ""; then
   usage "variable instance_name not defined"
 fi
@@ -132,8 +129,18 @@ fi
 log_msg $SCRIPT " * Pulling img from shub ..."
 singularity pull --name $IMAGENAME $SHUBURI
 
-# start an instance of the pulled image
-singularity instance start --bind $BINDPATH $IMAGENAME $INSTANCENAME
+# start an instance of the pulled image, if instance name specified
+if test "$INSTANCENAME" != ""; then
+  log_msg $SCRIPT " * Starting instance $INSTANCENAME ..."
+  if test "$BINDPATH" != ""
+  then
+    log_msg $SCRIPT " ** Added bind paths: $BINDPATH ..."
+    singularity instance start --bind $BINDPATH $IMAGENAME $INSTANCENAME
+  else
+    singularity instance start $IMAGENAME $INSTANCENAME
+  fi
+fi
+
 
 
 
