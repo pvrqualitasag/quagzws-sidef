@@ -8,7 +8,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Summary
-`tl;dr`. Based on a `history | grep singularity` on `1-htz`, the following result is obtained.
+`tl;dr`. The process of building a new singularity container and pulling it from the singularity hub (SHUB) repository onto a new machine is summarized in this section. 
+
+
+### Building a New Container
+Based on a `history | grep singularity` on `1-htz`, the following result is obtained.
 
 ```
 SIMGFN=`date +"%Y%m%d%H%M%S"`_quagzws_ubuntu1804lts.img
@@ -24,4 +28,26 @@ The above `grep`-result shows the required two steps to create a new singularity
 **Hint**: Because step 2 can take a while, it is worth-while to run it inside of a screen. 
 
 
+### Pulling A Container From SHUB
+The pre-build container can be run by pulling the image file from SHUB and giving it a specific name. 
+
+```
+singularity pull --name `date +"%Y%m%d%H%M%S"`_quagzws.simg shub://pvrqualitasag/quagzws-sidef
+```
+
+This creates the file `20190814114115_quagzws.simg` in the current working directory. 
+
+
+### Starting A Container Instance
+
+```
+singularity instance start --bind /qualstore03,/qualstorzws01,/qualstorora01,/qualstororatest01 /home/pvr/simg/quagzws.simg sizws
+```
+
+
+
 ## Background
+
+```
+TODO: provide some background on the topic of singularity
+```
