@@ -8,9 +8,10 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
 
   # install softwaree properties commons for add-apt-repository
   apt-get install -y software-properties-common
-  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
+  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9 
   add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/'
   apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 51716619E084DAB9
+  add-apt-repository ppa:linuxuprising/java
   apt-get update
 
   # Install libraries and other pre-requisites
@@ -21,20 +22,16 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   apt-get install -y r-base r-base-core r-recommended python python-pip python-numpy python-pandas python-dev python3-pip pandoc gnuplot 
   apt clean
 
-  # Install required R packages
-  R --slave -e 'install.packages(c("tidyverse", "devtools", "BiocInstaller", "doParallel", "e1071", "foreach", "gridExtra", "MASS", "plyr", "stringdist", "rmarkdown", "knitr", "tinytex", "openxlsx", "LaF"), repos="https://cloud.r-project.org/", dependencies=TRUE);tinytex::install_tinytex(dir = "/opt/tinytex")'
-
   # Install jula from git
-  curl -sSL "https://julialang-s3.julialang.org/bin/linux/x64/1.1/julia-1.1.0-linux-x86_64.tar.gz" > julia.tar.gz 
+  curl -sSL "https://julialang-s3.julialang.org/bin/linux/x64/1.1/julia-1.1.1-linux-x86_64.tar.gz" > julia.tar.gz 
   mkdir -p /opt/julia 
   tar -C /opt/julia -zxf julia.tar.gz 
   rm -f julia.tar.gz
 
-  # Install jdk12 from oracle
-  curl -L -b "oraclelicense=a" -O https://download.oracle.com/otn-pub/java/jdk/12.0.1+12/69cfe15208a647278a19ef0990eea691/jdk-12.0.1_linux-x64_bin.tar.gz 
-  mkdir -p /opt/oracle-jdk
-  tar -C /opt/oracle-jdk -zxf jdk-12.0.1_linux-x64_bin.tar.gz
-  rm -rf jdk-12.0.1_linux-x64_bin.tar.gz
+  # Install jdk12 from oracle, according to https://www.linuxuprising.com/2019/03/how-to-install-oracle-java-12-jdk-12-in.html
+  echo oracle-java12-installer shared/accepted-oracle-license-v1-2 select true | /usr/bin/debconf-set-selections
+  echo oracle-java12-installer shared/accepted-oracle-licence-v1-2 boolean true | /usr/bin/debconf-set-selections
+  apt-get install -y oracle-java12-installer
 
   # numpy and pandas for py3
   /usr/bin/pip3 install pandas
@@ -51,11 +48,9 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   echo '1-htz.quagzws.com' > /etc/hostname
 
 %environment
-  export JULIAVER=julia-1.1.0
-  export JULIAROOT=/opt/julia
   export ORACLEJDKROOT=/opt/oracle-jdk
   export ORACLEJDKVER=jdk-12.0.1
-  export PATH=/opt/tinytex/bin/x86_64-linux:${JULIAROOT}/${JULIAVER}/bin:${ORACLEJDKROOT}/${ORACLEJDKVER}/bin:${PATH}:/qualstorzws01/data_projekte/linuxBin
-  export LD_LIBRARY_PATH=${JULIAROOT}/${JULIAVER}/lib:${ORACLEJDKROOT}/${ORACLEJDKVER}/lib:${LD_LIBRARY_PATH}
+  export PATH=/opt/tinytex/bin/x86_64-linux:${ORACLEJDKROOT}/${ORACLEJDKVER}/bin:${PATH}:/qualstorzws01/data_projekte/linuxBin
+  export LD_LIBRARY_PATH=${ORACLEJDKROOT}/${ORACLEJDKVER}/lib:${LD_LIBRARY_PATH}
   export TZ=$(cat /etc/timezone)
 
