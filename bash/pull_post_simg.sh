@@ -71,6 +71,45 @@ log_msg () {
   $ECHO "[${l_RIGHTNOW} -- ${l_CALLER}] $l_MSG"
 }
 
+### # function to start instance
+start_instance () {
+  log_msg start_instance " * Starting instance $INSTANCENAME ..."
+  if [ "$BINDPATH" != "" ]
+  then
+    log_msg start_instance " ** Added bind paths: $BINDPATH ..."
+    singularity instance start --bind $BINDPATH $IMAGENAME $INSTANCENAME
+  else
+    singularity instance start $IMAGENAME $INSTANCENAME
+  fi
+  # check whether instance is running
+  log_msg start_instance " ** Check whether instance $INSTANCENAME is running ..."
+  if [ `singularity instance list | grep $INSTANCENAME | wc -l` == "0" ]
+  then
+    log_msg start_instance " ==> $INSTANCENAME is not running ==> stop here"
+    exit 1
+  else
+    log_msg start_instance " ==> $INSTANCENAME is running"
+  fi
+}
+
+### # function to install r-packages
+install_rpkg () {
+  local l_imgtag=`basename $IMAGENAME | sed -e "s/.simg//"`
+  local l_rlibdir=$RLIBDIR/$l_imgtag
+  # check whether $l_rlibdir exists
+  if [ -d "$l_rlibdir" ]
+  then
+    log_msg install_rpkg " ** R lib directory already exists, remove it first manually, if needed ==> stop here"
+    exit 1
+  fi
+  # create R lib dir
+  log_msg install_rpkg " ** Create R lib dir: $l_rlibdir ..."
+  mkdir -p $l_rlibdir
+  # install packages
+  log_msg install_rpkg " ** Install R packages ..."
+  singularity exec instance://$INSTANCENAME R -e ".libPaths('$l_rlibdir');install.packages(c('Rcpp', 'tidyverse', 'devtools', 'BiocInstaller', 'doParallel', 'e1071', 'foreach', 'gridExtra', 'MASS', 'plyr', 'stringdist', 'rmarkdown', 'knitr', 'xfun', 'tinytex', 'openxlsx', 'LaF'), lib='$l_rlibdir', repos='https://cloud.r-project.org', dependencies=TRUE)"
+}
+
 
 ### # ====================================================================== #
 ### # Main part of the script starts here ...
@@ -84,8 +123,9 @@ start_msg
 BINDPATH=""
 INSTANCENAME=""
 IMAGENAME=""
+RLIBDIR=""
 SHUBURI=""
-while getopts ":b:i:n:s:h" FLAG; do
+while getopts ":b:i:n:r:s:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
@@ -98,6 +138,9 @@ while getopts ":b:i:n:s:h" FLAG; do
       ;;
     n)
       IMAGENAME=$OPTARG
+      ;;
+    r)
+      RLIBDIR=$OPTARG
       ;;
     s)
       SHUBURI=$OPTARG
@@ -114,9 +157,6 @@ done
 shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 
 # Check whether required arguments have been defined
-if test "$INSTANCENAME" == ""; then
-  usage "variable instance_name not defined"
-fi
 if test "$IMAGENAME" == ""; then
   usage "variable image_name not defined"
 fi
@@ -130,15 +170,15 @@ log_msg $SCRIPT " * Pulling img from shub ..."
 singularity pull --name $IMAGENAME $SHUBURI
 
 # start an instance of the pulled image, if instance name specified
-if test "$INSTANCENAME" != ""; then
-  log_msg $SCRIPT " * Starting instance $INSTANCENAME ..."
-  if test "$BINDPATH" != ""
-  then
-    log_msg $SCRIPT " ** Added bind paths: $BINDPATH ..."
-    singularity instance start --bind $BINDPATH $IMAGENAME $INSTANCENAME
-  else
-    singularity instance start $IMAGENAME $INSTANCENAME
-  fi
+if [ "$INSTANCENAME" != "" ] 
+then
+  start_instance
+fi
+
+# if specified install R-packages
+if [ "$RLIBDIR" != "" ]
+then
+  install_rpkg
 fi
 
 
