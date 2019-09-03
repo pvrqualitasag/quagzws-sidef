@@ -28,10 +28,11 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   tar -C /opt/julia -zxf julia.tar.gz 
   rm -f julia.tar.gz
 
-  # Install jdk12 from oracle, according to https://www.linuxuprising.com/2019/03/how-to-install-oracle-java-12-jdk-12-in.html
-  echo oracle-java12-installer shared/accepted-oracle-license-v1-2 select true | /usr/bin/debconf-set-selections
-  echo oracle-java12-installer shared/accepted-oracle-licence-v1-2 boolean true | /usr/bin/debconf-set-selections
-  apt-get install -y oracle-java12-installer
+  # install OpenJDK 8 (LTS) from https://adoptopenjdk.net
+  curl -sSL "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u222-b10/OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz" > openjdk8.tar.gz
+  mkdir -p /opt/openjdk
+  tar -C /opt/openjdk -xf openjdk8.tar.gz
+  rm -f openjdk8.tar.gz
 
   # numpy and pandas for py3
   /usr/bin/pip3 install pandas
@@ -48,9 +49,8 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   echo '1-htz.quagzws.com' > /etc/hostname
 
 %environment
-  export ORACLEJDKROOT=/opt/oracle-jdk
-  export ORACLEJDKVER=jdk-12.0.1
-  export PATH=/opt/tinytex/bin/x86_64-linux:${ORACLEJDKROOT}/${ORACLEJDKVER}/bin:${PATH}:/qualstorzws01/data_projekte/linuxBin
+  export OPENJDKROOT=/opt/openjdk/jdk8u222-b10
+  export PATH=/opt/tinytex/bin/x86_64-linux:${OPENJDKROOT}/bin:${PATH}:/qualstorzws01/data_projekte/linuxBin
   export LD_LIBRARY_PATH=${ORACLEJDKROOT}/${ORACLEJDKVER}/lib:${LD_LIBRARY_PATH}
   export TZ=$(cat /etc/timezone)
 
