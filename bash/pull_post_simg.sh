@@ -107,7 +107,7 @@ install_rpkg () {
   mkdir -p $l_rlibdir
   # install packages
   log_msg install_rpkg " ** Install R packages ..."
-  singularity exec instance://$INSTANCENAME R -e ".libPaths('$l_rlibdir');install.packages(c('Rcpp', 'devtools', 'BiocInstaller', 'doParallel', 'e1071', 'foreach', 'gridExtra', 'MASS', 'plyr', 'stringdist', 'rmarkdown', 'knitr', 'xfun', 'tinytex', 'openxlsx', 'LaF', 'tidyverse'), lib='$l_rlibdir', repos='https://cloud.r-project.org', dependencies=TRUE)"
+  singularity exec instance://$INSTANCENAME R -e ".libPaths('$l_rlibdir');install.packages(c('Rcpp', ‘usethis’, ‘callr’, ‘httr’, ‘memoise’, ‘pkgbuild’, ‘pkgload’, ‘rcmdcheck’, ‘roxygen2’, 'devtools', 'BiocInstaller', 'doParallel', 'e1071', 'foreach', 'gridExtra', 'MASS', 'plyr', 'stringdist', 'rmarkdown', 'knitr', 'xfun', 'tinytex', 'openxlsx', 'LaF', ‘broom’, ‘dbplyr’, ‘forcats’, ‘ggplot2’, ‘haven’, ‘hms’, ‘lubridate’, ‘modelr’, ‘readr’, ‘readxl’, ‘reprex’, ‘rvest’, ‘stringr’, ‘tibble’, ‘tidyr’, ‘xml2’, 'tidyverse'), lib='$l_rlibdir', repos='https://cloud.r-project.org', dependencies=TRUE)"
 }
 
 
