@@ -95,19 +95,31 @@ start_instance () {
 ### # function to install r-packages
 install_rpkg () {
   local l_imgtag=`basename $IMAGENAME | sed -e "s/.simg//"`
-  local l_rlibdir=$RLIBDIR/$l_imgtag
+  local l_rlibdir=$RLIBDIR
+  # check whether RLIBDIR was specified as a valid directory
+  if [ -d "$l_rlibdir" ]
+  then
+    # if directory l_rlibdir exist, it must be empty
+    if [ `ls -1 $l_rlibdir | wc -l` != "0" ]
+    then
+      log_msg install_rpkg " ** ERROR RLIBDIR $l_rlibdir is not empty, use other directory or delete all content ==> exit"
+      exit 1
+    fi
+  else
+    local l_rlibdir=$RLIBROOT/$l_imgtag
+  fi
   # check whether $l_rlibdir exists
   if [ -d "$l_rlibdir" ]
   then
-    log_msg install_rpkg " ** R lib directory already exists, remove it first manually, if needed ==> stop here"
+    log_msg install_rpkg " ** ERROR RLIBDIR $l_rlibdir already exists, delete directory or use a different RLIBDIR ==> exit"
     exit 1
   fi
   # create R lib dir
   log_msg install_rpkg " ** Create R lib dir: $l_rlibdir ..."
   mkdir -p $l_rlibdir
   # install packages
-  log_msg install_rpkg " ** Install R packages ..."
-  singularity exec instance://$INSTANCENAME R -e ".libPaths('$l_rlibdir');install.packages(c('Rcpp', ‘usethis’, ‘callr’, ‘httr’, ‘memoise’, ‘pkgbuild’, ‘pkgload’, ‘rcmdcheck’, ‘roxygen2’, 'devtools', 'BiocInstaller', 'doParallel', 'e1071', 'foreach', 'gridExtra', 'MASS', 'plyr', 'stringdist', 'rmarkdown', 'knitr', 'xfun', 'tinytex', 'openxlsx', 'LaF', ‘broom’, ‘dbplyr’, ‘forcats’, ‘ggplot2’, ‘haven’, ‘hms’, ‘lubridate’, ‘modelr’, ‘readr’, ‘readxl’, ‘reprex’, ‘rvest’, ‘stringr’, ‘tibble’, ‘tidyr’, ‘xml2’, 'tidyverse'), lib='$l_rlibdir', repos='https://cloud.r-project.org', dependencies=TRUE)"
+  log_msg install_rpkg " ** Install R packages to $l_rlibdir ..."
+  singularity exec instance://$INSTANCENAME R --vanilla -e ".libPaths('$l_rlibdir');install.packages(c('devtools', 'BiocInstaller', 'doParallel', 'e1071', 'foreach', 'gridExtra', 'MASS', 'plyr', 'stringdist', 'rmarkdown', 'knitr', 'tinytex', 'openxlsx', 'LaF', 'tidyverse'), lib='$l_rlibdir', repos='https://cloud.r-project.org', dependencies=TRUE)"
 }
 
 
@@ -124,6 +136,7 @@ BINDPATH=""
 INSTANCENAME=""
 IMAGENAME=""
 RLIBDIR=""
+RLIBROOT=/home/zws/lib/R
 SHUBURI=""
 while getopts ":b:i:n:r:s:h" FLAG; do
   case $FLAG in
