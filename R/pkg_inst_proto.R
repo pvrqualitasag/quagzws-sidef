@@ -31,4 +31,14 @@ install.packages('stringr', lib=.libPaths()[1], repo='https://cran.rstudio.com')
 #+ pkginstallfromshell, eval=FALSE
 system("R --vanilla -e \".libPaths('/home/zws/lib/R/libdev');install.packages('Rcpp', lib = .libPaths()[1], repo = 'https://cran.rstudio.com', dependencies = TRUE)\"")
 
+#' Installation with all packages
+#+ allpkginstall, eval=FALSE
+system("singularity exec instance://$INSTANCENAME R --vanilla -e \".libPaths('$l_rlibdir');install.packages(c('devtools', 'BiocInstaller', 'doParallel', 'e1071', 'foreach', 'gridExtra', 'MASS', 'plyr', 'stringdist', 'rmarkdown', 'knitr', 'tinytex', 'openxlsx', 'LaF', 'tidyverse'), lib='$l_rlibdir', repos='https://cloud.r-project.org', dependencies=TRUE)\" &> `date +"%Y%m%d%H%M%S"`_rpkg_install.log")
+
+#' The above command did run without any errors
+#+ errorcheck, eval=FALSE
+system("grep ERROR: 20190905083148_rpkg_install.log ")
+
+
+
 
