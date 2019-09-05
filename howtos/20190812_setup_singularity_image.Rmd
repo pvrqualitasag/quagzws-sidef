@@ -27,6 +27,8 @@ The above `grep`-result shows the required two steps to create a new singularity
 
 **Hint**: Because step 2 can take a while, it is worth-while to run it inside of a screen. 
 
+The steps described in this section are implemented in the script `build_simg.sh -d <simg_def>` where `<simg_def>` specifies the singularity definition file. An alternative working directory can be specified using option `-w <work_dir>`. 
+
 
 ### Pulling A Container From SHUB
 The pre-build container can be run by pulling the image file from SHUB and giving it a specific name. 
@@ -35,7 +37,20 @@ The pre-build container can be run by pulling the image file from SHUB and givin
 singularity pull --name `date +"%Y%m%d%H%M%S"`_quagzws.simg shub://pvrqualitasag/quagzws-sidef
 ```
 
-This creates the file `20190814114115_quagzws.simg` in the current working directory. 
+This creates the file `20190814114115_quagzws.simg` in the current working directory. After pulling the image file, we have to start an 
+insance and install the required R packages locally. This is done in a script called `pull_post_simg.sh`. This script requires the following arguments
+
+```
+cd simg/img
+../quagzws-sidef/bash/pull_post_simg.sh -b /qualstore03,/qualstorzws01,/qualstorora01,/qualstororatest01 -i sizwsdev -n `date +"%Y%m%d%H%M%S"`_quagzws-sidef-master-latest.simg -r TRUE -s shub://pvrqualitasag/quagzws-sidef
+```
+
+The above call pull the latest image file from SHUB and stores it in the current directory under the name ``date +"%Y%m%d%H%M%S"`_quagzws-sidef-master-latest.simg`, starts an instance with the given instance name (`sizwsdev`) and installs the 
+specified required R-packages locally in a user-defined directory that can either be specified using the `-r` argument or in 
+a directory that is derived from the image-name. Using the `-r` argument without giving a directory starts the installation of the 
+R-packages in the default image-name-derived directory.
+
+
 
 
 ### Starting A Container Instance
