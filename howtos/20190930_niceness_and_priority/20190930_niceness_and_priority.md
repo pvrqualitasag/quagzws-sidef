@@ -64,3 +64,24 @@ renice 19 -p $(pgrep GenSel4R)
 This changes the top-output to the following
 
 ![](odg/screenshot-top-with-nice.png)<!-- -->
+
+Decreasing the `NI` values for the processes does not seam to be
+possible for ordninary users.
+
+``` bash
+renice 0 -p $(pgrep GenSel4R)
+```
+
+leads to the
+    output
+
+    renice: failed to set priority for 37076 (process ID): Permission denied
+    renice: failed to set priority for 37084 (process ID): Permission denied
+    renice: failed to set priority for 37092 (process ID): Permission denied
+    renice: failed to set priority for 37100 (process ID): Permission denied
+    renice: failed to set priority for 37108 (process ID): Permission denied
+    renice: failed to set priority for 37116 (process ID): Permission denied
+    renice: failed to set priority for 37124 (process ID): Permission denied
+    renice: failed to set priority for 37132 (process ID): Permission denied
+    renice: failed to set priority for 37140 (process ID): Permission denied
+    renice: failed to set priority for 37149 (process ID): Permission denied
