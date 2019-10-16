@@ -28,7 +28,7 @@
 #+ bash-env-setting, eval=FALSE
 set -o errexit    # exit immediately, if single command exits with non-zero status
 set -o nounset    # treat unset variables as errors
-set -o pipefail   # return value of pipeline is value of last command to exit with non-zero status
+#set -o pipefail   # return value of pipeline is value of last command to exit with non-zero status
                   #  hence pipe fails if one command in pipe fails
 
 #' ## Global Constants
@@ -296,7 +296,7 @@ copy_config
 #' ## Instance Start
 #' Start an instance of the pulled image, if instance name specified
 #+ instance-start, eval=FALSE
-log_msg $SCRIPT " * Instance start"
+log_msg $SCRIPT " * Instance start ..."
 INSTANCERUNNING=`singularity instance list | grep "$INSTANCENAME" | wc -l`
 echo "Instance name: $INSTANCENAME"
 log_msg $SCRIPT " * Running status of instance: $INSTANCENAME: $INSTANCERUNNING"
