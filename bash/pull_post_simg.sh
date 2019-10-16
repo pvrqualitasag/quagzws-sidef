@@ -46,8 +46,19 @@ INSTALLDIR=`$DIRNAME ${BASH_SOURCE[0]}`    # installation dir of bashtools on ho
 #' ### Files
 #+ script-files, eval=FALSE
 SCRIPT=`$BASENAME ${BASH_SOURCE[0]}`       # Set Script Name variable                #
+
+#' ### Hostname of the server
+#+ server-hostname, eval=FALSE
 SERVER=`hostname`                          # put hostname of server in variable      #
 
+#' ### Configuration Files and Templates
+#+ conf-file-templ, eval=FALSE
+BASHALIASTMPL=/home/zws/simg/quagzws-sidef/template/bash_aliases
+BASHALIASTRG=/home/zws/.bash_aliases
+RPROFILETMPL=/home/zws/simg/quagzws-sidef/template/Rprofile
+RPROFILETRG=/home/zws/.Rprofile
+SSMTPCONFTMPL=/home/zws/simg/quagzws-sidef/template/ssmtp.conf
+SSMTPCONFTRG=/home/zws/.ssmtp
 
 
 #' ## Functions
@@ -121,31 +132,14 @@ start_instance () {
 #' R-Packages from a given list are installed on an as-needed basis.
 #+ install-rpkg-fun, eval=FALSE
 install_rpkg () {
-  local l_imgtag=`basename $IMAGENAME | sed -e "s/.simg//"`
-  local l_rlibdir=$RLIBDIR
-  # check whether RLIBDIR was specified as a valid directory
-  if [ -d "$l_rlibdir" ]
+  # check whether RLIBDIR is an existing directory, if not create it
+  if [ !-d "$RLIBDIR" ]
   then
-    # if directory l_rlibdir exist, it must be empty
-    if [ `ls -1 $l_rlibdir | wc -l` != "0" ]
-    then
-      log_msg install_rpkg " ** ERROR RLIBDIR $l_rlibdir is not empty, use other directory or delete all content ==> exit"
-      exit 1
-    fi
-  else
-    local l_rlibdir=$RLIBROOT/$l_imgtag
+    mkdir -p 
+    log_msg install_rpkg " ** Created directory $RLIBDIR ..."
   fi
-  # check whether $l_rlibdir exists
-  if [ -d "$l_rlibdir" ]
-  then
-    log_msg install_rpkg " ** ERROR RLIBDIR $l_rlibdir already exists, delete directory or use a different RLIBDIR ==> exit"
-    exit 1
-  fi
-  # create R lib dir
-  log_msg install_rpkg " ** Create R lib dir: $l_rlibdir ..."
-  mkdir -p $l_rlibdir
   # install packages
-  log_msg install_rpkg " ** Install R packages to $l_rlibdir ..."
+  log_msg install_rpkg " ** Install R packages to $RLIBDIR ..."
   singularity exec instance://$INSTANCENAME R --vanilla -e ".libPaths('$l_rlibdir');install.packages(c('devtools', 'BiocManager', 'doParallel', 'e1071', 'foreach', 'gridExtra', 'MASS', 'plyr', 'stringdist', 'rmarkdown', 'knitr', 'tinytex', 'openxlsx', 'LaF', 'tidyverse'), lib='$l_rlibdir', repos='https://cloud.r-project.org', dependencies=TRUE)"
 }
 
@@ -181,10 +175,17 @@ copy_file_keep_on_exist () {
 #+ cp-config, eval=FALSE
 copy_config () {
   # bash_aliases
-  copy_file_keep_on_exist /home/zws/simg/
-  # Rprofile
+  copy_file_keep_on_exist $BASHALIASTMPL $BASHALIASTRG
   
-  # ssmtp
+  # Rprofile
+  copy_file_keep_on_exist $RPROFILETMPL $RPROFILETRG
+  
+  # ssmtp, $SSMTPCONFTRG is a directory
+  if [ ! -d "$SSMTPCONFTRG" ]
+  then
+    mkdir -p $SSMTPCONFTRG
+  fi
+  cat $SSMTPCONFTMPL | sed -e "s/{hostname}/$SERVER/" > $SSMTPCONFTRG/`basename $SSMTPCONFTMPL`
   
 }
 
