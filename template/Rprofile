@@ -1,0 +1,2 @@
+.libPaths("~/lib/R/library")
+Sys.setenv(JAVA_HOME = '/qualstorzws01/data_projekte/linuxLib/jdk1.8.0_191')

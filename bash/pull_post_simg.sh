@@ -1,41 +1,62 @@
 #!/bin/bash
-###
-###
-###
-###   Purpose:   Pull singularity image and run post-installation tasks.
-###   started:   2019-08-14 15:22:17 (pvr)
-###
-### ###################################################################### ###
-
+#' ---
+#' title: Singularity Pull and Post Installation
+#' date:  "2019-10-15"
+#' author: Peter von Rohr
+#' ---
+#' ## Purpose
+#' This script can be used to pull a given singularity container image from 
+#' singularity hub (shub) and to run all post-installation steps. The post-installation 
+#' steps consist of 
+#'
+#' * starting an instance, if it has not yet been started
+#' * installing a number of R-packages, if they have not yet been installed
+#' * adapting or creating the file .bash_aliases
+#' * adapting or creating the file .Rprofile
+#'
+#' The prerequisites for this script to run is to do a git clone of the `quagzws-sidef`
+#' repository from github into the directory /home/zws/simg. This also clones 
+#' this script which then can be run directly from where it was cloned to.
+#' 
+#' ## Description
+#' In a first step, the script checks whether the container image has already been 
+#' pulled. That is done by checking whether the indicated image file already 
+#' exists. As soon as the container image file is available on the server, 
+#' the configuration files can be copied from the template directory to where 
+#' they are supposed to be for the container instance.
+#' 
+#+ bash-env-setting, eval=FALSE
 set -o errexit    # exit immediately, if single command exits with non-zero status
 set -o nounset    # treat unset variables as errors
 set -o pipefail   # return value of pipeline is value of last command to exit with non-zero status
                   #  hence pipe fails if one command in pipe fails
 
-# ======================================== # ======================================= #
-# global constants                         #                                         #
-# ---------------------------------------- # --------------------------------------- #
-# prog paths                               #                                         #  
+#' ## Global Constants
+#' ### Paths to shell tools
+#+ shell-tools, eval=FALSE
 ECHO=/bin/echo                             # PATH to echo                            #
 DATE=/bin/date                             # PATH to date                            #
 BASENAME=/usr/bin/basename                 # PATH to basename function               #
 DIRNAME=/usr/bin/dirname                   # PATH to dirname function                #
-# ---------------------------------------- # --------------------------------------- #
-# directories                              #                                         #
+
+#' ### Directories
+#+ script-directories, eval=FALSE
 INSTALLDIR=`$DIRNAME ${BASH_SOURCE[0]}`    # installation dir of bashtools on host   #
-# ---------------------------------------- # --------------------------------------- #
-# files                                    #                                         #
+
+#' ### Files
+#+ script-files, eval=FALSE
 SCRIPT=`$BASENAME ${BASH_SOURCE[0]}`       # Set Script Name variable                #
-# ---------------------------------------- # --------------------------------------- #
-# server name                              #                                         #
-SERVER=`hostname`                          # put hostname of server in variable      #  
-# ======================================== # ======================================= #
+SERVER=`hostname`                          # put hostname of server in variable      #
 
 
 
-### # ====================================================================== #
-# Function definitions local to this script
-#==========================================
+#' ## Functions
+#' In this section user-defined functions that are specific for this script are 
+#' defined in this section.
+#'
+#' * title: Show usage message
+#' * param: message that is shown
+#+ usg-msg-fun, eval=FALSE
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
@@ -48,7 +69,8 @@ usage () {
   exit 1
 }
 
-### # produce a start message
+#' produce a start message
+#+ start-msg-fun, eval=FALSE
 start_msg () {
   $ECHO "********************************************************************************"
   $ECHO "Starting $SCRIPT at: "`$DATE +"%Y-%m-%d %H:%M:%S"`
@@ -56,14 +78,16 @@ start_msg () {
   $ECHO
 }
 
-### # produce an end message
+#' produce an end message
+#+ end-msg-fun, eval=FALSE
 end_msg () {
   $ECHO
   $ECHO "End of $SCRIPT at: "`$DATE +"%Y-%m-%d %H:%M:%S"`
   $ECHO "********************************************************************************"
 }
 
-### # functions related to logging
+#' functions related to logging
+#+ log-msg-fun, eval=FALSE
 log_msg () {
   local l_CALLER=$1
   local l_MSG=$2
@@ -71,7 +95,8 @@ log_msg () {
   $ECHO "[${l_RIGHTNOW} -- ${l_CALLER}] $l_MSG"
 }
 
-### # function to start instance
+#' function to start an instance
+#+ start-instance-fun, eval=FALSE
 start_instance () {
   log_msg start_instance " * Starting instance $INSTANCENAME ..."
   if [ "$BINDPATH" != "" ]
@@ -92,7 +117,9 @@ start_instance () {
   fi
 }
 
-### # function to install r-packages
+#' ### R-Package Installation
+#' R-Packages from a given list are installed on an as-needed basis.
+#+ install-rpkg-fun, eval=FALSE
 install_rpkg () {
   local l_imgtag=`basename $IMAGENAME | sed -e "s/.simg//"`
   local l_rlibdir=$RLIBDIR
@@ -123,15 +150,54 @@ install_rpkg () {
 }
 
 
-### # ====================================================================== #
-### # Main part of the script starts here ...
+#' ### Helper File Copy 
+#' The source file is copied from source to target, if the 
+#' the file already exists at the target, the original is 
+#' kept and the new file is prepended with the current data-time
+#'
+#' * param: l_src local source file
+#' * param: l_trg local target
+#+ cp-file-keep-on-exist, eval=FALSE
+copy_file_keep_on_exist () {
+  local l_src=$1
+  local l_trg=$2
+  # if target is a directory do ordinary copying
+  if [ -d "$l_trg" ]
+  then
+    cp $l_src $l_trg
+  else
+    # check whether target file already exists, then rename
+    if [ -f "$l_trg" ]
+    then
+      mv $l_trg $l_trg.`date +"%Y%m%d%H%M%S"`
+    fi
+    cp $l_src $l_trg
+  fi
+}
+
+
+#' ### Copy Configuration Files
+#' Configuration files for certain applications are copied from template directory
+#+ cp-config, eval=FALSE
+copy_config () {
+  # bash_aliases
+  copy_file_keep_on_exist /home/zws/simg/
+  # Rprofile
+  
+  # ssmtp
+  
+}
+
+#' ## Main Body of Script
+#' The main body of the script starts here.
+#+ start-msg, eval=FALSE
 start_msg
 
-### # ====================================================================== #
-### # Use getopts for commandline argument parsing ###
-### # If an option should be followed by an argument, it should be followed by a ":".
-### # Notice there is no ":" after "h". The leading ":" suppresses error messages from
-### # getopts. This is required to get my unrecognized option code to work.
+#' ## Getopts for Commandline Argument Parsing
+#' If an option should be followed by an argument, it should be followed by a ":".
+#' Notice there is no ":" after "h". The leading ":" suppresses error messages from
+#' getopts. This is required to get my unrecognized option code to work.
+#+ getopts-parsing, eval=FALSE
 BINDPATH=""
 INSTANCENAME=""
 IMAGENAME=""
@@ -169,74 +235,65 @@ done
 
 shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 
-# Check whether required arguments have been defined
+#' ## Checks for Command Line Arguments 
+#' The following statements are used to check whether required arguments 
+#' have been assigned with a non-empty value
+#+ argument-test, eval=FALSE
 if test "$IMAGENAME" == ""; then
   usage "variable image_name not defined"
 fi
 if test "$SHUBURI" == ""; then
   usage "variable shub_uri not defined"
 fi
+if test "$INSTANCENAME" == ""
+then
+  usage "variable instance_name not defined"
+fi
 
 
-# start by pulling the image
-log_msg $SCRIPT " * Pulling img from shub ..."
-singularity pull --name $IMAGENAME $SHUBURI
+#' ## Image Pull From SHUB
+#' Start by pulling the image from SHUB where the repository is specified 
+#' by $SHUBURI. The image file will be stored in the file called $IMAGENAME
+#' At some point, we had difficulties when $IMAGENAME contained also a path.
+#' Most likely it is safer to just give an name of the image file. 
+#+ image-pull, eval=FALSE
+if [ -f "$IMAGENAME" ]
+then
+  log_msg $SCRIPT " * Found image: $IMAGENAME ..."
+else
+  log_msg $SCRIPT " * Pulling img from shub ..."
+  singularity pull --name $IMAGENAME $SHUBURI
+fi
 
-# start an instance of the pulled image, if instance name specified
-if [ "$INSTANCENAME" != "" ] 
+
+#' ## Configuration Files
+#' Certain applications in the container need some configuration 
+#' files. These files are taken from the template directory of 
+#' this repository. 
+copy_config
+
+#' ## Instance Start
+#' Start an instance of the pulled image, if instance name specified
+#+ instance-start, eval=FALSE
+INSTANCERUNNING=$(singularity instance list | grep "$INSTANCENAME" | wc -l)
+log_msg $SCRIPT " * Running status of instance: $INSTANCENAME: $INSTANCERUNNING"
+if [ "$INSTANCERUNNING" == "0" ] 
 then
   start_instance
 fi
 
-# if specified install R-packages
+
+#' ## Install R-packages
+#' if specified install R-packages
+#+ install-rpack, eval=FALSE
 if [ "$RLIBDIR" != "" ]
 then
   install_rpkg
 fi
 
 
-
-
-### # ====================================================================== #
-### # Script ends here
+#' ## End of Script
+#+ end-msg, eval=FALSE
 end_msg
 
 
-
-### # ====================================================================== #
-### # What comes below is documentation that can be used with perldoc
-
-: <<=cut
-=pod
-
-=head1 NAME
-
-    - 
-
-=head1 SYNOPSIS
-
-
-=head1 DESCRIPTION
-
-Pull singularity image from singularity hub (SHUB) and run post-installation tasks.
-
-
-=head2 Requirements
-
-
-
-=head1 LICENSE
-
-Artistic License 2.0 http://opensource.org/licenses/artistic-license-2.0
-
-
-=head1 AUTHOR
-
-Peter von Rohr <peter.vonrohr@qualitasag.ch>
-
-
-=head1 DATE
-
-2019-08-14 15:22:17
-
-=cut

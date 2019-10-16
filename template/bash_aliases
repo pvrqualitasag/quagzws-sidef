@@ -1,0 +1,13 @@
+### # local definition of aliases
+### # singularity shell, if container image file exists
+QGSIMG=/home/zws/simg/quagzws-sidef-master-latest.simg
+if [ -f "$QGSIMG" ]
+then
+  alias ssbp='singularity shell --bind /qualstore03,/qualstorzws01,/qualstorora01,/qualstororatest01 "$QGSIMG"'
+  alias siszws='singularity instance start --bind /qualstore03,/qualstorzws01,/qualstorora01,/qualstororatest01 "$QGSIMG" sizws'
+  alias sszws='singularity shell instance://sizws'
+fi
+alias sils='singularity instance list'
+alias sisa='singularity instance start'
+alias siso='singularity instance stop'
+alias sish='singularity shell'
