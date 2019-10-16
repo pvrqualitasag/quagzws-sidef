@@ -59,6 +59,7 @@ RPROFILETMPL=/home/zws/simg/quagzws-sidef/template/Rprofile
 RPROFILETRG=/home/zws/.Rprofile
 SSMTPCONFTMPL=/home/zws/simg/quagzws-sidef/template/ssmtp.conf
 SSMTPCONFTRG=/home/zws/.ssmtp
+RPKGSCRIPT=/home/zws/simg/quagzws-sidef/R/pkg_install_simg.R
 
 
 #' ## Functions
@@ -140,7 +141,20 @@ install_rpkg () {
   fi
   # install packages
   log_msg install_rpkg " ** Install R packages to $RLIBDIR ..."
-  singularity exec instance://$INSTANCENAME R --vanilla -e ".libPaths('$l_rlibdir');install.packages(c('devtools', 'BiocManager', 'doParallel', 'e1071', 'foreach', 'gridExtra', 'MASS', 'plyr', 'stringdist', 'rmarkdown', 'knitr', 'tinytex', 'openxlsx', 'LaF', 'tidyverse'), lib='$l_rlibdir', repos='https://cloud.r-project.org', dependencies=TRUE)"
+  singularity exec instance://$INSTANCENAME R -e "source $RPKGSCRIPT" --no-save
+}
+
+
+#' ### Helper File Rename
+#' If the file exists the existing file is renamed
+rename_file_on_exist () {
+  local l_fpath=$1
+  # if $l_fpath exists, it is renamed
+  if [ -f "$l_fpath" ]
+  then
+    log_msg 'rename_file_on_exist' " * Rename existing file: $l_fpath"
+    mv $l_fpath $l_fpath.`date +"%Y%m%d%H%M%S"`
+  fi
 }
 
 
@@ -161,10 +175,8 @@ copy_file_keep_on_exist () {
     cp $l_src $l_trg
   else
     # check whether target file already exists, then rename
-    if [ -f "$l_trg" ]
-    then
-      mv $l_trg $l_trg.`date +"%Y%m%d%H%M%S"`
-    fi
+    rename_file_on_exist $l_trg
+    # copy the source to the target
     cp $l_src $l_trg
   fi
 }
@@ -175,17 +187,23 @@ copy_file_keep_on_exist () {
 #+ cp-config, eval=FALSE
 copy_config () {
   # bash_aliases
+  log_msg 'copy_config' " * Copy bash_aliases ..."
   copy_file_keep_on_exist $BASHALIASTMPL $BASHALIASTRG
   
   # Rprofile
-  copy_file_keep_on_exist $RPROFILETMPL $RPROFILETRG
+  log_msg 'copy_config' " * Copy Rprofile ..."
+  rename_file_on_exist $RPROFILETRG
+  cat $RPROFILETMPL | sed -e "s/{RLIBDIR}/$RLIBDIR/" > $RPROFILETRG
   
   # ssmtp, $SSMTPCONFTRG is a directory
+  log_msg 'copy_config' " * Copy ssmtp.conf ..."
   if [ ! -d "$SSMTPCONFTRG" ]
   then
     mkdir -p $SSMTPCONFTRG
   fi
-  cat $SSMTPCONFTMPL | sed -e "s/{hostname}/$SERVER/" > $SSMTPCONFTRG/`basename $SSMTPCONFTMPL`
+  SSMTPCONFPATH=$SSMTPCONFTRG/`basename $SSMTPCONFTMPL`
+  rename_file_on_exist $SSMTPCONFPATH
+  cat $SSMTPCONFTMPL | sed -e "s/{hostname}/$SERVER/" > $SSMTPCONFPATH
   
 }
 
@@ -202,8 +220,7 @@ start_msg
 BINDPATH=""
 INSTANCENAME=""
 IMAGENAME=""
-RLIBDIR=""
-RLIBROOT=/home/zws/lib/R
+RLIBDIR="/home/zws/lib/R/library"
 SHUBURI=""
 while getopts ":b:i:n:r:s:h" FLAG; do
   case $FLAG in
