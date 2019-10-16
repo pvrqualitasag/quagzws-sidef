@@ -144,7 +144,7 @@ install_rpkg () {
   fi
   # install packages
   log_msg 'install_rpkg' " ** Install R packages to $RLIBDIR ..."
-  singularity exec instance://$INSTANCENAME R -e "source '$RPKGSCRIPT'" --no-save
+  singularity exec instance://$INSTANCENAME R -e "source( '$RPKGSCRIPT' )" --no-save
 }
 
 
