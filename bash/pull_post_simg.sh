@@ -294,7 +294,7 @@ copy_config
 #' ## Instance Start
 #' Start an instance of the pulled image, if instance name specified
 #+ instance-start, eval=FALSE
-INSTANCERUNNING=$(singularity instance list | grep "$INSTANCENAME" | wc -l)
+INSTANCERUNNING=`singularity instance list | grep "$INSTANCENAME" | wc -l`
 log_msg $SCRIPT " * Running status of instance: $INSTANCENAME: $INSTANCERUNNING"
 if [ "$INSTANCERUNNING" == "0" ] 
 then
