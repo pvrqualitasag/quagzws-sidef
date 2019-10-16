@@ -257,6 +257,10 @@ then
   usage "variable instance_name not defined"
 fi
 
+#' ## Change Working Directory
+#' Do everything from where image file is stored
+#+ cd-wd, eval=FALSE
+cd $IMGDIR
 
 #' ## Image Pull From SHUB
 #' Start by pulling the image from SHUB where the repository is specified 
