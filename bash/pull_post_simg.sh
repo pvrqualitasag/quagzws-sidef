@@ -110,22 +110,22 @@ log_msg () {
 #' function to start an instance
 #+ start-instance-fun, eval=FALSE
 start_instance () {
-  log_msg start_instance " * Starting instance $INSTANCENAME ..."
+  log_msg 'start_instance' " * Starting instance $INSTANCENAME ..."
   if [ "$BINDPATH" != "" ]
   then
-    log_msg start_instance " ** Added bind paths: $BINDPATH ..."
+    log_msg 'start_instance' " ** Added bind paths: $BINDPATH ..."
     singularity instance start --bind $BINDPATH $IMAGENAME $INSTANCENAME
   else
     singularity instance start $IMAGENAME $INSTANCENAME
   fi
   # check whether instance is running
-  log_msg start_instance " ** Check whether instance $INSTANCENAME is running ..."
+  log_msg 'start_instance' " ** Check whether instance $INSTANCENAME is running ..."
   if [ `singularity instance list | grep $INSTANCENAME | wc -l` == "0" ]
   then
-    log_msg start_instance " ==> $INSTANCENAME is not running ==> stop here"
+    log_msg 'start_instance' " ==> $INSTANCENAME is not running ==> stop here"
     exit 1
   else
-    log_msg start_instance " ==> $INSTANCENAME is running"
+    log_msg 'start_instance' " ==> $INSTANCENAME is running"
   fi
 }
 
@@ -137,10 +137,10 @@ install_rpkg () {
   if [ !-d "$RLIBDIR" ]
   then
     mkdir -p 
-    log_msg install_rpkg " ** Created directory $RLIBDIR ..."
+    log_msg 'install_rpkg' " ** Created directory $RLIBDIR ..."
   fi
   # install packages
-  log_msg install_rpkg " ** Install R packages to $RLIBDIR ..."
+  log_msg 'install_rpkg' " ** Install R packages to $RLIBDIR ..."
   singularity exec instance://$INSTANCENAME R -e "source $RPKGSCRIPT" --no-save
 }
 
