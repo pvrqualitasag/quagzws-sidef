@@ -298,6 +298,7 @@ copy_config
 #+ instance-start, eval=FALSE
 log_msg $SCRIPT " * Instance start"
 INSTANCERUNNING=`singularity instance list | grep "$INSTANCENAME" | wc -l`
+echo "Instance name: $INSTANCENAME"
 log_msg $SCRIPT " * Running status of instance: $INSTANCENAME: $INSTANCERUNNING"
 if [ "$INSTANCERUNNING" == "0" ] 
 then
