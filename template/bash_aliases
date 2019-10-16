@@ -1,6 +1,6 @@
 ### # local definition of aliases
 ### # singularity shell, if container image file exists
-QGSIMG=/home/zws/simg/quagzws-sidef-master-latest.simg
+QGSIMG={SIMGLINK}
 if [ -f "$QGSIMG" ]
 then
   alias ssbp='singularity shell --bind /qualstore03,/qualstorzws01,/qualstorora01,/qualstororatest01 "$QGSIMG"'

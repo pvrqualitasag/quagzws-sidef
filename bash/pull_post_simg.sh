@@ -53,13 +53,16 @@ SERVER=`hostname`                          # put hostname of server in variable 
 
 #' ### Configuration Files and Templates
 #+ conf-file-templ, eval=FALSE
-BASHALIASTMPL=/home/zws/simg/quagzws-sidef/template/bash_aliases
+SIMGROOT=/home/zws/simg
+BASHALIASTMPL=$SIMGROOT/quagzws-sidef/template/bash_aliases
 BASHALIASTRG=/home/zws/.bash_aliases
-RPROFILETMPL=/home/zws/simg/quagzws-sidef/template/Rprofile
+RPROFILETMPL=$SIMGROOT/quagzws-sidef/template/Rprofile
 RPROFILETRG=/home/zws/.Rprofile
-SSMTPCONFTMPL=/home/zws/simg/quagzws-sidef/template/ssmtp.conf
+SSMTPCONFTMPL=$SIMGROOT/quagzws-sidef/template/ssmtp.conf
 SSMTPCONFTRG=/home/zws/.ssmtp
-RPKGSCRIPT=/home/zws/simg/quagzws-sidef/R/pkg_install_simg.R
+RPKGSCRIPT=$SIMGROOT/quagzws-sidef/R/pkg_install_simg.R
+IMGDIR=$SIMGROOT/img
+SIMGLINK=$SIMGROOT/quagzws.simg
 
 
 #' ## Functions
@@ -134,14 +137,14 @@ start_instance () {
 #+ install-rpkg-fun, eval=FALSE
 install_rpkg () {
   # check whether RLIBDIR is an existing directory, if not create it
-  if [ !-d "$RLIBDIR" ]
+  if [ ! -d "$RLIBDIR" ]
   then
     mkdir -p 
     log_msg 'install_rpkg' " ** Created directory $RLIBDIR ..."
   fi
   # install packages
   log_msg 'install_rpkg' " ** Install R packages to $RLIBDIR ..."
-  singularity exec instance://$INSTANCENAME R -e "source $RPKGSCRIPT" --no-save
+  singularity exec instance://$INSTANCENAME R -e "source '$RPKGSCRIPT'" --no-save
 }
 
 
@@ -158,38 +161,23 @@ rename_file_on_exist () {
 }
 
 
-#' ### Helper File Copy 
-#' The source file is copied from source to target, if the 
-#' the file already exists at the target, the original is 
-#' kept and the new file is prepended with the current data-time
-#'
-#' * param: l_src local source file
-#' * param: l_trg local target
-#+ cp-file-keep-on-exist, eval=FALSE
-copy_file_keep_on_exist () {
-  local l_src=$1
-  local l_trg=$2
-  # if target is a directory do ordinary copying
-  if [ -d "$l_trg" ]
-  then
-    cp $l_src $l_trg
-  else
-    # check whether target file already exists, then rename
-    rename_file_on_exist $l_trg
-    # copy the source to the target
-    cp $l_src $l_trg
-  fi
-}
-
-
 #' ### Copy Configuration Files
 #' Configuration files for certain applications are copied from template directory
 #+ cp-config, eval=FALSE
 copy_config () {
+  # insert link to image used in .bash_alias
+  if [ ! -f "$SIMGLINK" ]
+  then
+    log_msg 'copy_config' " * Create link $SIMGLINK to $IMGDIR/$IMAGENAME"
+    ln -s $IMGDIR/$IMAGENAME $SIMGLINK
+  fi
+  
   # bash_aliases
   log_msg 'copy_config' " * Copy bash_aliases ..."
-  copy_file_keep_on_exist $BASHALIASTMPL $BASHALIASTRG
-  
+  rename_file_on_exist $BASHALIASTRG
+  # use '#' as delimiters for sed, because $SIMGLINK contains a path
+  cat $BASHALIASTMPL | sed -e "s#{SIMGLINK}#$SIMGLINK#" > $BASHALIASTRG
+
   # Rprofile
   log_msg 'copy_config' " * Copy Rprofile ..."
   rename_file_on_exist $RPROFILETRG
