@@ -193,7 +193,8 @@ copy_config () {
   # Rprofile
   log_msg 'copy_config' " * Copy Rprofile ..."
   rename_file_on_exist $RPROFILETRG
-  cat $RPROFILETMPL | sed -e "s/{RLIBDIR}/$RLIBDIR/" > $RPROFILETRG
+  # use '#' as delimiters for sed, because $RLIBDIR contains a path
+  cat $RPROFILETMPL | sed -e "s#{RLIBDIR}#$RLIBDIR#" > $RPROFILETRG
   
   # ssmtp, $SSMTPCONFTRG is a directory
   log_msg 'copy_config' " * Copy ssmtp.conf ..."
