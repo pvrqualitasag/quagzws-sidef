@@ -139,7 +139,7 @@ install_rpkg () {
   # check whether RLIBDIR is an existing directory, if not create it
   if [ ! -d "$RLIBDIR" ]
   then
-    mkdir -p 
+    mkdir -p $RLIBDIR
     log_msg 'install_rpkg' " ** Created directory $RLIBDIR ..."
   fi
   # install packages
@@ -261,6 +261,7 @@ fi
 #' Do everything from where image file is stored
 #+ cd-wd, eval=FALSE
 cd $IMGDIR
+
 
 #' ## Image Pull From SHUB
 #' Start by pulling the image from SHUB where the repository is specified 
