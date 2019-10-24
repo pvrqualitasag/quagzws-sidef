@@ -10,12 +10,10 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   apt-get install -y software-properties-common
   apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9 
   add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/'
-  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 51716619E084DAB9
-  add-apt-repository ppa:linuxuprising/java
   apt-get update
 
   # Install libraries and other pre-requisites
-  apt-get install -y build-essential xserver-xorg-dev freeglut3 freeglut3-dev libopenmpi-dev openmpi-bin openmpi-common openssh-client openssh-server libssh-dev libgit2-dev libssl-dev libxml2-dev libfreetype6-dev libmagick++-dev ftp screen curl man vim less locales time rsync gawk sudo tzdata git ssmtp mailutils cargo dos2unix doxygen wget sshpass
+  apt-get install -y build-essential xserver-xorg-dev freeglut3 freeglut3-dev libopenmpi-dev openmpi-bin openmpi-common openssh-client openssh-server libssh-dev libgit2-dev libssl-dev libxml2-dev libfreetype6-dev libmagick++-dev ftp screen curl man vim less locales time rsync gawk sudo tzdata git ssmtp mailutils cargo dos2unix doxygen wget sshpass htop nano
   apt update
 
   # Install R, Python, pandas and gnuplot
@@ -49,8 +47,6 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   echo '1-htz.quagzws.com' > /etc/hostname
 
 %environment
-  export OPENJDKROOT=/opt/openjdk/jdk8u222-b10
-  export PATH=/opt/tinytex/bin/x86_64-linux:${OPENJDKROOT}/bin:${PATH}:/qualstorzws01/data_projekte/linuxBin
-  export LD_LIBRARY_PATH=${ORACLEJDKROOT}/${ORACLEJDKVER}/lib:${LD_LIBRARY_PATH}
+  export PATH=${PATH}:/qualstorzws01/data_projekte/linuxBin
   export TZ=$(cat /etc/timezone)
 
