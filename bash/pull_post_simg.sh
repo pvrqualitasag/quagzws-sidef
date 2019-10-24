@@ -25,6 +25,13 @@
 #' the configuration files can be copied from the template directory to where 
 #' they are supposed to be for the container instance.
 #' 
+#' ## Example
+#' The following call does a pull of a new container image
+#' 
+#' $ cd /home/zws/simg/img 
+#' $  ../quagzws-sidef/bash/pull_post_simg.sh -b /qualstore03,/qualstorzws01,/qualstorora01,/qualstororatest01 \
+#'      -i sidev -n 20191024_quagzws.simg -s shub://pvrqualitasag/quagzws-sidef
+#'
 #+ bash-env-setting, eval=FALSE
 set -o errexit    # exit immediately, if single command exits with non-zero status
 set -o nounset    # treat unset variables as errors
