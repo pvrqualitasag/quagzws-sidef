@@ -84,6 +84,7 @@ usage () {
   $ECHO "           -r <r_lib_dir>        --   R library directory"
   $ECHO "           -u                    --   Switch to update R packages" 
   $ECHO "           -c                    --   Switch to copy config from templates"
+  $ECHO "           -l                    --   Switch to indicate whether link to simg file should be added"
   $ECHO ""
   exit 1
 }
@@ -170,8 +171,18 @@ rename_file_on_exist () {
 #+ cp-config, eval=FALSE
 copy_config () {
   # insert link to image used in .bash_alias
-  if [ ! -f "$SIMGLINK" ]
+  if [ "$LINKSIMG" == "TRUE" ]
   then
+    # link name cannot be empty here
+    if [ "$SIMGLINK" == "" ]
+    then
+      usage 'copy_config' "ERROR: cannot link image file, because link variable is empty."
+    fi
+    # if link exists, it is removed
+    if [ -f "$SIMGLINK" ]
+    then
+      rm -rf $SIMGLINK
+    fi
     log_msg 'copy_config' " * Create link $SIMGLINK to $IMGDIR/$IMAGENAME"
     ln -s $IMGDIR/$IMAGENAME $SIMGLINK
   fi
@@ -217,7 +228,8 @@ RLIBDIR="/home/zws/lib/R/library"
 SHUBURI=""
 COPYCONFIG="FALSE"
 UPDATERPGK="FALSE"
-while getopts ":b:ci:n:r:s:uh" FLAG; do
+LINKSIMG="FALSE"
+while getopts ":b:ci:ln:r:s:uh" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
@@ -230,6 +242,9 @@ while getopts ":b:ci:n:r:s:uh" FLAG; do
       ;;
     i) 
       INSTANCENAME=$OPTARG
+      ;;
+    l)
+      LINKSIMG="TRUE"
       ;;
     n)
       IMAGENAME=$OPTARG
