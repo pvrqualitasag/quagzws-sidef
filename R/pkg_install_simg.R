@@ -32,6 +32,10 @@ vec_pinst_cran <- vec_pinst_cran[!vec_pinst_cran %in% installed.packages()]
 if (length(vec_pinst_cran) > 0) 
   install.packages(pkgs = vec_pinst_cran, repos = 'https://stat.ethz.ch/CRAN/', dependencies = TRUE)
 
+# installation of tinytex
+tinytex::install_tinytex()
+
+
 # packages from gitgub
 vec_repo_ghub <- c("tidyverse/multidplyr", 
                    "pvrqualitasag/qgert")

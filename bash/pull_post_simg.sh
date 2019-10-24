@@ -75,11 +75,15 @@ SIMGLINK=$SIMGROOT/quagzws.simg
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -b <bind_path> -i <instance_name> -n <image_name> -s <shub_uri>"
-  $ECHO "  where    <bind_path>       --   paths to be bound when starting an instance"
-  $ECHO "           <instance_name>   --   name of the instance started from the image"
-  $ECHO "           <image_name>      --   name of the image given after pulling it from shub"
-  $ECHO "           <shub_uri>        --   URI of image on SHUB"
+  $ECHO "Usage: $SCRIPT -b <bind_path> -i <instance_name> -n <image_file_name> -s <shub_uri>"
+  $ECHO "  where    -b <bind_path>        --   paths to be bound when starting an instance"
+  $ECHO "           -i <instance_name>    --   name of the instance started from the image"
+  $ECHO "           -n <image_file_name>  --   name of the image given after pulling it from shub"
+  $ECHO "           -s <shub_uri>         --   URI of image on SHUB"
+  $ECHO "  additional option parameters are"
+  $ECHO "           -r <r_lib_dir>        --   R library directory"
+  $ECHO "           -u                    --   Switch to update R packages" 
+  $ECHO "           -c                    --   Switch to copy config from templates"
   $ECHO ""
   exit 1
 }
@@ -211,13 +215,18 @@ INSTANCENAME=""
 IMAGENAME=""
 RLIBDIR="/home/zws/lib/R/library"
 SHUBURI=""
-while getopts ":b:i:n:r:s:h" FLAG; do
+COPYCONFIG="FALSE"
+UPDATERPGK="FALSE"
+while getopts ":b:ci:n:r:s:uh" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
       ;;
     b)
       BINDPATH=$OPTARG
+      ;;
+    c)
+      COPYCONFIG="TRUE"
       ;;
     i) 
       INSTANCENAME=$OPTARG
@@ -230,6 +239,9 @@ while getopts ":b:i:n:r:s:h" FLAG; do
       ;;
     s)
       SHUBURI=$OPTARG
+      ;;
+    u)
+      UPDATERPGK="TRUE"
       ;;
     :)
       usage "-$OPTARG requires an argument"
@@ -247,7 +259,7 @@ shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 #' have been assigned with a non-empty value
 #+ argument-test, eval=FALSE
 if test "$IMAGENAME" == ""; then
-  usage "variable image_name not defined"
+  usage "variable image_file_name not defined"
 fi
 if test "$SHUBURI" == ""; then
   usage "variable shub_uri not defined"
@@ -283,8 +295,11 @@ fi
 #' files. These files are taken from the template directory of 
 #' this repository. 
 #+ copy-config, eval=FALSE
-log_msg $SCRIPT " * Copy configuration ..."
-copy_config
+if [ "$COPYCONFIG" == "TRUE" ]
+then
+  log_msg $SCRIPT " * Copy configuration ..."
+  copy_config
+fi
 
 #' ## Instance Start
 #' Start an instance of the pulled image, if instance name specified
@@ -302,8 +317,12 @@ fi
 #' ## Install R-packages
 #' if specified install R-packages
 #+ install-rpack, eval=FALSE
-if [ "$RLIBDIR" != "" ]
+if [ "$UPDATERPGK" == "TRUE" ]
 then
+  if [ "$RLIBDIR" == "" ]
+  then
+    usage $SCRIPT "Error with option update_rpkg, r_lib_dir cannot be empty"
+  fi
   install_rpkg
 fi
 
