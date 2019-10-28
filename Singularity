@@ -47,6 +47,6 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   echo '1-htz.quagzws.com' > /etc/hostname
 
 %environment
-  export PATH=${PATH}:/qualstorzws01/data_projekte/linuxBin
+  export PATH=${PATH}:/opt/openjdk/jdk8u222-b10/bin:/qualstorzws01/data_projekte/linuxBin
   export TZ=$(cat /etc/timezone)
 
