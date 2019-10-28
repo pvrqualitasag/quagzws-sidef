@@ -1,0 +1,830 @@
+
+SQLcl: Release 4.2.0 Production on Wed Apr 17 17:02:42 2019
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Last Successful login time: Wed Apr 17 2019 17:02:43 +02:00
+
+Connected to:
+Oracle Database 12c Standard Edition Release 12.1.0.2.0 - 64bit Production
+
+
+    IDPAYS PAYNOM                                             PAYCAPITALE
+---------- -------------------------------------------------- --------------------------------------------------
+PAY PAYAB PAYCODEISO
+--- ----- ----------
+       532 Haiti                                                                                                 
+HTI HT           332
+
+       534 Heard and MC Donald Islands                                                                           
+HMD HM           334
+
+       544 Hong Kong                                                                                             
+HKG HK           344
+
+       564 Iran                                                                                                  
+IRN IR           364
+
+       568 Irak                                                                                                  
+IRQ IQ           368
+
+       572 Irland                                                                                                
+IRL IE           372
+
+       588 Jamaika                                                                                               
+JAM JM           388
+
+       600 Jordanien                                                                                             
+JOR JO           400
+
+       598 Kasachstan                                                                                            
+KAZ KZ           398
+
+       496 Kiribati                                                                                              
+KIR KI           296
+
+       608 Korea                                                                                                 
+PRK KP           408
+
+       614 Kuwait                                                                                                
+KWT KW           414
+
+       617 Kyrgistan                                                                                             
+KGZ KG           417
+
+       618 Lao People's Democratic Republic                                                                      
+LAO LA           418
+
+       622 Libanon                                                                                               
+LBN LB           422
+
+       626 Leshoto                                                                                               
+LSO LS           426
+
+    IDPAYS PAYNOM                                             PAYCAPITALE
+---------- -------------------------------------------------- --------------------------------------------------
+PAY PAYAB PAYCODEISO
+--- ----- ----------
+
+       630 Liberia                                                                                               
+LBR LR           430
+
+       634 Lybien                                                                                                
+LBY LY           434
+
+       638 Liechtenstein                                                                                         
+LIE LI           438
+
+       646 Macau                                                                                                 
+MAC MO           446
+
+      1007 Mazedonien                                                                                            
+MKD MK           807
+
+       650 Madagaskar                                                                                            
+MDG MG           450
+
+       654 Malawi                                                                                                
+MWI MW           454
+
+       658 Malaysia                                                                                              
+MYS MY           458
+
+       662 Malediven                                                                                             
+MDV MV           462
+
+       666 Mali                                                                                                  
+MLI ML           466
+
+       670 Malta                                                                                                 
+MLT MT           470
+
+       784 Marshall Islands                                                                                      
+MHL MH           584
+
+       674 Martinique                                                                                            
+MTQ MQ           474
+
+       678 Mauaretanien                                                                                          
+MRT MR           478
+
+       680 Mauritius                                                                                             
+MUS MU           480
+
+       375 Mayotte                                                                                               
+
+    IDPAYS PAYNOM                                             PAYCAPITALE
+---------- -------------------------------------------------- --------------------------------------------------
+PAY PAYAB PAYCODEISO
+--- ----- ----------
+MYT YT           175
+
+       783 Micronesien                                                                                           
+FSM FM           583
+
+       698 Moldavien                                                                                             
+MDA MD           498
+
+       692 Monaco                                                                                                
+MCO MC           492
+
+       696 Mongolei                                                                                              
+MNG MN           496
+
+       700 Montserrat                                                                                            
+MSR MS           500
+
+       704 Marokko                                                                                               
+MAR MA           504
+
+       708 Mozambique                                                                                            
+MOZ MZ           508
+
+       304 Myanmar                                                                                               
+MMR MM           104
+
+       716 Namibia                                                                                               
+NAM NA           516
+
+       720 Nauru                                                                                                 
+NRU NR           520
+
+       724 Nepal                                                                                                 
+NPL NP           524
+
+       730 Niederländische Antillen                                                                              
+ANT AN           530
+
+       740 Neu Caledonien                                                                                        
+NCL NC           540
+
+       762 Niger                                                                                                 
+NER NE           562
+
+        50 England (GB)                                       London                                             
+GBR GB           826
+
+
+    IDPAYS PAYNOM                                             PAYCAPITALE
+---------- -------------------------------------------------- --------------------------------------------------
+PAY PAYAB PAYCODEISO
+--- ----- ----------
+         2 Italien                                            Rom                                                
+ITA IT           380
+
+        55 Ungarn                                             Budapest                                           
+HUN HU           348
+
+         4 Schweiz                                            Bern                                               
+CHE CH           756
+
+        14 Belgien                                            Brüssel                                            
+BEL BE            56
+
+        56 Australien                                         Canberra                                           
+AUS AU            36
+
+        57 Japan                                              Tokio                                              
+JPN JP           392
+
+        15 Dänemark                                           Kopenhagen                                         
+DNK DK           208
+
+        58 Israel                                             Jérusalem                                          
+ISR IL           376
+
+        59 Spanien                                            Madrid                                             
+ESP ES           724
+
+        60 Luxemburg                                          Luxembourg                                         
+LUX LU           442
+
+        22 Kanada                                             Ottawa                                             
+CAN CA           124
+
+        61 Norwegen                                           Oslo                                               
+NOR NO           578
+
+        24 Deutschland                                        Berlin                                             
+DEU DE           276
+
+        62 Bulgarien                                          Sofia                                              
+BGR BG           100
+
+        63 Portugal                                           Lissabon                                           
+PRT PT           620
+
+        27 Holland                                            Amsterdam                                          
+NLD NL           528
+
+    IDPAYS PAYNOM                                             PAYCAPITALE
+---------- -------------------------------------------------- --------------------------------------------------
+PAY PAYAB PAYCODEISO
+--- ----- ----------
+
+        64 Brasilien                                          Brasilia                                           
+BRA BR            76
+
+        65 Kroatien                                           Zagreb                                             
+HRV HR           191
+
+        30 USA                                                Washington                                         
+USA US           840
+
+        31 Österreich                                         Wien                                               
+AUT AT            40
+
+        66 Tschechien                                         Prag                                               
+CZE CZ           203
+
+        33 Frankreich                                         Paris                                              
+FRA FR           250
+
+        67 Estland                                                                                               
+EST EE           233
+
+        68 Finnland                                                                                              
+FIN FI           246
+
+        69 Island                                                                                                
+ISL IS           352
+
+        70 Litauen                                                                                               
+LTU LT           440
+
+        80 Argentinien                                                                                           
+ARG AR            32
+
+        39 Schweden                                           Stockholm                                          
+SWE SE           752
+
+        40 Unbekannt (TVD)                                    Unbekannt                                          
+XXX XX             0
+
+        72 Polen                                              Warschau                                           
+POL PL           616
+
+        73 Rumänien                                           Bukarest                                           
+ROU RO           642
+
+        74 Slowenien                                                                                             
+
+    IDPAYS PAYNOM                                             PAYCAPITALE
+---------- -------------------------------------------------- --------------------------------------------------
+PAY PAYAB PAYCODEISO
+--- ----- ----------
+SVN SI           705
+
+        75 Ukraine                                                                                               
+UKR UA           804
+
+        81 Bolivien                                                                                              
+BOL BO            68
+
+        82 Chile                                                                                                 
+CHL CL           152
+
+        83 China                                                                                                 
+CHN CN           156
+
+        84 Kolumbien                                                                                             
+COL CO           170
+
+        85 Costa Rica                                                                                            
+CRI CR           188
+
+        86 Dominikanische Republik                                                                               
+DOM DO           214
+
+        87 Equador                                                                                               
+ECU EC           218
+
+        88 El Salvador                                                                                           
+SLV SV           222
+
+        89 Guatemala                                                                                             
+GTM GT           320
+
+        90 Honduras                                           I                                                  
+HND HN           340
+
+        91 Indien                                             New Dehli                                          
+IND II           356
+
+        92 Indonesien                                                                                            
+IDN ID           360
+
+        94 Kenia                                                                                                 
+KEN KE           404
+
+        95 Lettland                                                                                              
+LVA LV           428
+
+
+    IDPAYS PAYNOM                                             PAYCAPITALE
+---------- -------------------------------------------------- --------------------------------------------------
+PAY PAYAB PAYCODEISO
+--- ----- ----------
+        96 Mexiko                                             Mexico                                             
+MEX MX           484
+
+        97 Neuseeland                                                                                            
+NZL NZ           554
+
+        98 Nicaragua                                                                                             
+NIC NI           558
+
+        99 Panama                                                                                                
+PAN PA           591
+
+       100 Paraguay                                                                                              
+PRY PY           600
+
+       101 Peru                                                                                                  
+PER PE           604
+
+       102 Russland                                                                                              
+RUS RU           643
+
+       103 Slovakei                                                                                              
+SVK SK           703
+
+       104 Südafrika                                                                                             
+ZAF ZA           710
+
+       105 Südkorea                                                                                              
+KOR KR           410
+
+       106 Thailand                                                                                              
+THA TH           764
+
+       107 Türkei                                                                                                
+TUR TR           792
+
+       108 Uruguay                                                                                               
+URY UY           858
+
+       109 Venezuela                                                                                             
+VEN VE           862
+
+       110 Sambia                                                                                                
+ZMB ZM           894
+
+       111 Zimbabwe                                                                                              
+ZWE ZW           716
+
+    IDPAYS PAYNOM                                             PAYCAPITALE
+---------- -------------------------------------------------- --------------------------------------------------
+PAY PAYAB PAYCODEISO
+--- ----- ----------
+
+       112 Taïwan                                                                                                
+TWN TW           158
+
+       113 Tunesien                                           Tunis                                              
+TUN TN           788
+
+       114 Yugoslawien                                        Belgrade                                           
+YUG YU           891
+
+       204 Afghanistan                                                                                           
+AFG AF             4
+
+       208 Albanien                                                                                              
+ALB AL             8
+
+       212 Algerien                                                                                              
+DZA DZ            12
+
+       216 Samoa (AS)                                                                                            
+ASM AS            16
+
+       220 Andorra                                                                                               
+AND AD            20
+
+       224 Angola                                                                                                
+AGO AO            24
+
+       860 Anguilla                                                                                              
+AIA AI           660
+
+       210 Antarctica                                                                                            
+ATA AQ            10
+
+       228 Antigua und Barbuda                                                                                   
+ATG AG            28
+
+       251 Armenien                                                                                              
+ARM AM            51
+
+       733 Aruba                                                                                                 
+ABW AW           533
+
+       231 Azerbaijan                                                                                            
+AZE AZ            31
+
+       244 Bahamas                                                                                               
+
+    IDPAYS PAYNOM                                             PAYCAPITALE
+---------- -------------------------------------------------- --------------------------------------------------
+PAY PAYAB PAYCODEISO
+--- ----- ----------
+BHS BS            44
+
+       248 Bahrain                                                                                               
+BHR BH            48
+
+       250 Banglasesh                                                                                            
+BGD BD            50
+
+       252 Barbados                                                                                              
+BRB BB            52
+
+       312 Weissrussland                                                                                         
+BLR BY           112
+
+       284 Belize                                                                                                
+BLZ BZ            84
+
+       404 Benin                                                                                                 
+BEN BJ           204
+
+       260 Bermuda                                                                                               
+BMU BM            60
+
+       264 Bhutan                                                                                                
+BTN BT            64
+
+       270 Bosnien                                                                                               
+BIH BA            70
+
+       272 Botswana                                                                                              
+BWA BW            72
+
+       274 Bouvet Islands                                                                                        
+BVT BV            74
+
+       286 British Indian Ocean Territory                                                                        
+IOT IO            86
+
+       296 Brunei                                                                                                
+BRN BN            96
+
+      1054 Burkina Faso                                                                                          
+BFA BF           854
+
+       308 Burundi                                                                                               
+BDI BI           108
+
+
+    IDPAYS PAYNOM                                             PAYCAPITALE
+---------- -------------------------------------------------- --------------------------------------------------
+PAY PAYAB PAYCODEISO
+--- ----- ----------
+       316 Cambodia                                                                                              
+KHM KH           116
+
+       320 Kamerun                                                                                               
+CMR CM           120
+
+       332 Cape Verde                                                                                            
+CPV CV           132
+
+       336 Cayman Islands                                                                                        
+CYM KY           136
+
+       340 Zentralafrika                                                                                         
+CAF CF           140
+
+       348 Chad                                                                                                  
+TCD TD           148
+
+       362 Christmas Islands                                                                                     
+CXR CX           162
+
+       366 Cocos Islands                                                                                         
+CCK CC           166
+
+       374 Komoren                                                                                               
+COM KM           174
+
+       378 Kongo                                                                                                 
+COG CG           178
+
+       384 Cook Islands                                                                                          
+COK CK           184
+
+       584 Côte d'Ivoire                                                                                         
+CIV CI           384
+
+       392 Kuba                                                                                                  
+CUB CU           192
+
+       396 Zypern                                                                                                
+CYP CY           196
+
+       462 Djibouti                                                                                              
+DJI DJ           262
+
+       412 Dominica                                                                                              
+DMA DM           212
+
+    IDPAYS PAYNOM                                             PAYCAPITALE
+---------- -------------------------------------------------- --------------------------------------------------
+PAY PAYAB PAYCODEISO
+--- ----- ----------
+
+       826 Osttimor                                                                                              
+TMP TP           626
+
+      1018 Aegypten                                                                                              
+EGY EG           818
+
+       426 Equatorial Guinea                                                                                     
+GNQ GQ           226
+
+       432 Eritrea                                                                                               
+ERI ER           232
+
+       431 Ethiopien                                                                                             
+ETH ET           231
+
+       438 Falkland Islands                                                                                      
+FLK FK           238
+
+       434 Färöer Islands                                                                                        
+FRO FO           234
+
+       442 Fiji                                                                                                  
+FJI FJ           242
+
+       449 France, Metropolitan                                                                                  
+FXX FX           249
+
+       454 Franz. Guiana                                                                                         
+GUF GF           254
+
+       458 Franz. Polinesien                                                                                     
+PYF PF           258
+
+       460 French Southern Territories                                                                           
+ATF TF           260
+
+       466 Gabon                                                                                                 
+GAB GA           266
+
+       470 Gambia                                                                                                
+GMB GM           270
+
+       468 Georgien                                                                                              
+GEO GE           268
+
+       488 Ghana                                                                                                 
+
+    IDPAYS PAYNOM                                             PAYCAPITALE
+---------- -------------------------------------------------- --------------------------------------------------
+PAY PAYAB PAYCODEISO
+--- ----- ----------
+GHA GH           288
+
+       492 Gibraltar                                                                                             
+GIB GI           292
+
+       500 Griechenland                                                                                          
+GRC GR           300
+
+       504 Grönland                                                                                              
+GRL GL           304
+
+       508 Grenada                                                                                               
+GRD GD           308
+
+       512 Guadeloupe                                                                                            
+GLP GP           312
+
+       516 Guam                                                                                                  
+GUM GU           316
+
+       524 Guinea                                                                                                
+GIN GN           324
+
+       824 Guinea-Bissau                                                                                         
+GNB GW           624
+
+       528 Guyana                                                                                                
+GUY GY           328
+
+       766 Nigeria                                                                                               
+NGA NG           566
+
+       770 Niue                                                                                                  
+NIU NU           570
+
+       774 Norfolk Islands                                                                                       
+NFK NF           574
+
+       780 Northern Mariana Islands                                                                              
+MNP MP           580
+
+       712 Oman                                                                                                  
+OMN OM           512
+
+       786 Pakistan                                                                                              
+PAK PK           586
+
+
+    IDPAYS PAYNOM                                             PAYCAPITALE
+---------- -------------------------------------------------- --------------------------------------------------
+PAY PAYAB PAYCODEISO
+--- ----- ----------
+       785 Palau                                                                                                 
+PLW PW           585
+
+       798 Papua neu Guinea                                                                                      
+PNG PG           598
+
+       808 Philippinen                                                                                           
+PHL PH           608
+
+       812 Pitcairn                                                                                              
+PCN PN           612
+
+       830 Puerto Rico                                                                                           
+PRI PR           630
+
+       834 Qatar                                                                                                 
+QAT QA           634
+
+       838 Reunion                                                                                               
+REU RE           638
+
+       846 Ruanda                                                                                                
+RWA RW           646
+
+       859 Saint Kitts And Nevis                                                                                 
+KNA KN           659
+
+       862 Saint Lucia                                                                                           
+LCA LC           662
+
+       870 Saint Vincent And The Grenadines                                                                      
+VCT VC           670
+
+      1082 Samoa (WS)                                                                                            
+WSM WS           882
+
+       874 San Marino                                                                                            
+SMR SM           674
+
+       878 Sao Tome And Principe                                                                                 
+STP ST           678
+
+       882 Saudi Arabien                                                                                         
+SAU SA           682
+
+       886 Senegal                                                                                               
+SEN SN           686
+
+    IDPAYS PAYNOM                                             PAYCAPITALE
+---------- -------------------------------------------------- --------------------------------------------------
+PAY PAYAB PAYCODEISO
+--- ----- ----------
+
+       890 Seychellen                                                                                            
+SYC SC           690
+
+       894 Sierra Leone                                                                                          
+SLE SL           694
+
+       902 Singapore                                                                                             
+SGP SG           702
+
+       290 Solomon Islands                                                                                       
+SLB SB            90
+
+       906 Somalia                                                                                               
+SOM SO           706
+
+       439 South Georgia And The South Sandwich Islands                                                          
+SGS GS           239
+
+       344 Sri Lanka                                                                                             
+LKA LK           144
+
+       854 St. Helena                                                                                            
+SHN SH           654
+
+       866 St. Pierre And Miquelon                                                                               
+SPM PM           666
+
+       936 Sudan                                                                                                 
+SDN SD           736
+
+       940 Suriname                                                                                              
+SUR SR           740
+
+       944 Svalbard And Jan Mayen Islands                                                                        
+SJM SJ           744
+
+       948 Swaziland                                                                                             
+SWZ SZ           748
+
+       960 Syrien                                                                                                
+SYR SY           760
+
+       962 Taijkistan                                                                                            
+TJK TJ           762
+
+      1034 Tansania                                                                                              
+
+    IDPAYS PAYNOM                                             PAYCAPITALE
+---------- -------------------------------------------------- --------------------------------------------------
+PAY PAYAB PAYCODEISO
+--- ----- ----------
+TZA TZ           834
+
+       968 Togo                                                                                                  
+TGO TG           768
+
+       972 Tokelau                                                                                               
+TKL TK           772
+
+       976 Tonga                                                                                                 
+TON TO           776
+
+       980 Trinidad And Tobago                                                                                   
+TTO TT           780
+
+       995 Turkmenistan                                                                                          
+TKM TM           795
+
+       996 Turks And Caicos Islands                                                                              
+TCA TC           796
+
+       998 Tuvalu                                                                                                
+TUV TV           798
+
+      1000 Uganda                                                                                                
+UGA UG           800
+
+       984 United Arab Emirates                                                                                  
+ARE AE           784
+
+       781 United States Minor Outlying Islands                                                                  
+UMI UM           581
+
+      1060 Uzbekistan                                                                                            
+UZB UZ           860
+
+       748 Vanuatu                                                                                               
+VUT VU           548
+
+       536 Vatikan                                                                                               
+VAT VA           336
+
+       904 Vietnam                                                                                               
+VNM VN           704
+
+       292 Virgin Islands (BRITISH)                                                                              
+VGB VG            92
+
+
+    IDPAYS PAYNOM                                             PAYCAPITALE
+---------- -------------------------------------------------- --------------------------------------------------
+PAY PAYAB PAYCODEISO
+--- ----- ----------
+      1050 Virgin Islands (U.S.)                                                                                 
+VIR VI           850
+
+      1076 Wallis And Futuna Islands                                                                             
+WLF WF           876
+
+       932 West Sahara                                                                                           
+ESH EH           732
+
+      1087 Yemen                                                                                                 
+YEM YE           887
+
+       380 Zaire                                                                                                 
+ZAR ZR           180
+
+      1088 England (UK)                                                                                          
+UKD UK           826
+
+      1091 Kosovo                                                                                                
+KOS KO           680
+
+      1092 840                                                Washington                                         
+840 U8           840
+
+      1090 Serbien                                                                                               
+SRB RS           688
+
+      1089 Unbekannt                                                                                             
+INC IN           999
+
+
+245 rows selected. 
+
+
+Disconnected from Oracle Database 12c Standard Edition Release 12.1.0.2.0 - 64bit Production

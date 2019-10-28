@@ -1,0 +1,5 @@
+Das ist eine neutrale E-Mail Message, welche keine Empfangsadresse und keinen Absender 
+und keine Betreffzeile enthaelt. Die Message besteht nur aus einem Text.
+
+Gruss FB-ZWS Singularity Container Team
+
