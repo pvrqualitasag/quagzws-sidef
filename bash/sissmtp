@@ -139,6 +139,7 @@ shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 #' Check whether this script runs on a singularity system or not. The call to 
 #' ssmtp will be modified accordingly.
 if [ `env | grep -i singularity | wc -l` == "0" ]
+then
   # non-singularity system
   if [ "$VERBOSE" == 'TRUE' ];then log_msg $SCRIPT "Running on non-singularity system ...";fi
   ssmtp $1
