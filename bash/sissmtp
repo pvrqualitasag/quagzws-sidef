@@ -1,0 +1,157 @@
+#!/bin/bash
+#' ---
+#' title: SSMTP Wrapper Script For Singularity
+#' date:  2019-10-31 09:27:01
+#' author: Peter von Rohr
+#' ---
+#' ## Purpose
+#' From a singularity container, emails can only be sent with ssmtp when specifying 
+#' the configuration file explicitly using the -C option. This wrapper script contains 
+#' the call to ssmtp including the call to the configuration file.
+#'
+#' ## Description
+#' ssmtp is called and the configuration file which is placed on every server through 
+#' the pull_post_simg.sh script under /home/zws/.ssmtp/ssmtp.conf is specified using 
+#' the -C option. The E-Mail address is given as the command-line argument $1 which 
+#' is passed to ssmtp. Because, this wrapper script should also be usable in a 
+#' non-singularity environment, we check whether this script runs from a singularity 
+#' container or not using the output of the command `env | grep -i singularity`. 
+#' On a non-singularity system the output of the mentioned command is empty whereas 
+#' on a singluarity system, it returns all variables that contain the term `singularity`
+#' in both upper ans lower case. 
+#'
+#' ## Details
+#' Per default, this script does not produce any output. Specifying the -v option 
+#' produces more verbose output.
+#'
+#' ## Bash Settings
+#+ bash-env-setting, eval=FALSE
+set -o errexit    # exit immediately, if single command exits with non-zero status
+set -o nounset    # treat unset variables as errors
+set -o pipefail   # return value of pipeline is value of last command to exit with non-zero status
+                  #  hence pipe fails if one command in pipe fails
+
+
+#' ## Global Constants
+#' ### Paths to shell tools
+#+ shell-tools, eval=FALSE
+ECHO=/bin/echo                             # PATH to echo                            #
+DATE=/bin/date                             # PATH to date                            #
+BASENAME=/usr/bin/basename                 # PATH to basename function               #
+DIRNAME=/usr/bin/dirname                   # PATH to dirname function                #
+
+#' ### Directories
+#' Installation directory of this script
+#+ script-directories, eval=FALSE
+INSTALLDIR=`$DIRNAME ${BASH_SOURCE[0]}`    # installation dir of bashtools on host   #
+
+#' ### Files
+#' This section stores the name of this script and the
+#' hostname in a variable. Both variables are important for logfiles to be able to
+#' trace back which output was produced by which script and on which server.
+#+ script-files, eval=FALSE
+SCRIPT=`$BASENAME ${BASH_SOURCE[0]}`       # Set Script Name variable                #
+SERVER=`hostname`                          # put hostname of server in variable      #
+SSMTPCONF=/home/zws/.ssmtp/ssmtp.conf      # local ssmtp configuration file          #
+
+#' ### Flags
+#' Flags determining the behavior of the script, such as the verbosity of the output.
+#+ script-flag
+VERBOSE='FALSE'
+
+
+#' ## Functions
+#' The following definitions of general purpose functions are local to this script.
+#'
+#' ### Usage Message
+#' Usage message giving help on how to use the script.
+#+ usg-msg-fun, eval=FALSE
+usage () {
+  local l_MSG=$1
+  $ECHO "Usage Error: $l_MSG"
+  $ECHO "Usage: $SCRIPT <email_address> -v"
+  $ECHO "  where  <email_address>  --  e-mail of recipient"
+  $ECHO "  optional arguments are"
+  $ECHO "        -v                --  run in verbose mode"
+  $ECHO ""
+  exit 1
+}
+
+#' ### Start Message
+#' The following function produces a start message showing the time
+#' when the script started and on which server it was started.
+#+ start-msg-fun, eval=FALSE
+#+ start-msg-fun, eval=FALSE
+start_msg () {
+  $ECHO "********************************************************************************"
+  $ECHO "Starting $SCRIPT at: "`$DATE +"%Y-%m-%d %H:%M:%S"`
+  $ECHO "Server:  $SERVER"
+  $ECHO
+}
+
+#' ### End Message
+#' This function produces a message denoting the end of the script including
+#' the time when the script ended. This is important to check whether a script
+#' did run successfully to its end.
+#+ end-msg-fun, eval=FALSE
+end_msg () {
+  $ECHO
+  $ECHO "End of $SCRIPT at: "`$DATE +"%Y-%m-%d %H:%M:%S"`
+  $ECHO "********************************************************************************"
+}
+
+#' ### Log Message
+#' Log messages formatted similarly to log4r are produced.
+#+ log-msg-fun, eval=FALSE
+log_msg () {
+  local l_CALLER=$1
+  local l_MSG=$2
+  local l_RIGHTNOW=`$DATE +"%Y%m%d%H%M%S"`
+  $ECHO "[${l_RIGHTNOW} -- ${l_CALLER}] $l_MSG"
+}
+
+
+#' ## Main Body of Script
+#' The main body of the script starts here.
+#+ start-msg, eval=FALSE
+if [ "$VERBOSE" == 'TRUE' ];then start_msg;fi
+
+#' ## Getopts for Commandline Argument Parsing
+#' If an option should be followed by an argument, it should be followed by a ":".
+#' Notice there is no ":" after "h". The leading ":" suppresses error messages from
+#' getopts. This is required to get my unrecognized option code to work.
+#+ getopts-parsing, eval=FALSE
+while getopts ":vh" FLAG; do
+  case $FLAG in
+    h)
+      usage "Help message for $SCRIPT"
+      ;;
+    v)
+      VERBOSE='TRUE'
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
+
+
+#' ## System Environment Check
+#' Check whether this script runs on a singularity system or not. The call to 
+#' ssmtp will be modified accordingly.
+if [ `env | grep -i singularity | wc -l` == "0" ]
+  # non-singularity system
+  if [ "$VERBOSE" == 'TRUE' ];then log_msg $SCRIPT "Running on non-singularity system ...";fi
+  ssmtp $1
+else
+  # singularity system
+  if [ "$VERBOSE" == 'TRUE' ];then log_msg $SCRIPT "Running on singularity system ...";fi
+  # check whether config exists
+  if [ ! -f "$SSMTPCONF" ];then usage "CANNOT FIND ssmtp-config: $SSMTPCONF";fi
+  ssmtp -C $SSMTPCONF $1
+fi
+
+
+#' ## End of Script
+#+ end-msg, eval=FALSE
+if [ "$VERBOSE" == 'TRUE' ];then end_msg;fi
+
