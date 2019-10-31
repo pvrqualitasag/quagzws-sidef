@@ -103,9 +103,9 @@ update_repo () {
   log_msg 'update_repo' "Running update on $l_SERVER"
   if [ "$REFERENCE" != "" ]
   then
-    $ECHO "singularity exec instance://sizws cd /home/zws/simg/quagzws-sidef;git pull -b $REFERENCE" | ssh zws@$l_SERVER
+    $ECHO "singularity exec instance://sizws git -C /home/zws/simg/quagzws-sidef pull -b $REFERENCE" | ssh zws@$l_SERVER
   else
-    $ECHO "singularity exec instance://sizws cd /home/zws/simg/quagzws-sidef;git pull" | ssh zws@$l_SERVER
+    $ECHO "singularity exec instance://sizws git -C /home/zws/simg/quagzws-sidef pull" | ssh zws@$l_SERVER
   fi
 }
 
