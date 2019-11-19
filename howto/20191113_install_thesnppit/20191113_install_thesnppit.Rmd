@@ -7,6 +7,12 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Strategy
+From the documenatation given in the user guide, it is clear that TheSNPpit as it comes out of the box is a program that is targetted towards running on a single machine. This means that there is one instance of the database-server and one installation of the client programs that accesses the data in the database. Different users on the same machine can use the client programs which can all interact with the given instance of the database on the same machine.
+
+It gets more complicated if we want to be able work with the same data from different machines. This requires to get access to the database from different clients running on different machines. This requires a distributed setup over different machines.
+
+
 ## Installation Resources
 ### User Guide
 We are currently checking the user guide on https://tsp-repo.thesnppit.net/resources/TheSNPpit-user-guide-latest.pdf for hints on how to install. Chapter 6 of the user guide describes the installation. The proposed way to install TheSNPpit is to download the tar-ball from the website, to unpack the tarball and to run the script `bin/install`. Since this requires root priviledges, this cannot be used in a singularity container.
