@@ -1,7 +1,7 @@
 Installation of TheSNPpit on Singularity
 ================
 
-## Strategy
+## Requirements and Problems
 
 From the documenatation given in the user guide, it is clear that
 TheSNPpit as it comes out of the box is a program that is targetted
@@ -12,9 +12,38 @@ same machine can use the client programs which can all interact with the
 given instance of the database on the same machine.
 
 It gets more complicated if we want to be able work with the same data
-from different machines. This requires to get access to the database
-from different clients running on different machines. This requires a
-distributed setup over different machines.
+from different machines. This requires to get access to the
+database-server from different clients running on different machines.
+This requires a distributed setup over different machines.
+
+A further requirement for using the provided installation infrastructure
+is that root access is available on the machine where TheSNPPit is to be
+installed.
+
+As a consequence of the points described above, the automatic
+installation script given in the tarball from TheSNPpit cannot be used.
+
+## Strategy
+
+The problems described in the previous section are to be solved in
+different steps.
+
+1.  Installation of TheSNPpit on a single ZWS-machine given the
+    restrictions of not having root access to the machine and only
+    having a single user `zws`. The single machine installation requires
+    to do all steps given in the installation section of the user guide
+    separately.
+2.  Try to expand the clients to be able to be used on different
+    machines. The distributed usage of TheSNPpit includes the
+    installation of the database server on one machine and the client
+    part of the package on all machines where TheSNPpit should be used.
+    All the clients must be able to connect to the single instance of
+    the database server. Alternatively it would also be possible to
+    setup a master-slave replication scheme between the machines where
+    one machine has the database master and all the others run
+    replication slave databases. But so far, this seams to be too
+    complicated compared to the benefits that would result from this
+    setup.
 
 ## Installation Resources
 
@@ -38,7 +67,36 @@ installations.
 ## Experiments
 
 This section describes the trials and experiments with a local
-installation.
+installation. The experiments consist of the four steps given in section
+6.3 of the user guide.
+
+### System software installation
+
+In a first experiment, the system software is added to the list of
+software that is installed in the singularity container. The following
+statement checks whether the required system software is already in the
+singularity definition file.
+
+``` bash
+cd /home/quagadmin/simg/img/ubuntu1804lts
+for p in perl gcc PostgreSQL PostgreSQL-contrib libecpg6 libecpg-dev libdbi-perl libinline-perl libmodern-perl-perl libcloog-ppl1 libcloog-ppl0 libfile-slurp-perl libdbd-pg-perl libjudy-dev
+do
+  echo " * Checking def for $p ..."
+  grep "$p" ../../def/ubuntu1804lts/quagzws_ubuntu1804lts.def
+  sleep 2
+done
+```
+
+All packages that were indicated except for `perl` and `gcc` which are
+installed in the container by default are added to the container
+building definition file and a new image is built.
+
+``` bash
+cd /home/quagadmin/simg/img/thesnppit
+../../shub/bash/build_simg.sh -d ../../def/thesnppit/quagzws_ubuntu1804lts.def -w /home/quagadmin/simg/img/thesnppit
+```
+
+### Database Configuration
 
 ### Local pgsql
 
