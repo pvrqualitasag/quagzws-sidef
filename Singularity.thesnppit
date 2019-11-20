@@ -20,6 +20,9 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   apt-get update -y
   apt clean
 
+  # permissions for postgres
+  chmod -R 755 /var/lib/postgresql/10/main
+
   # locales
   locale-gen en_US.UTF-8
   locale-gen de_CH.UTF-8
