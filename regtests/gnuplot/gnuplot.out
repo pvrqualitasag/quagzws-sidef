@@ -1,0 +1,806 @@
+******************** file simple.dem ********************
+Hit return to continueHit return to continueHit return to continueHit return to continueHit return to continueHit return to continueHit return to continueHit return to continue******************** file controls.dem ********************
+Hit return to continue******************** file electron.dem ********************
+Hit return to continueHit return to continueHit return to continue******************** file using.dem ********************
+Hit return to continueHit return to continue******************** file fillstyle.dem ********************
+Now draw the boxes with solid fillNow draw the boxes with a black borderNow make the boxes a little less wideAnd now let's try a different fill densityNow draw the boxes with no borderOr maybe a pattern fill, instead?Finished this demo******************** file fillcvrs.dem ********************
+Press Return to continuePress Return to continuePress Return to continuePress Return to continuePress Return to continuePress Return to continuePress Return to continueHit return to continueHit return to continueHit return to continue******************** file candlesticks.dem ********************
+Hit return to continueHit return to continueHit return to continueHit return to continueHit return to continueHit return to continue******************** file autoscale.dem ********************
+Hit return to continueHit return to continueHit return to continue******************** file bins.dem *************************
+Hit return to continue******************** file smooth_splines.dem ********************
+various splines for smoothing
+Now apply a smoothing spline, weighted by 1/rel error (-> return)Make it smoother by changing the smoothing weights (-> return)Accentuate the relative changes with a log-scale (-> return)Now approximate the data with a bezier curve between the endpoints (-> return)You would rather use log-scales ? (-> return)Hit return to continueHit <cr> to continueHit <cr> to continue******************** file errorbars.dem ********************
+various styles of errorbar
+Would you like boxes? (-> return)Only X-Bars? (-> return)Only Y-Bars? (-> return)Logscaled? (-> return)X as well? (-> return)If you like bars without tics (-> return)X-Bars only (-> return)Y-Bars only (-> return)filledcurve shaded error regionHit return to continue******************** file fit.dem ********************
+Some examples how data fitting using nonlinear least squares fit can be done.
+
+We fit a straight line to the data -- only as a demo without physical meaning.
+  fit function:l(x) = y0 + m*x
+  initial parameters: y0 = 1.1, m = -0.1
+  fit command: fit l(x) 'lcdemo.dat' via y0, m
+
+Now start fitting...  (-> return)Press enter to proceed with the next example.
+Now use the real single-measurement weights from column 5.  (Look at the file
+lcdemo.dat and compare the columns to see the difference.)
+Since these are weights we rescale the resulting parameter errors.
+  fit settings: set fit errorscaling
+  fit command : fit l(x) 'lcdemo.dat' using 1:2:5 yerr via y0, m
+
+Press enter to start the fit.Press enter to proceed with the next example.
+It's time now to try a more realistic model function:
+
+  density(x) = x < Tc ? curve(x)+lowlin(x) : high(x)
+  curve(x) = b*tanh(g*(Tc-x))
+  lowlin(x)  = ml*(x-Tc) + dens_Tc
+  high(x) = mh*(x-Tc) + dens_Tc
+
+density(x) is a function which shall fit the whole temperature range using
+a ?: expression. It contains 6 model parameters which will all be varied. Now
+take the start parameters out of the file 'start.par' and plot the function.
+  fit command: fit density(x) 'lcdemo.dat' using 1:2:5 yerror via 'start.par'
+
+Press enter to start the fit.Press enter to proceed with the next example.
+
+Now a brief demonstration of 3d fitting.
+hemisphr.dat contains random points on a hemisphere of radius 1, but we let
+fit figure this out for us.  It takes many iterations, so we limit them to 50.
+We also do not want intermediate results here.
+  fit settings: set fit results maxiter 50
+  fit function: h(x,y) = sqrt(r*r - (abs(x-x0))**2.2 - (abs(y-y0))**1.8) + z0
+  fit command : fit h(x,y) 'hemisphr.dat' using 1:2:3 via r, x0, y0, z0
+Press enter to start the fit.
+After 50 iterations the fit converged.
+final sum of squares of residuals : 0.080165
+rel. change during last iteration : 0
+
+degrees of freedom    (FIT_NDF)                        : 245
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.0180888
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.000327204
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+r               = 1.00225          +/- 0.0003641    (0.03632%)
+x0              = -0.000450691     +/- 0.0003929    (87.17%)
+y0              = 0.000201292      +/- 0.0004735    (235.3%)
+z0              = -0.00104521      +/- 0.001526     (146%)
+
+correlation matrix of the fit parameters:
+                r      x0     y0     z0     
+r               1.000 
+x0              0.140  1.000 
+y0              0.085 -0.424  1.000 
+z0             -0.658 -0.045 -0.049  1.000 
+
+Notice, however, that this would converge much faster when fitted in a more
+appropriate co-ordinate system:
+  fit r 'hemisphr.dat' using 0:($1*$1+$2*$2+$3*$3) via r
+where we are fitting f(x)=r to the radii calculated as the data is read from
+the file.  No x value is required in this case.
+(This is left as an excercise for the user).
+
+Another possibility is to prescale the variables (set fit prescale),
+which may improve convergence.
+  fit settings: set fit maxiter 50 prescale
+  fit command : fit h(x,y) 'hemisphr.dat' using 1:2:3 via r, x0,y0,z0
+Press enter to proceed with the next example.
+
+Now an example on how to fit multi-branch functions.
+The model consists of two branches, the first describing longitudinal sound
+velocity as function of propagation direction (upper data, from dataset 1),
+the second describing transverse sound velocity (lower data, from dataset 0).
+
+The model uses these data in order to fit elastic stiffnesses which occur
+differently in both branches.
+  fit function: f(x,y)	=  y==1  ?  vlong(x)  :  vtrans(x)
+                vlong(x)    = sqrt(1.0/2.0/rho*1e9*(main(x) + mixed(x)))
+                vtrans(x)   = sqrt(1.0/2.0/rho*1e9*(main(x) - mixed(x)))
+y will be the index of the dataset.
+  fit command: fit f(x,y) 'soundvel.dat' using 1:-2:2 via 'sound.par'
+
+Press enter to start the fit.iter      chisq       delta/lim  lambda   c33           c11           c44           c13           phi0         
+   0 1.6651778833e+07   0.00e+00  1.06e+02    9.000000e+00   6.000000e+00   1.000000e+00   4.000000e+00   2.000000e+01
+   1 3.7115794520e+06  -3.49e+05  1.06e+01    1.107842e+01   5.715164e+00   1.112984e+00   5.269471e+00   5.489671e+00
+   2 3.0952217805e+05  -1.10e+06  1.06e+00    1.250349e+01   5.473118e+00   6.767568e-01   4.359096e+00  -2.308544e+00
+   3 7.9135498639e+04  -2.91e+05  1.06e-01    1.257557e+01   5.490760e+00   7.047546e-01   4.019414e+00  -3.385802e-01
+   4 7.8701397376e+04  -5.52e+02  1.06e-02    1.258878e+01   5.490036e+00   7.019290e-01   3.998785e+00  -3.997977e-01
+   5 7.8701391418e+04  -7.57e-03  1.06e-03    1.258874e+01   5.490047e+00   7.019482e-01   3.998746e+00  -3.995830e-01
+iter      chisq       delta/lim  lambda   c33           c11           c44           c13           phi0         
+
+After 5 iterations the fit converged.
+final sum of squares of residuals : 78701.4
+rel. change during last iteration : -7.57102e-08
+
+degrees of freedom    (FIT_NDF)                        : 144
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 23.3781
+variance of residuals (reduced chisquare) = WSSR/ndf   : 546.537
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+c33             = 12.5887          +/- 0.02898      (0.2302%)
+c11             = 5.49005          +/- 0.01846      (0.3363%)
+c44             = 0.701948         +/- 0.009755     (1.39%)
+c13             = 3.99875          +/- 0.03177      (0.7946%)
+phi0            = -0.399583        +/- 0.13         (32.54%)
+
+correlation matrix of the fit parameters:
+                c33    c11    c44    c13    phi0   
+c33             1.000 
+c11            -0.066  1.000 
+c44            -0.198 -0.278  1.000 
+c13            -0.141  0.028 -0.086  1.000 
+phi0            0.114 -0.022  0.034  0.181  1.000 
+
+Look at the file 'hexa.fnc' to see how the branches are realized using the
+data index as input for a pseudo-3d fit.
+
+Press enter to proceed with the next example.Next we only use every fifth data point for fitting by using the 'every'
+keyword. Note the faster fit and its result.
+  fit command: fit f(x,y) 'soundvel.dat' every 5 using 1:-2:2 via 'sound.par'
+
+Press enter to start the fit.iter      chisq       delta/lim  lambda   c33           c11           c44           c13           phi0         
+   0 3.4156363488e+06   0.00e+00  1.06e+02    9.000000e+00   6.000000e+00   1.000000e+00   4.000000e+00   2.000000e+01
+   1 1.7633147044e+06  -9.37e+04  1.06e+01    1.068004e+01   5.714969e+00   1.220411e+00   5.416989e+00   1.563561e+01
+   2 3.6812403684e+05  -3.79e+05  1.06e+00    1.154575e+01   5.621298e+00   9.265286e-01   5.024562e+00  -3.686271e+00
+   3 2.6359224461e+04  -1.30e+06  1.06e-01    1.253003e+01   5.480326e+00   6.995740e-01   4.092691e+00  -5.722734e-02
+   4 1.9074727803e+04  -3.82e+04  1.06e-02    1.254656e+01   5.491040e+00   7.055514e-01   3.941309e+00  -9.110937e-01
+   5 1.9071441847e+04  -1.72e+01  1.06e-03    1.254887e+01   5.490704e+00   7.054929e-01   3.937661e+00  -8.989885e-01
+   6 1.9071441717e+04  -6.83e-04  1.06e-04    1.254886e+01   5.490728e+00   7.054880e-01   3.937655e+00  -8.989317e-01
+iter      chisq       delta/lim  lambda   c33           c11           c44           c13           phi0         
+
+After 6 iterations the fit converged.
+final sum of squares of residuals : 19071.4
+rel. change during last iteration : -6.82518e-09
+
+degrees of freedom    (FIT_NDF)                        : 26
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 27.0835
+variance of residuals (reduced chisquare) = WSSR/ndf   : 733.517
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+c33             = 12.5489          +/- 0.07395      (0.5893%)
+c11             = 5.49073          +/- 0.04794      (0.8732%)
+c44             = 0.705488         +/- 0.02385      (3.381%)
+c13             = 3.93766          +/- 0.08229      (2.09%)
+phi0            = -0.898932        +/- 0.3067       (34.11%)
+
+correlation matrix of the fit parameters:
+                c33    c11    c44    c13    phi0   
+c33             1.000 
+c11            -0.067  1.000 
+c44            -0.227 -0.251  1.000 
+c13            -0.196  0.051 -0.066  1.000 
+phi0            0.086  0.006 -0.005  0.147  1.000 
+
+When you compare the results (see 'fit.log') you will note that the error of
+the fitted parameters have become larger, and the quality of the plot is only
+slightly affected.
+Press enter to proceed with the next example.
+By marking some parameters as '# FIXED' in the parameter file, you fit only
+the others (c44 and c13 are fixed here).
+Press enter to start the fit.iter      chisq       delta/lim  lambda   c33           c11           phi0         
+   0 9.7945909430e+06   0.00e+00  7.60e+01    9.000000e+00   6.000000e+00   1.000000e-04
+   1 5.6703596418e+05  -1.63e+06  7.60e+00    1.220149e+01   5.310817e+00  -7.224014e-01
+   2 5.3024065948e+05  -6.94e+03  7.60e-01    1.240113e+01   5.340579e+00  -1.080402e-01
+   3 5.3014685037e+05  -1.77e+01  7.60e-02    1.240095e+01   5.340080e+00  -1.667665e-01
+   4 5.3014624975e+05  -1.13e-01  7.60e-03    1.240106e+01   5.340147e+00  -1.620752e-01
+iter      chisq       delta/lim  lambda   c33           c11           phi0         
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 530146
+rel. change during last iteration : -1.13295e-06
+
+degrees of freedom    (FIT_NDF)                        : 146
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 60.2589
+variance of residuals (reduced chisquare) = WSSR/ndf   : 3631.14
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+c33             = 12.4011          +/- 0.07251      (0.5847%)
+c11             = 5.34015          +/- 0.0462       (0.8651%)
+phi0            = -0.162075        +/- 0.3543       (218.6%)
+
+correlation matrix of the fit parameters:
+                c33    c11    phi0   
+c33             1.000 
+c11            -0.135  1.000 
+phi0            0.153  0.001  1.000 
+
+This has the same effect as specifying only the real free parameters by
+the 'via' syntax:
+  fit f(x) 'soundvel.dat' via c33, c11, phi0
+
+Press enter to proceed with the next example.
+
+Here comes an example of a rather complex function.
+
+First a plot with all parameters set to initial values.
+Now fit the model function to the data.
+  fit settings: set fit limit 1e-10
+  fit function: R(x) = sinh(A*a(x)) * exp(-1.*A*(1.+a(x)))
+                a(x) = W(x) * Q(tc) / mu
+                W(x) = 1./(sqrt(2.*pi)*eta) * exp( -1. * x**2 / (2.*eta**2) )
+  initial parameters:
+                eta = 0.00012
+                tc  = 0.0018
+  fit command : fit R(x) 'moli3.dat' u 1:2:3 zerror via eta, tc
+
+now start fitting...  (-> return)iter      chisq       delta/lim  lambda   eta           tc           
+   0 1.1441984213e+04   0.00e+00  2.76e+05    1.200000e-04   1.800000e-03
+   1 5.3171854336e+03  -1.15e+10  2.76e+04    1.043852e-04   1.837367e-03
+   2 4.6879093617e+03  -1.34e+09  2.76e+03    1.018093e-04   2.009651e-03
+   3 4.6734120845e+03  -3.10e+07  2.76e+02    1.010031e-04   2.024420e-03
+   4 4.6729937953e+03  -8.95e+05  2.76e+01    1.008229e-04   2.021774e-03
+   5 4.6729736309e+03  -4.32e+04  2.76e+00    1.007894e-04   2.021375e-03
+   6 4.6729718879e+03  -3.73e+03  2.76e-01    1.007831e-04   2.021299e-03
+   7 4.6729716327e+03  -5.46e+02  2.76e-02    1.007819e-04   2.021285e-03
+   8 4.6729715874e+03  -9.70e+01  2.76e-03    1.007817e-04   2.021282e-03
+   9 4.6729715790e+03  -1.80e+01  2.76e-04    1.007817e-04   2.021282e-03
+  10 4.6729715774e+03  -3.37e+00  2.76e-05    1.007817e-04   2.021282e-03
+  11 4.6729715771e+03  -6.32e-01  2.76e-06    1.007817e-04   2.021282e-03
+iter      chisq       delta/lim  lambda   eta           tc           
+
+After 11 iterations the fit converged.
+final sum of squares of residuals : 4672.97
+rel. change during last iteration : -6.32405e-11
+
+degrees of freedom    (FIT_NDF)                        : 123
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 6.16374
+variance of residuals (reduced chisquare) = WSSR/ndf   : 37.9916
+p-value of the Chisq distribution (FIT_P)              : 0
+
+Final set of parameters            Standard Deviation
+=======================            ==========================
+eta             = 0.000100782      +/- 3.184e-07    (0.3159%)
+tc              = 0.00202128       +/- 1.282e-05    (0.6342%)
+
+correlation matrix of the fit parameters:
+                eta    tc     
+eta             1.000 
+tc              0.426  1.000 
+
+Looking at the plot of the resulting fit curve, you can see that this function
+doesn't really fit this set of data points.  This would normally be a reason to
+to check for measurement problems not yet accounted for, and maybe even re-think
+the theoretic prediction in use.
+
+Press enter to proceed with the next example.
+Next we show a fit with three independent variables.
+The file fit3.dat has four columns, with values of the three independent
+variables x, y and t, and the'resulting value z.  The data lines are in four
+sections, with t being constant within each section.  The sections are separated
+by two blank lines, so we can select sections with "index" modifiers.  Here are
+the data in the first section, where t = -3.
+
+We will fit the function a0/(1 + a1*x**2 + a2*y**2) to these data.  Since at
+this point we have two independent variables, our "using" spec has four entries,
+representing x:y:z:s (where s is the estimated error in the z value).
+  fit function: f1(x,y)=a0/(1+a1*x**2+a2*y**2)
+  fit command : fit f1(x,y) 'fit3.dat' index 0 using 1:2:4 via a0,a1,a2
+
+Press enter to start the fit.iter      chisq       delta/lim  lambda   a0            a1            a2           
+   0 1.9200759829e+02   0.00e+00  1.08e+00    1.000000e+00   1.000000e-01   1.000000e-01
+   * 2.1341288747e+05   9.99e+09  1.08e+01   -1.996446e+00  -9.317214e-02  -6.894074e-02
+   1 1.2155812773e+02  -5.80e+09  1.08e+00    6.747760e-01   3.330668e-01   3.459786e-01
+   2 6.4591509465e+00  -1.78e+11  1.08e-01   -2.166519e+00   4.014935e-01   5.408270e-01
+   3 1.0813895568e+00  -4.97e+10  1.08e-02   -3.016252e+00   5.534097e-01   4.635940e-01
+   4 1.0604896443e+00  -1.97e+08  1.08e-03   -3.021526e+00   5.281087e-01   4.842650e-01
+   5 1.0604647203e+00  -2.35e+05  1.08e-04   -3.022777e+00   5.291208e-01   4.850168e-01
+   6 1.0604647180e+00  -2.20e+01  1.08e-05   -3.022759e+00   5.291036e-01   4.850186e-01
+   7 1.0604647180e+00  -2.62e-01  1.08e-06   -3.022760e+00   5.291039e-01   4.850187e-01
+iter      chisq       delta/lim  lambda   a0            a1            a2           
+
+After 7 iterations the fit converged.
+final sum of squares of residuals : 1.06046
+rel. change during last iteration : -2.61569e-11
+
+degrees of freedom    (FIT_NDF)                        : 118
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.0947997
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.00898699
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a0              = -3.02276         +/- 0.05612      (1.857%)
+a1              = 0.529104         +/- 0.02538      (4.798%)
+a2              = 0.485019         +/- 0.02338      (4.821%)
+
+correlation matrix of the fit parameters:
+                a0     a1     a2     
+a0              1.000 
+a1             -0.636  1.000 
+a2             -0.638  0.235  1.000 
+Press enter to proceed with the next example.
+Here is the last set of data where t = 3.
+We fit the same function to this set.
+  fit function: f1(x,y)=a0/(1+a1*x**2+a2*y**2)
+  fit command : fit f1(x,y) 'fit3.dat' index 3 using 1:2:4 via a0,a1,a2
+
+Press enter to start the fit.iter      chisq       delta/lim  lambda   a0            a1            a2           
+   0 2.7120346202e+02   0.00e+00  4.18e-01   -3.022760e+00   5.291039e-01   4.850187e-01
+   1 5.0488012023e+00  -5.27e+11  4.18e-02    2.596854e+00   6.962571e-01   5.636897e-01
+   2 1.4652164280e+00  -2.45e+10  4.18e-03    3.093112e+00   4.150048e-01   5.365566e-01
+   3 1.1757252546e+00  -2.46e+09  4.18e-04    3.115259e+00   4.994275e-01   5.471436e-01
+   4 1.1726111180e+00  -2.66e+07  4.18e-05    3.120030e+00   5.112617e-01   5.467837e-01
+   5 1.1726107387e+00  -3.23e+03  4.18e-06    3.119771e+00   5.112950e-01   5.466635e-01
+   6 1.1726107381e+00  -5.57e+00  4.18e-07    3.119777e+00   5.112965e-01   5.466665e-01
+   * 1.1726107381e+00   1.67e-01  4.18e-06    3.119777e+00   5.112964e-01   5.466664e-01
+   * 1.1726107381e+00   1.67e-01  4.18e-05    3.119777e+00   5.112964e-01   5.466664e-01
+   * 1.1726107381e+00   1.67e-01  4.18e-04    3.119777e+00   5.112964e-01   5.466664e-01
+   * 1.1726107381e+00   1.67e-01  4.18e-03    3.119777e+00   5.112964e-01   5.466664e-01
+   * 1.1726107381e+00   1.67e-01  4.18e-02    3.119777e+00   5.112964e-01   5.466664e-01
+   * 1.1726107381e+00   1.67e-01  4.18e-01    3.119777e+00   5.112964e-01   5.466664e-01
+   * 1.1726107381e+00   1.54e-01  4.18e+00    3.119777e+00   5.112964e-01   5.466664e-01
+   * 1.1726107381e+00   3.65e-02  4.18e+01    3.119777e+00   5.112964e-01   5.466665e-01
+   * 1.1726107381e+00   8.58e-04  4.18e+02    3.119777e+00   5.112965e-01   5.466665e-01
+   * 1.1726107381e+00   7.57e-06  4.18e+03    3.119777e+00   5.112965e-01   5.466665e-01
+   7 1.1726107381e+00   0.00e+00  4.18e+02    3.119777e+00   5.112965e-01   5.466665e-01
+iter      chisq       delta/lim  lambda   a0            a1            a2           
+
+After 7 iterations the fit converged.
+final sum of squares of residuals : 1.17261
+rel. change during last iteration : 0
+
+degrees of freedom    (FIT_NDF)                        : 117
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.100112
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0100223
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a0              = 3.11978          +/- 0.0752       (2.41%)
+a1              = 0.511296         +/- 0.02835      (5.544%)
+a2              = 0.546667         +/- 0.03019      (5.522%)
+
+correlation matrix of the fit parameters:
+                a0     a1     a2     
+a0              1.000 
+a1              0.718  1.000 
+a2              0.716  0.376  1.000 
+Press enter to proceed with the next example.
+We also have data for several intermediate values of t.  We will fit the
+function f(x,y,t)=a0*t/(1+a1*x**2+a2*y**2) to all the data.
+  fit function: f(x,y,t)=a0*t/(1+a1*x**2+a2*y**2)
+  fit command : fit f(x,y,t) 'fit3.dat' u 1:2:3:4 via a0,a1,a2
+
+Press enter to start the fit.iter      chisq       delta/lim  lambda   a0            a1            a2           
+   0 6.6327563650e+02   0.00e+00  9.11e-01    3.119777e+00   5.112965e-01   5.466665e-01
+   1 4.6639172676e+00  -1.41e+12  9.11e-02    1.058306e+00   5.232988e-01   5.443153e-01
+   2 4.5674642800e+00  -2.11e+08  9.11e-03    1.021357e+00   5.174850e-01   5.083111e-01
+   3 4.5674523432e+00  -2.61e+04  9.11e-04    1.021796e+00   5.177911e-01   5.088947e-01
+   4 4.5674523419e+00  -2.84e+00  9.11e-05    1.021790e+00   5.177820e-01   5.088906e-01
+   5 4.5674523419e+00  -4.67e-02  9.11e-06    1.021790e+00   5.177821e-01   5.088907e-01
+iter      chisq       delta/lim  lambda   a0            a1            a2           
+
+After 5 iterations the fit converged.
+final sum of squares of residuals : 4.56745
+rel. change during last iteration : -4.67264e-12
+
+degrees of freedom    (FIT_NDF)                        : 480
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.0975476
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.00951553
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a0              = 1.02179          +/- 0.01414      (1.384%)
+a1              = 0.517782         +/- 0.01766      (3.41%)
+a2              = 0.508891         +/- 0.01737      (3.414%)
+
+correlation matrix of the fit parameters:
+                a0     a1     a2     
+a0              1.000 
+a1              0.669  1.000 
+a2              0.669  0.289  1.000 
+
+Here are all the data together.
+
+You can use ranges to rename variables and/or limit the data included in the
+fit.  The first range corresponds to the first "using" entry, etc. For example,
+we could have gotten the same fit like this:
+   fit [lon=*:*][lat=*:*][time=*:*]        \
+     a0*time/(1 + a1*lon**2 + a2*lat**2)   \
+     "fit3.dat" u 1:2:3:4 via a0,a1,a2
+Press enter to proceed with the next example.
+
+The fit command can handle errors in the independent variable, too.
+The problem shown here is Pearson's data with York's weights.
+
+First draw the data with uncertainties and the initial function.
+
+Press enter to fit the data using no error values
+
+Press enter to fit the data using no error valueslambda start value set: 1
+iter      chisq       delta/lim  lambda   a1            a2           
+   0 4.6100000000e+00   0.00e+00  1.00e+00    5.000000e+00  -5.000000e-01
+   1 8.0189138044e-01  -4.75e+08  1.00e-01    5.741046e+00  -5.350813e-01
+   2 8.0066352303e-01  -1.53e+05  1.00e-02    5.761170e+00  -5.395735e-01
+   3 8.0066352224e-01  -9.89e-02  1.00e-03    5.761185e+00  -5.395773e-01
+iter      chisq       delta/lim  lambda   a1            a2           
+
+After 3 iterations the fit converged.
+final sum of squares of residuals : 0.800664
+rel. change during last iteration : -9.88845e-10
+
+degrees of freedom    (FIT_NDF)                        : 8
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.316359
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.100083
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a1              = 5.76119          +/- 0.1895       (3.289%)
+a2              = -0.539577        +/- 0.04213      (7.807%)
+
+correlation matrix of the fit parameters:
+                a1     a2     
+a1              1.000 
+a2             -0.849  1.000 
+
+Press enter to fit the data using only the uncertainties of the y-values.
+
+Press enter to fit the data using only the uncertainties of the y-values.lambda start value set: 1
+iter      chisq       delta/lim  lambda   a1y           a2y          
+   0 1.4962550000e+02   0.00e+00  1.00e+00    5.000000e+00  -5.000000e-01
+   1 3.4345697872e+01  -3.36e+08  1.00e-01    6.095602e+00  -6.101483e-01
+   2 3.4345207498e+01  -1.43e+03  1.00e-02    6.100109e+00  -6.108129e-01
+   3 3.4345207498e+01  -4.10e-06  1.00e-03    6.100109e+00  -6.108130e-01
+iter      chisq       delta/lim  lambda   a1y           a2y          
+
+After 3 iterations the fit converged.
+final sum of squares of residuals : 34.3452
+rel. change during last iteration : -4.09628e-14
+
+degrees of freedom    (FIT_NDF)                        : 8
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 2.07199
+variance of residuals (reduced chisquare) = WSSR/ndf   : 4.29315
+p-value of the Chisq distribution (FIT_P)              : 3.51726e-05
+
+Final set of parameters            Standard Deviation
+=======================            ==========================
+a1y             = 6.10011          +/- 0.2047       (3.355%)
+a2y             = -0.610813        +/- 0.03009      (4.926%)
+
+correlation matrix of the fit parameters:
+                a1y    a2y    
+a1y             1.000 
+a2y            -0.985  1.000 
+
+Press enter to fit the data using the uncertainties of the x and y values.
+
+Press enter to fit the data using the uncertainties of the x and y values.lambda start value set: 1
+iter      chisq       delta/lim  lambda   a1xy          a2xy         
+   0 6.3259837889e+01   0.00e+00  1.00e+00    5.000000e+00  -5.000000e-01
+   1 1.1957122097e+01  -4.29e+08  1.00e-01    5.395533e+00  -4.633919e-01
+   2 1.1956475893e+01  -5.40e+03  1.00e-02    5.396066e+00  -4.634515e-01
+   * 1.1956484542e+01   7.23e+01  1.00e-01    5.396062e+00  -4.634507e-01
+   * 1.1956484540e+01   7.23e+01  1.00e+00    5.396062e+00  -4.634507e-01
+   * 1.1956484400e+01   7.12e+01  1.00e+01    5.396062e+00  -4.634507e-01
+   * 1.1956479134e+01   2.71e+01  1.00e+02    5.396064e+00  -4.634512e-01
+   * 1.1956475943e+01   4.19e-01  1.00e+03    5.396066e+00  -4.634515e-01
+   * 1.1956475893e+01   4.16e-03  1.00e+04    5.396066e+00  -4.634515e-01
+   * 1.1956475893e+01   4.03e-05  1.00e+05    5.396066e+00  -4.634515e-01
+   3 1.1956475893e+01  -1.63e-07  1.00e+04    5.396066e+00  -4.634515e-01
+iter      chisq       delta/lim  lambda   a1xy          a2xy         
+
+After 3 iterations the fit converged.
+final sum of squares of residuals : 11.9565
+rel. change during last iteration : -1.63425e-15
+
+degrees of freedom    (FIT_NDF)                        : 8
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 1.22252
+variance of residuals (reduced chisquare) = WSSR/ndf   : 1.49456
+p-value of the Chisq distribution (FIT_P)              : 0.153156
+
+Final set of parameters            Standard Deviation
+=======================            ==========================
+a1xy            = 5.39607          +/- 0.2957       (5.479%)
+a2xy            = -0.463451        +/- 0.0578       (12.47%)
+
+correlation matrix of the fit parameters:
+                a1xy   a2xy   
+a1xy            1.000 
+a2xy           -0.964  1.000 
+
+
+Summary of the fit results:
+                        a1           a2           a1_err       a2_err
+------------------------------------------------------------------------
+initial values          5.000e+00  -5.00e-01
+our result              5.396e+00  -4.63e-01   2.957e-01  5.78e-02
+ROOT Minuit             5.480e+00  -4.81e-01   2.926e-01  5.76e-02
+------------------------------------------------------------------------
+
+You can have a look at all previous fit results by looking into the file
+'fit.log' (or whatever you defined the environment variable 'FIT_LOG' to).
+Remember that this file will always be appended to, so remove it from time
+to time.
+
+Done with fitting demo  (-> return)         "fitmulti.dem", line 83: warning: 
+	> Implied independent variable y not found in fit function.
+	> Assuming version 4 syntax with zerror in column 3 but no zerror keyword.
+
+iter      chisq       delta/lim  lambda   c1           
+   0 2.1892940362e+01   0.00e+00  6.81e-01    1.000000e+00
+   1 4.5233347856e-02  -4.83e+07  6.81e-02    2.431818e+00
+   2 1.0247233379e-08  -4.41e+11  6.81e-03    2.499968e+00
+   3 2.3236116830e-19  -4.41e+15  6.81e-04    2.500000e+00
+   4 1.9793013150e-28  -1.17e+14  6.81e-05    2.500000e+00
+   5 1.9793013150e-28   0.00e+00  6.81e-06    2.500000e+00
+iter      chisq       delta/lim  lambda   c1           
+
+After 5 iterations the fit converged.
+final sum of squares of residuals : 1.9793e-28
+rel. change during last iteration : 0
+
+degrees of freedom    (FIT_NDF)                        : 20
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 3.14587e-15
+variance of residuals (reduced chisquare) = WSSR/ndf   : 9.89651e-30
+p-value of the Chisq distribution (FIT_P)              : 1
+
+Final set of parameters            Standard Deviation
+=======================            ==========================
+c1              = 2.5              +/- 0.3206       (12.82%)
+---------------------------------------------------------
+1D fit: expected 2.5 c1 = 2.5
+---------------------------------------------------------
+Hit return to try for a 2D fit         "fitmulti.dem", line 99: warning: 
+	> Implied independent variable t not found in fit function.
+	> Assuming version 4 syntax with zerror in column 4 but no zerror keyword.
+
+iter      chisq       delta/lim  lambda   c1            c2           
+   0 1.8402267568e+01   0.00e+00  5.08e-01    1.000000e+00   1.000000e+00
+   1 5.1495377021e-01  -3.47e+06  5.08e-02    2.363854e+00  -7.849976e-01
+   2 1.4278686826e-05  -3.61e+09  5.08e-03    2.499431e+00  -1.794590e+00
+   3 4.0743857030e-14  -3.50e+13  5.08e-04    2.500000e+00  -1.800000e+00
+   4 1.1747755312e-26  -3.47e+17  5.08e-05    2.500000e+00  -1.800000e+00
+   5 1.3330381888e-28  -8.71e+06  5.08e-06    2.500000e+00  -1.800000e+00
+   6 1.2866926106e-28  -3.60e+03  5.08e-07    2.500000e+00  -1.800000e+00
+   7 1.2866926106e-28   0.00e+00  5.08e-08    2.500000e+00  -1.800000e+00
+iter      chisq       delta/lim  lambda   c1            c2           
+
+After 7 iterations the fit converged.
+final sum of squares of residuals : 1.28669e-28
+rel. change during last iteration : 0
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 2.67363e-15
+variance of residuals (reduced chisquare) = WSSR/ndf   : 7.14829e-30
+p-value of the Chisq distribution (FIT_P)              : 1
+
+Final set of parameters            Standard Deviation
+=======================            ==========================
+c1              = 2.5              +/- 0.3503       (14.01%)
+c2              = -1.8             +/- 1.432        (79.57%)
+
+correlation matrix of the fit parameters:
+                c1     c2     
+c1              1.000 
+c2             -0.403  1.000 
+---------------------------------------------------------
+2D fit: expected 2.5 c1 = 2.5
+2D fit: expected -1.8 c2 = -1.80000000000001
+---------------------------------------------------------
+Hit return to try for a 3D fit         "fitmulti.dem", line 115: warning: 
+	> Implied independent variable x3 not found in fit function.
+	> Assuming version 4 syntax with zerror in column 5 but no zerror keyword.
+
+iter      chisq       delta/lim  lambda   c1            c2            c3           
+   0 5.0042107018e+05   0.00e+00  1.36e+00    1.000000e+00   1.000000e+00   1.000000e+00
+   1 1.5648231886e+02  -3.20e+08  1.36e-01    2.667794e+00   2.485896e-01   6.876787e+01
+   2 9.5026215217e-04  -1.65e+10  1.36e-02    2.498116e+00  -1.774715e+00   6.999949e+01
+   3 1.4986897994e-11  -6.34e+12  1.36e-03    2.500000e+00  -1.799997e+00   7.000000e+01
+   4 2.5594986155e-23  -5.86e+16  1.36e-04    2.500000e+00  -1.800000e+00   7.000000e+01
+   5 1.5865767741e-24  -1.51e+06  1.36e-05    2.500000e+00  -1.800000e+00   7.000000e+01
+   6 1.5657265887e-24  -1.33e+03  1.36e-06    2.500000e+00  -1.800000e+00   7.000000e+01
+   * 1.5852570098e-24   1.23e+03  1.36e-05    2.500000e+00  -1.800000e+00   7.000000e+01
+   * 1.5852570098e-24   1.23e+03  1.36e-04    2.500000e+00  -1.800000e+00   7.000000e+01
+   * 1.5852570098e-24   1.23e+03  1.36e-03    2.500000e+00  -1.800000e+00   7.000000e+01
+   * 1.5852570098e-24   1.23e+03  1.36e-02    2.500000e+00  -1.800000e+00   7.000000e+01
+   * 1.5852570098e-24   1.23e+03  1.36e-01    2.500000e+00  -1.800000e+00   7.000000e+01
+   * 1.5852570098e-24   1.23e+03  1.36e+00    2.500000e+00  -1.800000e+00   7.000000e+01
+   * 1.5854870121e-24   1.25e+03  1.36e+01    2.500000e+00  -1.800000e+00   7.000000e+01
+   7 1.5657265887e-24   0.00e+00  1.36e+00    2.500000e+00  -1.800000e+00   7.000000e+01
+iter      chisq       delta/lim  lambda   c1            c2            c3           
+
+After 7 iterations the fit converged.
+final sum of squares of residuals : 1.56573e-24
+rel. change during last iteration : 0
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 2.94932e-13
+variance of residuals (reduced chisquare) = WSSR/ndf   : 8.69848e-26
+p-value of the Chisq distribution (FIT_P)              : 1
+
+Final set of parameters            Standard Deviation
+=======================            ==========================
+c1              = 2.5              +/- 0.3341       (13.36%)
+c2              = -1.8             +/- 0.8232       (45.73%)
+c3              = 70               +/- 0.09942      (0.142%)
+
+correlation matrix of the fit parameters:
+                c1     c2     c3     
+c1              1.000 
+c2             -0.228  1.000 
+c3             -0.144 -0.089  1.000 
+---------------------------------------------------------
+3D fit: expected 2.5 c1 = 2.50000000000001
+3D fit: expected -1.8 c2 = -1.80000000000011
+3D fit: expected 70.0 c3 = 70.0
+---------------------------------------------------------
+Hit return to try for a 4D fit         "fitmulti.dem", line 131: warning: 
+	> Implied independent variable x4 not found in fit function.
+	> Assuming version 4 syntax with zerror in column 6 but no zerror keyword.
+
+iter      chisq       delta/lim  lambda   c1            c2            c3            c4           
+   0 5.0434414591e+05   0.00e+00  1.23e+00    1.000000e+00   1.000000e+00   1.000000e+00   1.000000e+00
+   1 1.0737393796e+02  -4.70e+08  1.23e-01    2.637883e+00   2.081428e-01   6.896240e+01  -3.465848e+00
+   2 7.6766393648e-04  -1.40e+10  1.23e-02    2.498380e+00  -1.775303e+00   6.999930e+01  -3.204055e+00
+   3 1.1976288234e-11  -6.41e+12  1.23e-03    2.500000e+00  -1.799997e+00   7.000000e+01  -3.200001e+00
+   4 1.9635651177e-23  -6.10e+16  1.23e-04    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00
+   5 6.5436327632e-25  -2.90e+06  1.23e-05    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00
+   6 6.5213001110e-25  -3.42e+02  1.23e-06    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00
+   7 6.5184207687e-25  -4.42e+01  1.23e-07    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00
+   8 6.4608339226e-25  -8.91e+02  1.23e-08    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00
+   * 6.5173794723e-25   8.68e+02  1.23e-07    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00
+   * 6.5173794723e-25   8.68e+02  1.23e-06    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00
+   * 6.5173794723e-25   8.68e+02  1.23e-05    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00
+   * 6.5173794723e-25   8.68e+02  1.23e-04    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00
+   * 6.5173794723e-25   8.68e+02  1.23e-03    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00
+   * 6.5173794723e-25   8.68e+02  1.23e-02    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00
+   * 6.5173794723e-25   8.68e+02  1.23e-01    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00
+   * 6.5173794723e-25   8.68e+02  1.23e+00    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00
+   * 6.5178922319e-25   8.75e+02  1.23e+01    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00
+   9 6.4608339226e-25   0.00e+00  1.23e+00    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00
+iter      chisq       delta/lim  lambda   c1            c2            c3            c4           
+
+After 9 iterations the fit converged.
+final sum of squares of residuals : 6.46083e-25
+rel. change during last iteration : 0
+
+degrees of freedom    (FIT_NDF)                        : 17
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 1.94948e-13
+variance of residuals (reduced chisquare) = WSSR/ndf   : 3.80049e-26
+p-value of the Chisq distribution (FIT_P)              : 1
+
+Final set of parameters            Standard Deviation
+=======================            ==========================
+c1              = 2.5              +/- 0.3341       (13.36%)
+c2              = -1.8             +/- 0.8947       (49.71%)
+c3              = 70               +/- 0.1026       (0.1466%)
+c4              = -3.2             +/- 0.3306       (10.33%)
+
+correlation matrix of the fit parameters:
+                c1     c2     c3     c4     
+c1              1.000 
+c2             -0.214  1.000 
+c3             -0.137 -0.176  1.000 
+c4              0.010 -0.392  0.247  1.000 
+---------------------------------------------------------
+4D fit: expected 2.5 c1 = 2.4999999999999
+4D fit: expected -1.8 c2 = -1.80000000000033
+4D fit: expected 70.0 c3 = 70.0
+4D fit: expected -3.2 c4 = -3.1999999999997
+---------------------------------------------------------
+Hit return to try for a 5D fit         "fitmulti.dem", line 149: warning: 
+	> Implied independent variable x5 not found in fit function.
+	> Assuming version 4 syntax with zerror in column 7 but no zerror keyword.
+
+iter      chisq       delta/lim  lambda   c1            c2            c3            c4            c5           
+   0 3.5652827793e+05   0.00e+00  2.08e+01    1.000000e+00   1.000000e+00   1.000000e+00   1.000000e+00   1.000000e+00
+   1 8.2628175865e+04  -3.31e+05  2.08e+00    1.131551e+00   1.200143e+00   4.015282e+00   1.106540e+00   3.274197e+00
+   2 2.8797393982e+03  -2.77e+06  2.08e-01    2.268438e+00   3.004089e+00   5.746308e+01  -1.174504e+00   9.548228e-01
+   3 5.7761101766e-02  -4.99e+09  2.08e-02    2.484844e+00  -1.615778e+00   6.995937e+01  -3.211773e+00   4.017438e-01
+   4 5.5575896136e-09  -1.04e+12  2.08e-03    2.499994e+00  -1.799932e+00   6.999999e+01  -3.200009e+00   4.000002e-01
+   5 7.5296124774e-20  -7.38e+15  2.08e-04    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01
+   6 6.8714202466e-25  -1.10e+10  2.08e-05    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01
+   7 6.6497897753e-25  -3.33e+03  2.08e-06    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01
+   * 6.6506654109e-25   1.32e+01  2.08e-05    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01
+   * 6.6506654109e-25   1.32e+01  2.08e-04    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01
+   * 6.6506654109e-25   1.32e+01  2.08e-03    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01
+   * 6.6506654109e-25   1.32e+01  2.08e-02    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01
+   * 6.6506654109e-25   1.32e+01  2.08e-01    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01
+   * 6.6500422107e-25   3.80e+00  2.08e+00    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01
+   8 6.4747494290e-25  -2.70e+03  2.08e-01    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01
+   * 6.9279657963e-25   6.54e+03  2.08e+00    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01
+   * 6.6666004012e-25   2.88e+03  2.08e+01    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01
+   * 6.6524640137e-25   2.67e+03  2.08e+02    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01
+   * 6.5555287857e-25   1.23e+03  2.08e+03    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01
+   9 6.4747494290e-25   0.00e+00  2.08e+02    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01
+iter      chisq       delta/lim  lambda   c1            c2            c3            c4            c5           
+
+After 9 iterations the fit converged.
+final sum of squares of residuals : 6.47475e-25
+rel. change during last iteration : 0
+
+degrees of freedom    (FIT_NDF)                        : 16
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 2.01165e-13
+variance of residuals (reduced chisquare) = WSSR/ndf   : 4.04672e-26
+p-value of the Chisq distribution (FIT_P)              : 1
+
+Final set of parameters            Standard Deviation
+=======================            ==========================
+c1              = 2.5              +/- 0.3351       (13.41%)
+c2              = -1.8             +/- 0.9103       (50.57%)
+c3              = 70               +/- 0.2366       (0.338%)
+c4              = -3.2             +/- 0.3331       (10.41%)
+c5              = 0.4              +/- 0.01144      (2.86%)
+
+correlation matrix of the fit parameters:
+                c1     c2     c3     c4     c5     
+c1              1.000 
+c2             -0.224  1.000 
+c3              0.011 -0.241  1.000 
+c4              0.001 -0.360 -0.004  1.000 
+c5             -0.078  0.184 -0.901  0.123  1.000 
+---------------------------------------------------------
+5D fit: expected 2.5 c1 = 2.4999999999999
+5D fit: expected -1.8 c2 = -1.80000000000034
+5D fit: expected 70.0 c3 = 70.0
+5D fit: expected -3.2 c4 = -3.1999999999997
+5D fit: expected 0.4 c5 = 0.4
+---------------------------------------------------------
+Hit return to try for a 6D fitThis 6D fit will fail in version 4 but version 5 can handle more parameters
+         "fitmulti.dem", line 171: warning: 
+	> Implied independent variable  not found in fit function.
+	> Assuming version 4 syntax with zerror in column 8 but no zerror keyword.
+
+iter      chisq       delta/lim  lambda   c1            c2            c3            c4            c5            c6           
+   0 3.4961271093e+05   0.00e+00  1.94e+01    1.000000e+00   1.000000e+00   1.000000e+00   1.000000e+00   1.000000e+00   1.000000e+00
+   1 7.6637354181e+04  -3.56e+05  1.94e+00    9.608331e-01   1.184762e+00   4.200546e+00   1.106839e+00   3.265869e+00   9.641673e-01
+   2 2.4111848689e+03  -3.08e+06  1.94e-01    1.293024e+00   2.647546e+00   5.815961e+01  -1.307965e+00   9.256806e-01   1.373154e-01
+   3 4.0425600039e-02  -5.96e+09  1.94e-02    2.493419e+00  -1.646308e+00   6.996638e+01  -3.211246e+00   4.014427e-01  -1.585899e-01
+   4 7.1103832630e-08  -5.69e+10  1.94e-03    2.500262e+00  -1.799903e+00   7.000002e+01  -3.200052e+00   3.999987e-01  -2.480390e-01
+   5 3.2145956903e-15  -2.21e+12  1.94e-04    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01  -2.499996e-01
+   6 1.2915932826e-24  -2.49e+14  1.94e-05    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01  -2.500000e-01
+   * 1.2994882026e-24   6.08e+02  1.94e-04    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01  -2.500000e-01
+   * 1.2994882026e-24   6.08e+02  1.94e-03    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01  -2.500000e-01
+   * 1.2994882026e-24   6.08e+02  1.94e-02    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01  -2.500000e-01
+   7 1.2628874232e-24  -2.27e+03  1.94e-03    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01  -2.500000e-01
+   8 1.1896282775e-24  -6.16e+03  1.94e-04    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01  -2.500000e-01
+   * 1.2110348070e-24   1.77e+03  1.94e-03    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01  -2.500000e-01
+   * 1.2110348070e-24   1.77e+03  1.94e-02    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01  -2.500000e-01
+   * 1.2110348070e-24   1.77e+03  1.94e-01    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01  -2.500000e-01
+   * 1.2219968181e-24   2.65e+03  1.94e+00    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01  -2.500000e-01
+   * 1.2252721686e-24   2.91e+03  1.94e+01    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01  -2.500000e-01
+   9 1.1888204839e-24  -6.79e+01  1.94e+00    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01  -2.500000e-01
+   * 1.2998029581e-24   8.54e+03  1.94e+01    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01  -2.500000e-01
+  10 1.1888204839e-24   0.00e+00  1.94e+00    2.500000e+00  -1.800000e+00   7.000000e+01  -3.200000e+00   4.000000e-01  -2.500000e-01
+iter      chisq       delta/lim  lambda   c1            c2            c3            c4            c5            c6           
+
+After 10 iterations the fit converged.
+final sum of squares of residuals : 1.18882e-24
+rel. change during last iteration : 0
+
+degrees of freedom    (FIT_NDF)                        : 14
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 2.91403e-13
+variance of residuals (reduced chisquare) = WSSR/ndf   : 8.49157e-26
+p-value of the Chisq distribution (FIT_P)              : 1
+
+Final set of parameters            Standard Deviation
+=======================            ==========================
+c1              = 2.5              +/- 1.079        (43.17%)
+c2              = -1.8             +/- 0.9301       (51.67%)
+c3              = 70               +/- 0.2616       (0.3737%)
+c4              = -3.2             +/- 0.3759       (11.75%)
+c5              = 0.4              +/- 0.01302      (3.256%)
+c6              = -0.25            +/- 7.512        (3005%)
+
+correlation matrix of the fit parameters:
+                c1     c2     c3     c4     c5     c6     
+c1              1.000 
+c2              0.124  1.000 
+c3              0.370 -0.129  1.000 
+c4             -0.440 -0.405 -0.182  1.000 
+c5             -0.447  0.062 -0.919  0.303  1.000 
+c6              0.945  0.197  0.366 -0.461 -0.428  1.000 
+---------------------------------------------------------
+6D fit: expected 2.5 c1 = 2.49999999999976
+6D fit: expected -1.8 c2 = -1.80000000000026
+6D fit: expected 70.0 c3 = 70.0
+6D fit: expected -3.2 c4 = -3.19999999999975
+6D fit: expected 0.4 c5 = 0.4
+6D fit: expected -0.25 c6 = -0.250000000000491
+FIT_NDF = 14 after range filters (expected 14)
+---------------------------------------------------------
+Hit return to try fit with array variables         "fitmulti.dem", line 183: warning: 
+	> Implied independent variable  not found in fit function.
+	> Assuming version 4 syntax with zerror in column 8 but no zerror keyword.
+
+         "fitmulti.dem", line 183: unknown type in real()
+
