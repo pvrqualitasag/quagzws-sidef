@@ -4,3 +4,4 @@ Subject: Test E-mail ab singularity container
 
 This is a test message from a file.
 Best Singularity Testing Team Qualtias AG
+
