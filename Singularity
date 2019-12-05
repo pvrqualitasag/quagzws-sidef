@@ -7,17 +7,26 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   apt-get update
 
   # install softwaree properties commons for add-apt-repository
-  apt-get install -y software-properties-common
+  apt-get install -y software-properties-common apt-utils
   apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9 
   add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/'
   apt-get update
 
   # Install libraries and other pre-requisites
   apt-get install -y build-essential xserver-xorg-dev freeglut3 freeglut3-dev libopenmpi-dev openmpi-bin openmpi-common openssh-client openssh-server libssh-dev libgit2-dev libssl-dev libxml2-dev libfreetype6-dev libmagick++-dev ftp screen curl man vim less locales time rsync gawk sudo tzdata git ssmtp mailutils cargo dos2unix doxygen wget sshpass htop nano
-  apt update
+  apt-get update
 
   # Install R, Python, pandas and gnuplot
   apt-get install -y r-base r-base-core r-recommended python python-pip python-numpy python-pandas python-dev python3-pip pandoc gnuplot 
+  apt-get update
+  
+  # Install system software for TheSNPpit
+  apt-get install -y libdbd-pg-perl libecpg6 libecpg-dev libdbi-perl libinline-perl libmodern-perl-perl libcloog-ppl1 libcloog-ppl-dev libfile-slurp-perl libpq5 libjudy-dev
+  apt-get update -y
+  echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
+  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add -
+  apt-get install -y postgresql postgresql-contrib
+  apt-get update
   apt clean
 
   # Install jula from git
@@ -36,6 +45,14 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   /usr/bin/pip3 install pandas
   /usr/bin/pip3 install numpy
 
+  # permissions for postgres
+  chmod -R 755 /var/lib/postgresql/10/main
+  chmod -R 777 /var/run/postgresql
+  
+  # dconf and gnuplot problem
+  mkdir -p /run/user/501
+  chmod -R 777 /run/user/501
+  
   # locales
   locale-gen en_US.UTF-8
   locale-gen de_CH.UTF-8
