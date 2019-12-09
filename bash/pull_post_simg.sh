@@ -296,9 +296,6 @@ shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 if test "$IMAGENAME" == ""; then
   usage "variable image_file_name not defined"
 fi
-if test "$SHUBURI" == ""; then
-  usage "variable shub_uri not defined"
-fi
 if test "$INSTANCENAME" == ""
 then
   usage "variable instance_name not defined"
@@ -320,8 +317,13 @@ if [ -f "$IMAGENAME" ]
 then
   log_msg $SCRIPT " * Found image: $IMAGENAME ..."
 else
-  log_msg $SCRIPT " * Pulling img from shub ..."
-  singularity pull --name $IMAGENAME $SHUBURI
+  if [ "$SHUBURI" == "" ]
+  then
+    log_msg $SCRIPT " * -s <shub_uri> not specified, hence cannot pull ..."
+  else
+    log_msg $SCRIPT " * Pulling img from shub ..."
+    singularity pull --name $IMAGENAME $SHUBURI
+  fi    
 fi
 
 
