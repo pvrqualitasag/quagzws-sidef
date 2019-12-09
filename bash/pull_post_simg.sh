@@ -92,6 +92,8 @@ usage () {
   $ECHO "           -u                    --   Switch to update R packages" 
   $ECHO "           -c                    --   Switch to copy config from templates"
   $ECHO "           -l                    --   Switch to indicate whether link to simg file should be added"
+  $ECHO "           -t                    --   Start the instance from the pulled image"
+  $ECHO "           -w <image_dir>        --   Specify alternative directory where image is stored"
   $ECHO ""
   exit 1
 }
@@ -230,13 +232,14 @@ start_msg
 #+ getopts-parsing, eval=FALSE
 BINDPATH=""
 INSTANCENAME=""
+STARTINSTANCE="FALSE"
 IMAGENAME=""
 RLIBDIR="/home/zws/lib/R/library"
 SHUBURI=""
 COPYCONFIG="FALSE"
 UPDATERPGK="FALSE"
 LINKSIMG="FALSE"
-while getopts ":b:ci:ln:r:s:uh" FLAG; do
+while getopts ":b:ci:ln:r:s:uw:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
@@ -262,8 +265,18 @@ while getopts ":b:ci:ln:r:s:uh" FLAG; do
     s)
       SHUBURI=$OPTARG
       ;;
+    t)
+      STARTINSTANCE="TRUE"
+      ;;
     u)
       UPDATERPGK="TRUE"
+      ;;
+    w) 
+      if [ -d "$OPTARG" ];then
+        IMGDIR=$OPTARG
+      else
+        usage "-w <image_dir> does not seam to be a valid image directory"
+      fi
       ;;
     :)
       usage "-$OPTARG requires an argument"
@@ -330,7 +343,7 @@ log_msg $SCRIPT " * Instance start ..."
 INSTANCERUNNING=`singularity instance list | grep "$INSTANCENAME" | wc -l`
 echo "Instance name: $INSTANCENAME"
 log_msg $SCRIPT " * Running status of instance: $INSTANCENAME: $INSTANCERUNNING"
-if [ "$INSTANCERUNNING" == "0" ] 
+if [ "$INSTANCERUNNING" == "0" ] && [ "$STARTINSTANCE" == "TRUE" ]
 then
   start_instance
 fi
