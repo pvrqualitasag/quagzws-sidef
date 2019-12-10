@@ -51,7 +51,7 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   
   # dconf and gnuplot problem
   mkdir -p /run/user/501
-  chmod -R 777 /run/user/501
+  chmod -R 777 /run/user
   
   # locales
   locale-gen en_US.UTF-8
