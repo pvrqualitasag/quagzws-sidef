@@ -25,6 +25,7 @@ G2F90PATH=/qualstorzws01/data_projekte/projekte/gibbs
 G2F90PROG=gibbs2f90
 G2F90PAR=gibbs1.txt
 G2F90OUTFILES=(fort.99 gibbs_samples last_solutions)
+G2F90BINSOL=binary_final_solutions
 
 
 #' ## Preparation
@@ -58,6 +59,10 @@ done
 
 
 #' ## Clean Up
+#' Remove binary solution file
+#+ rm-bin-sol
+rm $G2F90BINSOL
+
 #' Go back to original wd
 #+ cd-back
 cd $cur_wd
