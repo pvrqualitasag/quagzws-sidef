@@ -1,4 +1,0 @@
- set title 'POSTGIBBSF90 - Samples'
-plot 'postgibbs_samples' using 2:   4 t "par   1" w l
- pause 600
- exit
