@@ -199,7 +199,7 @@ copy_config () {
   log_msg 'copy_config' " * Copy bash_aliases ..."
   rename_file_on_exist $BASHALIASTRG
   # use '#' as delimiters for sed, because $SIMGLINK contains a path
-  cat $BASHALIASTMPL | sed -e "s#{SIMGLINK}#$SIMGLINK#" > $BASHALIASTRG
+  cat $BASHALIASTMPL | sed -e "s#{SIMGLINK}#$SIMGLINK#" | sed -e "s#{BINDPATH}#$BINDPATH#" > $BASHALIASTRG
 
   # Rprofile
   log_msg 'copy_config' " * Copy Rprofile ..."

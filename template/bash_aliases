@@ -3,11 +3,12 @@
 QGSIMG={SIMGLINK}
 if [ -f "$QGSIMG" ]
 then
-  alias ssbp='singularity shell --bind /qualstore03,/qualstorzws01,/qualstorora01,/qualstororatest01 "$QGSIMG"'
-  alias siszws='singularity instance start --bind /qualstore03,/qualstorzws01,/qualstorora01,/qualstororatest01 "$QGSIMG" sizws'
+  alias ssbp='singularity shell --bind {BINDPATH} "$QGSIMG"'
+  alias siszws='singularity instance start --bind {BINDPATH} "$QGSIMG" sizws'
   alias sszws='SINGULARITY_SHELL=/bin/bash singularity shell instance://sizws'
 fi
 alias sils='singularity instance list'
 alias sisa='singularity instance start'
+alias sisab='singularity instance start --bind {BINDPATH}'
 alias siso='singularity instance stop'
 alias sish='singularity shell'
