@@ -22,6 +22,7 @@ set -o pipefail   # return value of pipeline is value of last command to exit wi
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 SCRIPT=$(basename ${BASH_SOURCE[0]})
 G2F90PATH=/qualstorzws01/data_projekte/projekte/gibbs
+G2F90PROG=gibbs2f90
 G2F90PAR=gibbs1.txt
 
 #' ## Preparation
@@ -30,7 +31,7 @@ G2F90PAR=gibbs1.txt
 cur_wd=`pwd`
 cd $SCRIPT_DIR
 # Run the gibbs2f90 program
-(echo $G2F90PAR;echo '5000 1000';echo 10) | $G2F90PATH
+(echo $G2F90PAR;echo '5000 1000';echo 10) | $G2F90PATH/$G2F90PROG
 
 
 #' ## Clean Up
