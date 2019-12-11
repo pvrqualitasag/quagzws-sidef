@@ -24,7 +24,7 @@ SCRIPT=$(basename ${BASH_SOURCE[0]})
 PGF90PATH=/qualstorzws01/data_projekte/projekte/gibbs
 PGF90PROG=postgibbsf90
 PGF90PAR=gibbs1.txt
-PGF90OUTFILES=(fort.456 fort.998 postgibbs_samples postsd postout postmeanCorr postmean postind f1)
+PGF90OUTFILES=(fort.456 fort.998 postgibbs_samples postsd postout postmeanCorr postmean postind)
 
 #' ## Functions
 #' The following definitions of general purpose functions are local to this script.
