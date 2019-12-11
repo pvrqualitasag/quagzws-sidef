@@ -27,6 +27,47 @@ G2F90PAR=gibbs1.txt
 G2F90OUTFILES=(fort.99 gibbs_samples last_solutions)
 G2F90BINSOL=binary_final_solutions
 
+#' ## Functions
+#' The following definitions of general purpose functions are local to this script.
+#'
+#' ### Usage Message
+#' Usage message giving help on how to use the script.
+#+ usg-msg-fun, eval=FALSE
+usage () {
+  local l_MSG=$1
+  $ECHO "Usage Error: $l_MSG"
+  $ECHO "Usage: $SCRIPT -n <run_compare>"
+  $ECHO "  where -n <run_compare>  --  indicates whether to run comparisons to existing results"
+  $ECHO ""
+  exit 1
+}
+
+
+#' ## Getopts for Commandline Argument Parsing
+#' If an option should be followed by an argument, it should be followed by a ":".
+#' Notice there is no ":" after "h". The leading ":" suppresses error messages from
+#' getopts. This is required to get my unrecognized option code to work.
+#+ getopts-parsing, eval=FALSE
+RUNCOMPARE="TRUE"
+while getopts ":n:h" FLAG; do
+  case $FLAG in
+    h)
+      usage "Help message for $SCRIPT"
+      ;;
+    n)
+      RUNCOMPARE=$OPTARG
+      ;;
+    :)
+      usage "-$OPTARG requires an argument"
+      ;;
+    ?)
+      usage "Invalid command line argument (-$OPTARG) found"
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
+
 
 #' ## Preparation
 #' The current working directory is stored away to be able to go back at the end.
@@ -43,20 +84,21 @@ cd $SCRIPT_DIR
 
 #' ## Comparison
 #' Compare output of current test with stored output
-for f in ${G2F90OUTFILES[@]}
-#ls -1 *.out | while read f
-do
-  echo " * Comparing result file $f ..."
-  if [ `diff $f.out $f | wc -l` == "0" ]
-  then
-    echo " ... ok -- clean-up"
-    rm -rf $f
-  else
-    diff $f.out $f > $f.diff
-  fi
-  sleep 2
-done
-
+if [ "$RUNCOMPARE" == "TRUE" ]
+then
+  for f in ${G2F90OUTFILES[@]}
+  do
+    echo " * Comparing result file $f ..."
+    if [ `diff $f.out $f | wc -l` == "0" ]
+    then
+      echo " ... ok -- clean-up"
+      rm -rf $f
+    else
+      diff $f.out $f > $f.diff
+    fi
+    sleep 2
+  done
+fi
 
 #' ## Clean Up
 #' Remove binary solution file
