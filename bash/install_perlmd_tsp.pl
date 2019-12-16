@@ -38,7 +38,7 @@ use Pod::Usage;
 use FindBin qw($RealBin);
 
 my %args;
-my $core_mod_file = $RealBin . '/../etc/needed_modules';
+my $core_mod_file = $RealBin . '/needed_perl_modules_tsp';
 my @modfiles;
 
 # handling the command line args:
