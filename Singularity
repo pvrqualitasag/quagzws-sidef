@@ -20,21 +20,6 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   apt-get install -y r-base r-base-core r-recommended python python-pip python-numpy python-pandas python-dev python3-pip pandoc gnuplot 
   apt-get update
   
-  # Install system software for TheSNPpit
-  apt-get install -y libdbd-pg-perl libecpg6 libecpg-dev libdbi-perl libinline-perl libmodern-perl-perl libcloog-ppl1 libcloog-ppl-dev libfile-slurp-perl libpq5 libjudy-dev
-  apt-get update -y
-  echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
-  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add -
-  apt-get install -y postgresql postgresql-contrib
-  apt-get update
-  apt clean
-  
-  # Install additional perl-modules for TheSNPPit
-  curl -sSL "https://raw.githubusercontent.com/pvrqualitasag/quagzws-sidef/master/etc/needed_perl_modules_tsp" > needed_perl_modules_tsp
-  curl -sSL "https://raw.githubusercontent.com/pvrqualitasag/quagzws-sidef/master/bash/install_perlmd_tsp.pl" > install_perlmd_tsp.pl
-  perl -w install_perlmd_tsp.pl
-  rm -rf install_perlmd_tsp.pl needed_perl_modules_tsp
-  
 
   # Install jula from git
   curl -sSL "https://julialang-s3.julialang.org/bin/linux/x64/1.1/julia-1.1.1-linux-x86_64.tar.gz" > julia.tar.gz 
@@ -52,10 +37,6 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   /usr/bin/pip3 install pandas
   /usr/bin/pip3 install numpy
 
-  # permissions for postgres
-  chmod -R 755 /var/lib/postgresql/10/main
-  chmod -R 777 /var/run/postgresql
-  
   # dconf and gnuplot problem
   mkdir -p /run/user/501
   chmod -R 777 /run/user
