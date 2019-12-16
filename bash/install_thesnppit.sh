@@ -229,6 +229,67 @@ EndOfSNPpitsh
   
 }
 
+#' ### Check for Multiple Postgres Installations
+#' It is verified that only one version of PG is installed
+#+ multiple-pg-check-fun
+multiple_pg_installations () {
+    info "checking for multiple postgresql versions"
+    COUNT=$(dpkg -l postgresql* | egrep 'ii ' |egrep "object-relational SQL database, version" |wc -l)
+    if [ $COUNT -gt 1 ]; then
+        error "You have several installations of the PostgreSQL server"
+        dpkg -l postgresql* | egrep 'ii ' |egrep "object-relational SQL database, version"
+        info "Only one postgresq installation is allowed"
+        info "BEWARE: you need a postgresql version >=9.3"
+        err_exit "deinstall unwanted postgresql, Sorry!"
+    fi
+}
+
+#' ### Obtain Postgres Version
+#' Get the version of the installed pg instance
+#+ get-pg-version-fun
+get_pg_version () {
+    info "collecting PG_version information"
+    # we get here only after we have tested that there is only one
+    # version of postgresql installed.
+    # need PG_ALLVERSION  like 9.4 or 10
+    # need PG_SUBVERSION  like 4
+    # need PG_VERSION     like 9
+    # need PG_PACKET      like postgresql_11
+    PG_PACKET=$(dpkg -l postgresql*    | egrep 'ii ' |egrep "SQL database, version" |awk '{print $2}')
+
+    if [ -n "$PG_PACKET"  ]; then
+       if [[ $PG_PACKET = *9.* ]]; then
+# subv wird packet bei 10 11 etc
+          PG_SUBVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "SQL database, version" |awk '{print $2}'|sed -e 's/postgresql-9.//')
+       else
+          PG_SUBVERSION=' '
+          echo no subversion
+       fi
+    fi
+
+    PG_ALLVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "SQL database, version" |awk '{print $2}'|sed -e 's/postgresql-//')
+    PG_VERSION=$(echo $PG_ALLVERSION |  cut -d. -f1)
+    echo packet_____:$PG_PACKET
+    echo version____:$PG_VERSION
+    echo subversion_:$PG_SUBVERSION
+    echo allversion_:$PG_ALLVERSION
+}
+
+
+#' ### Perl Existence Check
+#' Verification whether perl exists on the system
+#+ perl-check-fun
+check_perl () {
+  perl -v >/dev/null
+  if [ $? -eq 0 ]; then
+      ok "Perl already installed"
+  else
+      error "Perl is not installed!"
+      info "Perl needs to be installed before continuing ..."
+      exit 1
+  fi
+}
+
 
 #' ## Main Body of Script
 #' The main body of the script starts here.
@@ -318,6 +379,28 @@ ln -snf ${BASE_DIR}/TheSNPpit-$CURR_VERSION $SNP_HOME
 #+ call-create-bin
 log_msg "$SCRIPT" "Create binary ..."
 create_binary_snppit
+
+#' ### Checks related to PG
+#' The first check verifies whether multiple instances of pg are installed.
+#' The second function determines the version of the installed pg
+#+ pg-check-call
+log_msg "$SCRIPT" "Checking for postgres db installation ..."
+multiple_pg_installations
+get_pg_version
+# operational version installed? if PG_PACKET set: may be more than 1!!
+if [ -n "$PG_PACKET" ]; then
+   if [ ${PG_VERSION} -eq 9 ] && [ ${PG_SUBVERSION} -le 3 ] ; then
+       error "you need to have postgresql version > 9.3, sorry"
+   fi
+   ok "operational version of postgresql installed:" $PG_PACKET
+else
+   err_exit "Cannot find operational db installation" 
+fi
+
+#' ### Perl Existence Check
+#' Call the function that verifies whether perl is installed
+#+ perl-check-call
+check_perl
 
 
 #' ## End of Script
