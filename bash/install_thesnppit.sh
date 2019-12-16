@@ -61,6 +61,8 @@ OSUSER=zws
 DB_ENCODING=utf8
 DB_NAME=TheSNPpit
 
+LOCALBIN=/qualstorzws01/data_projekte/linuxBin
+
 #' ## Functions
 #' The following definitions of general purpose functions are local to this script.
 #'
@@ -279,15 +281,34 @@ start_msg
 #' The main steps of the installation start here. In a first step, we check
 #' whether the current version is set
 #+ cur-version-check
+log_msg "$SCRIPT" "Checking whether current version is set ..."
 check_current_version
 
 #' ### Base Directory
 #' The base directory is where TheSNPPit will be installed
 #+ det-base-dir
+log_msg "$SCRIPT" "Specifying base directory ..."
 get_base_dir
+SNP_HOME=${BASE_DIR}/TheSNPpit_current
+SNP_LIB=${SNP_HOME}/lib
+log_msg "$SCRIPT" "Defined SNP_HOME: $SNP_HOME"
+log_msg "$SCRIPT" "Defined SNP_LIB: $SNP_LIB"
 
+#' ### Link Installed Version
+#' link latest version to TheSNPpit_current:
+#+ link-latest
+log_msg "$SCRIPT" "Linking current version ..."
+ln -snf ${BASE_DIR}/TheSNPpit-$CURR_VERSION $SNP_HOME
 
+#' ### Binary
+#' create binary snppit:
+#+ create-bin
+cat > $LOCALBIN/snppit <<EndOfSNPpitsh
+#!/bin/bash
+SNP_HOME=$SNP_HOME
+exec ${SNP_HOME}/bin/TheSNPpit "\$@"
 
+EndOfSNPpitsh
 
 #' ## End of Script
 #+ end-msg, eval=FALSE
