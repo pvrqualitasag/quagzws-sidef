@@ -28,6 +28,13 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   apt-get install -y postgresql postgresql-contrib
   apt-get update
   apt clean
+  
+  # Install additional perl-modules for TheSNPPit
+  curl -sSL "https://raw.githubusercontent.com/pvrqualitasag/quagzws-sidef/master/etc/needed_perl_modules_tsp" > needed_perl_modules_tsp
+  curl -sSL "https://raw.githubusercontent.com/pvrqualitasag/quagzws-sidef/master/bash/install_perlmd_tsp.pl" > install_perlmd_tsp.pl
+  perl -w install_perlmd_tsp.pl
+  rm -rf install_perlmd_tsp.pl needed_perl_modules_tsp
+  
 
   # Install jula from git
   curl -sSL "https://julialang-s3.julialang.org/bin/linux/x64/1.1/julia-1.1.1-linux-x86_64.tar.gz" > julia.tar.gz 
