@@ -205,7 +205,7 @@ install_thesnppit_db () {
 
 #' ### Check Current Version
 #' The following check verifies that the current version of TheSNPPit is set
-#+ check-cur-version
+#+ check-cur-version-fun-def
 check_current_version () {
   if [ -z "$CURR_VERSION" ]; then
     error    "This is not a distribution of TheSNPpit for installation"
@@ -214,6 +214,19 @@ check_current_version () {
   else
     ok "TheSNPpit Version $CURR_VERSION"
   fi
+}
+
+#' ### Create Binary for TheSNPPit
+#' A small shell script that is used to start TheSNPPit is created
+#+ create-binary-fun-def
+create_binary_snppit () {
+  cat > $LOCALBIN/snppit <<EndOfSNPpitsh
+#!/bin/bash
+SNP_HOME=$SNP_HOME
+exec ${SNP_HOME}/bin/TheSNPpit "\$@"
+
+EndOfSNPpitsh
+  
 }
 
 
@@ -302,13 +315,10 @@ ln -snf ${BASE_DIR}/TheSNPpit-$CURR_VERSION $SNP_HOME
 
 #' ### Binary
 #' create binary snppit:
-#+ create-bin
-cat > $LOCALBIN/snppit <<EndOfSNPpitsh
-#!/bin/bash
-SNP_HOME=$SNP_HOME
-exec ${SNP_HOME}/bin/TheSNPpit "\$@"
+#+ call-create-bin
+log_msg "$SCRIPT" "Create binary ..."
+create_binary_snppit
 
-EndOfSNPpitsh
 
 #' ## End of Script
 #+ end-msg, eval=FALSE
