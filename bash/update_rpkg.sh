@@ -62,7 +62,7 @@ LOCALPKGDEFAULT=$SIMGROOT/quagzws-sidef/inst/extdata/input/local_pkg.txt
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -c <cran_pkg_input> -g <github_pkg_input> -i <instance_name> -l <local_pkg_input> -p <pkg_install_script> -r <r_lib_dir> -s <remote_server>"
+  $ECHO "Usage: $SCRIPT -c <cran_pkg_input> -d -g <github_pkg_input> -i <instance_name> -l <local_pkg_input> -p <pkg_install_script> -r <r_lib_dir> -s <remote_server>"
   $ECHO "  where -c <cran_pkg_input>      --  names of cran packages"
   $ECHO "        -d                       --  use defaults for input files"
   $ECHO "        -g <github_pkg_input>    --  names of github packages"
