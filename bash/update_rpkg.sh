@@ -46,6 +46,13 @@ SCRIPT=`$BASENAME ${BASH_SOURCE[0]}`       # Set Script Name variable           
 SERVER=`hostname`                          # put hostname of server in variable      #
 
 
+SIMGROOT=/home/zws/simg
+RPKGSCRIPTDEFAULT=$SIMGROOT/quagzws-sidef/R/pkg_install_simg.R
+CRANPKGDEFAULT=$SIMGROOT/quagzws-sidef/inst/extdata/input/cran_pkg.txt
+GHUBPKGDEFAULT=$SIMGROOT/quagzws-sidef/inst/extdata/input/ghub_pkg.txt
+LOCALPKGDEFAULT=$SIMGROOT/quagzws-sidef/inst/extdata/input/local_pkg.txt
+
+
 #' ## Functions
 #' The following definitions of general purpose functions are local to this script.
 #'
@@ -57,6 +64,7 @@ usage () {
   $ECHO "Usage Error: $l_MSG"
   $ECHO "Usage: $SCRIPT -c <cran_pkg_input> -g <github_pkg_input> -i <instance_name> -l <local_pkg_input> -p <pkg_install_script> -r <r_lib_dir> -s <remote_server>"
   $ECHO "  where -c <cran_pkg_input>      --  names of cran packages"
+  $ECHO "        -d                       --  use defaults for input files"
   $ECHO "        -g <github_pkg_input>    --  names of github packages"
   $ECHO "        -i <instance_name>       --  instance name"
   $ECHO "        -l <local_pkg_input>     --  directories of local packages"
@@ -109,12 +117,19 @@ install_rpkg () {
   # run local version, if we are already on $l_REMOTESERVER
   if [ "$l_REMOTESERVER" == "$SERVER" ]
   then
+    # check whether $RLIBDIR exists
+    if [ ! -d "$RLIBDIR" ]
+    then 
+      log_msg 'install_rpkg' " ** Lib-dir $RLIBDIR not found ==> create it ..."
+      mkdir -p $RLIBDIR
+    fi
     # install packages
     log_msg 'install_rpkg' " ** Install R packages to $RLIBDIR ..."
     singularity exec instance://$INSTANCENAME R -e ".libPaths('$RLIBDIR');cran_pkg<-'$CRANPKG';ghub_pkg<-'$GHUBPKG';local_pkg<-'$LOCALPKG';source( '$RPKGSCRIPT' )" --vanilla --no-save
   else
+    ssh zws@$l_REMOTESERVER "if [ ! -d \"$RLIBDIR\" ];then  echo \" * r-lib-dir: $RLIBDIR not found ==> create it ...\";mkdir -p $RLIBDIR;fi"
     log_msg 'install_rpkg' " ** Install R packages to $RLIBDIR on server $l_REMOTESERVER ..."
-    $ECHO "singularity exec instance://$INSTANCENAME R -e \".libPaths('$RLIBDIR');cran_pkg<-'$CRANPKG';ghub_pkg<-'$GHUBPKG';local_pkg<-'$LOCALPKG';source( '$RPKGSCRIPT' )\" --vanilla --no-save" | ssh zws@$l_REMOTESERVER
+    ssh zws@$l_REMOTESERVER "singularity exec instance://$INSTANCENAME R -e \".libPaths('$RLIBDIR');cran_pkg<-'$CRANPKG';ghub_pkg<-'$GHUBPKG';local_pkg<-'$LOCALPKG';source( '$RPKGSCRIPT' )\" --vanilla --no-save"
   fi
 }
 
@@ -134,17 +149,21 @@ REMOTESERVERNAME=""
 INSTANCENAME=""
 RLIBDIR="/home/zws/lib/R/library"
 SIMGROOT=/home/zws/simg
-RPKGSCRIPT=$SIMGROOT/quagzws-sidef/R/pkg_install_simg.R
-CRANPKG=$SIMGROOT/quagzws-sidef/inst/extdata/input/cran_pkg.txt
-GHUBPKG=$SIMGROOT/quagzws-sidef/inst/extdata/input/ghub_pkg.txt
-LOCALPKG=$SIMGROOT/quagzws-sidef/inst/extdata/input/local_pkg.txt
-while getopts ":c:g:i:l:p:r:s:h" FLAG; do
+RPKGSCRIPT=$RPKGSCRIPTDEFAULT
+CRANPKG=""
+GHUBPKG=""
+LOCALPKG=""
+USEDEFAULT=""
+while getopts ":c:dg:i:l:p:r:s:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
       ;;
     c)
       CRANPKG=$OPTARG
+      ;;
+    d)
+      USEDEFAULT="TRUE"
       ;;
     g)  
       GHUBPKG=$OPTARG
@@ -188,6 +207,14 @@ if test "$RLIBDIR" == ""; then
   usage "-r <r_lib_dir> not defined"
 fi
 
+#' Check whether default settings for input files should be used.
+if [ "$USEDEFAULT" == "TRUE" ]
+then
+  log_msg $SCRIPT " * Using default values for input files ..."
+  CRANPKG=$CRANPKGDEFAULT
+  GHUBPKG=$GHUBPKGDEFAULT
+  LOCALPKG=$LOCALPKGDEFAULT
+fi
 
 #' ## Install R-packages
 #' if specified install R-packages
