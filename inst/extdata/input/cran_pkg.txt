@@ -1,0 +1,16 @@
+devtools
+remotes
+BiocManager
+doParallel
+e1071
+foreach
+gridExtra
+MASS
+plyr
+stringdist
+rmarkdown
+knitr
+tinytex
+openxlsx
+LaF
+tidyverse

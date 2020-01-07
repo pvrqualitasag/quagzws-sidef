@@ -1,0 +1,3 @@
+/qualstorzws01/data_zws/vms/prog/CarcassStep1Prepare
+/qualstorzws01/data_zws/vms/prog/MergePedigree
+/qualstorzws01/data_zws/vms/prog/WeaningWeightPrepare

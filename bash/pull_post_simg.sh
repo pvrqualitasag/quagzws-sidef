@@ -145,21 +145,6 @@ start_instance () {
   fi
 }
 
-#' ### R-Package Installation
-#' R-Packages from a given list are installed on an as-needed basis.
-#+ install-rpkg-fun, eval=FALSE
-install_rpkg () {
-  # check whether RLIBDIR is an existing directory, if not create it
-  if [ ! -d "$RLIBDIR" ]
-  then
-    mkdir -p $RLIBDIR
-    log_msg 'install_rpkg' " ** Created directory $RLIBDIR ..."
-  fi
-  # install packages
-  log_msg 'install_rpkg' " ** Install R packages to $RLIBDIR ..."
-  singularity exec instance://$INSTANCENAME R -e ".libPaths('$RLIBDIR');source( '$RPKGSCRIPT' )" --vanilla --no-save
-}
-
 
 #' ### Helper File Rename
 #' If the file exists the existing file is renamed
@@ -238,7 +223,7 @@ SHUBURI=""
 COPYCONFIG="FALSE"
 UPDATERPGK="FALSE"
 LINKSIMG="FALSE"
-while getopts ":b:ci:ln:r:s:uw:h" FLAG; do
+while getopts ":b:ci:ln:s:w:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
@@ -258,17 +243,11 @@ while getopts ":b:ci:ln:r:s:uw:h" FLAG; do
     n)
       IMAGENAME=$OPTARG
       ;;
-    r)
-      RLIBDIR=$OPTARG
-      ;;
     s)
       SHUBURI=$OPTARG
       ;;
     t)
       STARTINSTANCE="TRUE"
-      ;;
-    u)
-      UPDATERPGK="TRUE"
       ;;
     w) 
       if [ -d "$OPTARG" ];then
@@ -347,19 +326,6 @@ log_msg $SCRIPT " * Running status of instance: $INSTANCENAME: $INSTANCERUNNING"
 if [ "$INSTANCERUNNING" == "0" ] && [ "$STARTINSTANCE" == "TRUE" ]
 then
   start_instance
-fi
-
-
-#' ## Install R-packages
-#' if specified install R-packages
-#+ install-rpack, eval=FALSE
-if [ "$UPDATERPGK" == "TRUE" ]
-then
-  if [ "$RLIBDIR" == "" ]
-  then
-    usage $SCRIPT "Error with option update_rpkg, r_lib_dir cannot be empty"
-  fi
-  install_rpkg
 fi
 
 

@@ -8,44 +8,50 @@
 #' 
 #' 
 #' ## Packages
-#' The following chunks define the list of packages and run the installation
+#' ### CRAN
+#' The following chunk reads the list of cran packages to be installed, if any and installs the packages.
 #+ cran-pkg-def
-vec_pinst_cran <- c('devtools', 
-                    'BiocManager', 
-                    'doParallel', 
-                    'e1071', 
-                    'foreach', 
-                    'gridExtra', 
-                    'MASS', 
-                    'plyr', 
-                    'stringdist', 
-                    'rmarkdown', 
-                    'knitr', 
-                    'tinytex', 
-                    'openxlsx', 
-                    'LaF', 
-                    'tidyverse')
-# exclude that packages already installed from the list
-vec_pinst_cran <- vec_pinst_cran[!vec_pinst_cran %in% installed.packages()]
-
-# installation
-if (length(vec_pinst_cran) > 0) 
-  install.packages(pkgs = vec_pinst_cran, repos = 'https://stat.ethz.ch/CRAN/', dependencies = TRUE)
-
-# installation of tinytex
-if ('tinytex' %in% vec_pinst_cran){
-  tinytex::install_tinytex()
+if (exists("cran_pkg") && file.exists(cran_pkg)){
+  vec_pinst_cran <- readLines(con = file(cran_pkg))
+  # exclude that packages already installed from the list
+  vec_pinst_cran <- vec_pinst_cran[!vec_pinst_cran %in% installed.packages()]
+  
+  # installation
+  if (length(vec_pinst_cran) > 0) 
+    install.packages(pkgs = vec_pinst_cran, repos = 'https://stat.ethz.ch/CRAN/', dependencies = TRUE)
+  
+  # installation of tinytex
+  if ('tinytex' %in% vec_pinst_cran){
+    tinytex::install_tinytex()
+  }
+  
 }
 
 
-# packages from gitgub
-vec_repo_ghub <- c("tidyverse/multidplyr", 
-                   "pvrqualitasag/qgert")
-vec_pkg_ghub <- sapply(vec_repo_ghub, 
-                       function(x) unlist(strsplit(x, split = '/', fixed = TRUE))[2], 
-                       USE.NAMES = FALSE)
-vec_repo_ghub <- vec_repo_ghub[!vec_pkg_ghub %in% installed.packages()]
-if (length(vec_repo_ghub) > 0) 
-  devtools::install_github(vec_repo_ghub, upgrade = 'always')
+#' ### Github
+#' Packages from gitgub are read from a file and are installed
+#+ ghub-pkg-def
+if (exists("ghub_pkg") && file.exists(ghub_pkg)){
+  vec_repo_ghub <- readLines(con = file(ghub_pkg))
+  vec_pkg_ghub <- basename(vec_repo_ghub)
+  vec_repo_ghub <- vec_repo_ghub[!vec_pkg_ghub %in% installed.packages()]
+  if (length(vec_repo_ghub) > 0) 
+    remotes::install_github(vec_repo_ghub, upgrade = 'always')
+}
 
+
+#' ### Local
+#' Local packages are read from a file and installed
+#+ local-pkg
+if (exists("local_pkg") && file.exists(local_pkg)){
+  vec_repo_local <- readLines(con = file(local_pkg))
+  vec_pkg_local <- basename(vec_repo_local)
+  vec_repo_local <- vec_repo_local[!vec_pkg_local %in% installed.packages()]
+  # loop over local packages
+  for (p in seq_along(vec_repo_local)){
+    pkg <- vec_repo_local[p]
+    remotes::install_local(path = pkg, build_vignettes = FALSE)
+  }
+}
+  
 
