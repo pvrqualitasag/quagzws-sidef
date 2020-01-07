@@ -87,8 +87,6 @@ usage () {
   $ECHO "           -n <image_file_name>  --   name of the image given after pulling it from shub"
   $ECHO "           -s <shub_uri>         --   URI of image on SHUB"
   $ECHO "  additional option parameters are"
-  $ECHO "           -r <r_lib_dir>        --   R library directory"
-  $ECHO "           -u                    --   Switch to update R packages" 
   $ECHO "           -c                    --   Switch to copy config from templates"
   $ECHO "           -l                    --   Switch to indicate whether link to simg file should be added"
   $ECHO "           -t                    --   Start the instance from the pulled image"
