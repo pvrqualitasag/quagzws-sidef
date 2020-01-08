@@ -33,7 +33,8 @@
 #' $ if [ ! -d "$SIMGDIR" ]; then mkdir -p $SIMGDIR;fi
 #' $ cd $SIMGDIR 
 #' $ git clone https://github.com/pvrqualitasag/quagzws-sidef.git  
-#' $  ./quagzws-sidef/bash/pull_post_simg.sh -i sidev \
+#' $  ./quagzws-sidef/bash/pull_post_simg.sh -b /qualstore03,/qualstorzws01,/qualstorora01,/qualstororatest01 \
+#'                                           -i sidev \
 #'                                           -n `date +"%Y%m%d"`_quagzws.simg \
 #'                                           -s shub://pvrqualitasag/quagzws-sidef \
 #'                                           -w $SIMGDIR/img/ubuntu19084lts \
