@@ -10,13 +10,33 @@
 #' as seamless as possible over a collection of servers. 
 #'
 #' ## Description
-#' Three types of packages are distinguished: (1) cran-packages, (2) github packages
-#' and (3) local packages. For each class of packages, an input file with a list 
-#' of packages of the respective class can be specified. For each of the specified 
+#' Three types of packages are distinguished: 
+#' 
+#' 1. cran-packages
+#' 2. github packages and 
+#' 3. local packages. 
+#' 
+#' For each class of packages, an input file with a list 
+#' of packages of the respective class can be specified. 
+#'
+#' ## Details
+#' The names of these input 
+#' files can be give via the command line options -c, -g and -l to this script. 
+#' When the options -c, -g and -l are ommitted and the -d option is specified, 
+#' then default input files are used. The format with which the packages of 
+#' the three different classes are specified differ, depending on how the 
+#' different packages are installed. For cran packages, the package name is 
+#' sufficient. For github packages, the repository name and the package name 
+#' is required. For local packages, the path to the package is needed. 
+#' For each of the specified 
 #' packages, it is checked whether the package is already installed. If not, the 
 #' package is installed from the respective source. 
 #'
-#' ## Bash Settings
+#' ## Example
+#' {Specify an example call of the script.}
+#'
+#' ## Set Directives
+#' General behavior of the script is driven by the following settings
 #+ bash-env-setting, eval=FALSE
 set -o errexit    # exit immediately, if single command exits with non-zero status
 set -o nounset    # treat unset variables as errors
@@ -78,7 +98,6 @@ usage () {
 #' ### Start Message
 #' The following function produces a start message showing the time
 #' when the script started and on which server it was started.
-#+ start-msg-fun, eval=FALSE
 #+ start-msg-fun, eval=FALSE
 start_msg () {
   $ECHO "********************************************************************************"
@@ -142,7 +161,8 @@ start_msg
 #' ## Getopts for Commandline Argument Parsing
 #' If an option should be followed by an argument, it should be followed by a ":".
 #' Notice there is no ":" after "h". The leading ":" suppresses error messages from
-#' getopts. This is required to get my unrecognized option code to work.
+#' getopts. This is required to get my unrecognized option code to work. Before 
+#' the args parsing loop, default values for the variables are set.
 #+ getopts-parsing, eval=FALSE
 REMOTESERVERS=(beverin castor niesen)
 REMOTESERVERNAME=""
@@ -207,17 +227,33 @@ if test "$RLIBDIR" == ""; then
   usage "-r <r_lib_dir> not defined"
 fi
 
-#' Check whether default settings for input files should be used.
+#' ## Default Settings
+#' Check whether default settings for input files should be used. Defaults
+#' are used when -d is given and -c, -g and -l are all ommitted
+#+ check-def-setting
 if [ "$USEDEFAULT" == "TRUE" ]
 then
   log_msg $SCRIPT " * Using default values for input files ..."
-  CRANPKG=$CRANPKGDEFAULT
-  GHUBPKG=$GHUBPKGDEFAULT
-  LOCALPKG=$LOCALPKGDEFAULT
+  if [ "$CRANPKG" == "" ]
+  then
+    log_msg $SCRIPT " * Using default values for cran package input ..."
+    CRANPKG=$CRANPKGDEFAULT
+  fi
+  if [ "$GHUBPKG" == "" ]
+  then
+    log_msg $SCRIPT " * Using default values for github package input ..."
+    GHUBPKG=$GHUBPKGDEFAULT
+  fi
+  if [ "$LOCALPKG" == "" ]
+  then
+    log_msg $SCRIPT " * Using default values for local package input ..."
+    LOCALPKG=$LOCALPKGDEFAULT
+  fi  
 fi
 
 #' ## Install R-packages
-#' if specified install R-packages
+#' R-packages specified via different input files are installed on
+#' either just one server or on a collection of servers.
 #+ install-rpack, eval=FALSE
 if [ "$REMOTESERVERNAME" != "" ]
 then

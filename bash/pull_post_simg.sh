@@ -5,16 +5,16 @@
 #' author: Peter von Rohr
 #' ---
 #' ## Purpose
-#' This script can be used to pull a given singularity container image from 
-#' singularity hub (shub) and to run all post-installation steps. The post-installation 
-#' steps consist of 
+#' This script pulls a given singularity container image from 
+#' singularity hub (shub). Once the image is downloaed, post-installation steps
+#' can be run. The post-installation steps consist of 
 #'
 #' * starting an instance, if it has not yet been started
-#' * installing a number of R-packages, if they have not yet been installed
 #' * adapting or creating the file .bash_aliases
 #' * adapting or creating the file .Rprofile
+#' * creating a link to the singularity image file
 #'
-#' The prerequisites for this script to run is to do a git clone of the `quagzws-sidef`
+#' The prerequisites for this script is to do a `git clone` of the `quagzws-sidef`
 #' repository from github into the directory /home/zws/simg. This also clones 
 #' this script which then can be run directly from where it was cloned to.
 #' 
@@ -28,9 +28,20 @@
 #' ## Example
 #' The following call does just a pull of a new container image
 #' 
-#' $ cd /home/zws/simg/img 
-#' $  ./pull_post_simg.sh -i sidev -n `date +"%Y%m%d"`_quagzws.simg -s shub://pvrqualitasag/quagzws-sidef
+#' ```
+#' $ SIMGDIR=/home/zws/simg/img
+#' $ if [ ! -d "$SIMGDIR" ]; then mkdir -p $SIMGDIR;fi
+#' $ cd $SIMGDIR 
+#' $ git clone https://github.com/pvrqualitasag/quagzws-sidef.git  
+#' $  ./quagzws-sidef/bash/pull_post_simg.sh -i sidev \
+#'                                           -n `date +"%Y%m%d"`_quagzws.simg \
+#'                                           -s shub://pvrqualitasag/quagzws-sidef \
+#'                                           -w $SIMGDIR/ubuntu19084lts \
+#'                                           -c -l -t
+#' ```
 #'
+#' ## Set Directives
+#' General behavior of the script is driven by the following settings
 #+ bash-env-setting, eval=FALSE
 set -o errexit    # exit immediately, if single command exits with non-zero status
 set -o nounset    # treat unset variables as errors
@@ -95,6 +106,7 @@ usage () {
   exit 1
 }
 
+#' ### Start Message
 #' produce a start message
 #+ start-msg-fun, eval=FALSE
 start_msg () {
@@ -104,6 +116,7 @@ start_msg () {
   $ECHO
 }
 
+#' ### End Message
 #' produce an end message
 #+ end-msg-fun, eval=FALSE
 end_msg () {
@@ -112,6 +125,7 @@ end_msg () {
   $ECHO "********************************************************************************"
 }
 
+#' ### Logging Function
 #' functions related to logging
 #+ log-msg-fun, eval=FALSE
 log_msg () {
@@ -121,7 +135,8 @@ log_msg () {
   $ECHO "[${l_RIGHTNOW} -- ${l_CALLER}] $l_MSG"
 }
 
-#' function to start an instance
+#' ### Starting Instance 
+#' function to start an instance from the downloaded image file
 #+ start-instance-fun, eval=FALSE
 start_instance () {
   log_msg 'start_instance' " * Starting instance $INSTANCENAME ..."
@@ -146,6 +161,7 @@ start_instance () {
 
 #' ### Helper File Rename
 #' If the file exists the existing file is renamed
+#+ rename-file-on-exist-fun
 rename_file_on_exist () {
   local l_fpath=$1
   # if $l_fpath exists, it is renamed
@@ -161,23 +177,6 @@ rename_file_on_exist () {
 #' Configuration files for certain applications are copied from template directory
 #+ cp-config, eval=FALSE
 copy_config () {
-  # insert link to image used in .bash_alias
-  if [ "$LINKSIMG" == "TRUE" ]
-  then
-    # link name cannot be empty here
-    if [ "$SIMGLINK" == "" ]
-    then
-      usage 'copy_config' "ERROR: cannot link image file, because link variable is empty."
-    fi
-    # if link exists, it is removed
-    if [ -f "$SIMGLINK" ]
-    then
-      rm -rf $SIMGLINK
-    fi
-    log_msg 'copy_config' " * Create link $SIMGLINK to $IMGDIR/$IMAGENAME"
-    ln -s $IMGDIR/$IMAGENAME $SIMGLINK
-  fi
-  
   # bash_aliases
   log_msg 'copy_config' " * Copy bash_aliases ..."
   rename_file_on_exist $BASHALIASTRG
@@ -199,11 +198,50 @@ copy_config () {
   SSMTPCONFPATH=$SSMTPCONFTRG/`basename $SSMTPCONFTMPL`
   rename_file_on_exist $SSMTPCONFPATH
   cat $SSMTPCONFTMPL | sed -e "s/{hostname}/$SERVER/" > $SSMTPCONFPATH
-  
 }
 
+
+#' ### Link Image File
+#' Insert a link from the top image directory to the image file
+#+ link-simg-fun
+link_simg () {
+  # link name cannot be empty here
+  if [ "$SIMGLINK" == "" ]
+  then
+    usage 'copy_config' "ERROR: cannot link image file, because link variable is empty."
+  fi
+  # if link exists, it is removed
+  if [ -e "$SIMGLINK" ]
+  then
+    log_msg 'link_simg' " * Removed existing link $SIMGLINK ..."
+    rm -rf $SIMGLINK
+  fi
+  log_msg 'link_simg' " * Create link $SIMGLINK to $IMGDIR/$IMAGENAME ..."
+  ln -s $IMGDIR/$IMAGENAME $SIMGLINK
+}
+
+#' ### Pull Image from SHUB
+#' An image file is pulled from the singularity hub.
+#+ simg-pull-fun
+simg_pull () {
+  if [ "$SHUBURI" == "" ]
+  then
+    log_msg 'simg_pull' " * -s <shub_uri> not specified, hence cannot pull ..."
+  else
+    log_msg 'simg_pull' " * Pulling img from shub ..."
+    singularity pull --name $IMAGENAME $SHUBURI
+  fi    
+}
+
+
 #' ## Main Body of Script
-#' The main body of the script starts here.
+#' The main body of the script starts here. This script runs the following tasks
+#' 
+#' 1. Commandline arguments to specify the input and determine what should be done by the script are parsed.
+#' 2. The singularity comtainer image is pull from the singularity hub
+#' 3. If specified, a link is created to the image file
+#' 4. Configuration files for the container are taken from templates
+#' 5. Container instance is started, if specified.
 #+ start-msg, eval=FALSE
 start_msg
 
@@ -293,15 +331,19 @@ if [ -f "$IMAGENAME" ]
 then
   log_msg $SCRIPT " * Found image: $IMAGENAME ..."
 else
-  if [ "$SHUBURI" == "" ]
-  then
-    log_msg $SCRIPT " * -s <shub_uri> not specified, hence cannot pull ..."
-  else
-    log_msg $SCRIPT " * Pulling img from shub ..."
-    singularity pull --name $IMAGENAME $SHUBURI
-  fi    
+  simg_pull
 fi
 
+
+#' ## Link to Image File
+#'' insert link to image used in .bash_alias
+#+ link-simg
+if [ "$LINKSIMG" == "TRUE" ]
+then
+  log_msg $SCRIPT " * Link to simg ..."
+  link_simg
+fi
+  
 
 #' ## Configuration Files
 #' Certain applications in the container need some configuration 
