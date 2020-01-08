@@ -21,9 +21,14 @@
 #'
 #' ## Details
 #' The names of these input 
-#' files can be give via the command line options -c, -g and -l to this script. 
+#' files can be given via the command line options -c, -g and -l to this script. 
+#' When giving specific input file names via command line arguments, it is 
+#' important that these files exist on the remote server where the updates are 
+#' to be done.
 #' When the options -c, -g and -l are ommitted and the -d option is specified, 
-#' then default input files are used. The format with which the packages of 
+#' then default input files are used. For using the default input file names, 
+#' it has to be ensured that the quagzws-sidef repository is up-to-date on the 
+#' remote server. The format with which the packages of 
 #' the three different classes are specified differ, depending on how the 
 #' different packages are installed. For cran packages, the package name is 
 #' sufficient. For github packages, the repository name and the package name 
@@ -33,8 +38,27 @@
 #' package is installed from the respective source. 
 #'
 #' ## Example
-#' {Specify an example call of the script.}
+#' The following example shows how R-packages specified in default input files 
+#' are installed on the singularity instance sizws running on 1-htz.
+#' 
+#' ```
+#' $ ./bash/update_rpkg.sh -d -i sizws -s 1-htz.quagzws.com
+#' ```
 #'
+#' The above example assumes that a clone of the `quagzws-sidef` repository 
+#' already exists on the local machine and on the remote servers. If this is 
+#' not the case, the following statements might help.
+#'
+#' ```
+#' $ git clone https://github.com/pvrqualitasag/quagzws-sidef.git
+#' $ cd quagzws-sidef.git
+#' $ ./bash/update_quagzws_sidef.sh
+#' $ ./bash/update_rpkg.sh -d -i sizws -l /home/zws/simg/quagzws-sidef/inst/extdata/input/local_pkg.txt
+#' ```
+#' 
+#' The above statements runs a complete R-package installation on the given 
+#' servers.
+#' 
 #' ## Set Directives
 #' General behavior of the script is driven by the following settings
 #+ bash-env-setting, eval=FALSE
