@@ -56,8 +56,8 @@
 #' $ ./bash/update_rpkg.sh -d -i sizws -l /home/zws/simg/quagzws-sidef/inst/extdata/input/local_pkg.txt
 #' ```
 #' 
-#' The above statements runs a complete R-package installation on the given 
-#' servers.
+#' The above statements runs the installation of the local R-packages on the  
+#' remote servers specified in the script by default.
 #' 
 #' ## Set Directives
 #' General behavior of the script is driven by the following settings
