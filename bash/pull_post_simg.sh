@@ -272,7 +272,7 @@ SHUBURI=""
 COPYCONFIG="FALSE"
 UPDATERPGK="FALSE"
 LINKSIMG="FALSE"
-while getopts ":b:ci:ln:s:w:h" FLAG; do
+while getopts ":b:ci:ln:s:tw:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
