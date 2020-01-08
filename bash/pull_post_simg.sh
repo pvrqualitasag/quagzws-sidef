@@ -29,14 +29,14 @@
 #' The following call does just a pull of a new container image
 #' 
 #' ```
-#' $ SIMGDIR=/home/zws/simg/img
+#' $ SIMGDIR=/home/zws/simg
 #' $ if [ ! -d "$SIMGDIR" ]; then mkdir -p $SIMGDIR;fi
 #' $ cd $SIMGDIR 
 #' $ git clone https://github.com/pvrqualitasag/quagzws-sidef.git  
 #' $  ./quagzws-sidef/bash/pull_post_simg.sh -i sidev \
 #'                                           -n `date +"%Y%m%d"`_quagzws.simg \
 #'                                           -s shub://pvrqualitasag/quagzws-sidef \
-#'                                           -w $SIMGDIR/ubuntu19084lts \
+#'                                           -w $SIMGDIR/img/ubuntu19084lts \
 #'                                           -c -l -t
 #' ```
 #'
@@ -133,6 +133,19 @@ log_msg () {
   local l_MSG=$2
   local l_RIGHTNOW=`$DATE +"%Y%m%d%H%M%S"`
   $ECHO "[${l_RIGHTNOW} -- ${l_CALLER}] $l_MSG"
+}
+
+#' ### Directory Existence
+#' check whether the specified directory exists, if not create it
+#+ check-exist-dir-create-fun
+check_exist_dir_create () {
+  local l_check_dir=$1
+  if [ ! -d "$l_check_dir" ]
+  then
+    log_msg check_exist_dir_create "CANNOT find directory: $l_check_dir ==> create it"
+    mkdir -p $l_check_dir    
+  fi  
+
 }
 
 #' ### Starting Instance 
@@ -286,11 +299,7 @@ while getopts ":b:ci:ln:s:w:h" FLAG; do
       STARTINSTANCE="TRUE"
       ;;
     w) 
-      if [ -d "$OPTARG" ];then
-        IMGDIR=$OPTARG
-      else
-        usage "-w <image_dir> does not seam to be a valid image directory"
-      fi
+      IMGDIR=$OPTARG
       ;;
     :)
       usage "-$OPTARG requires an argument"
@@ -318,6 +327,7 @@ fi
 #' ## Change Working Directory
 #' Do everything from where image file is stored
 #+ cd-wd, eval=FALSE
+check_exist_dir_create $IMGDIR
 cd $IMGDIR
 
 
