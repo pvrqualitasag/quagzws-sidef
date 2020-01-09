@@ -17,9 +17,9 @@ SCRIPT=$(basename ${BASH_SOURCE[0]})
 PWDFILE=$SCRIPT_DIR/.r4tea.pwd
 
 # Continue to put your code here
-read -s -p "Password for r4tea: " password
+read -s -p "Password for 1-htz: " password
 echo
 echo $password > $PWDFILE
-sshpass -f $PWDFILE  ssh peter@r4tea.rteastem.org hostname
+sshpass -f $PWDFILE  ssh zws@1-htz.quagzws.com hostname
 rm $PWDFILE
 
