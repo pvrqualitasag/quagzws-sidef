@@ -37,7 +37,7 @@
 #'                                           -i sidev \
 #'                                           -n `date +"%Y%m%d"`_quagzws.simg \
 #'                                           -s shub://pvrqualitasag/quagzws-sidef \
-#'                                           -w $SIMGDIR/img/ubuntu19084lts \
+#'                                           -w $SIMGDIR/img/ubuntu1804lts \
 #'                                           -c -l -t
 #' ```
 #'
