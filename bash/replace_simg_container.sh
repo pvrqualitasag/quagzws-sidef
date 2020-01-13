@@ -199,7 +199,7 @@ fi
 #' ## Instance Replacement
 #' Replace instance on either one given server or a list of servers
 #+ instance-replace
-if [ "$REMOTESERVERNAME" == ""]
+if [ "$REMOTESERVERNAME" == "" ]
 then
   for s in ${REMOTESERVERS[@]}
   do
