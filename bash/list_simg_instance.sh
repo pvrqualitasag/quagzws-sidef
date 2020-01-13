@@ -128,7 +128,7 @@ show_top_remote () {
   # loop over list of instances instances
   cat tmp_sils | grep -v DAEMON | grep -v "^[[:space:]]*$" | cut -d ' ' -f1 | while read n
   do
-    ssh -t zws@$l_HOST "singularity exec instance://$n top -n 1 -b"
+    ssh zws@$l_HOST "singularity exec instance://$n top -n 1 -b"
   done
   
   # remove tmp instance list
