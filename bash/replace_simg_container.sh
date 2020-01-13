@@ -6,16 +6,25 @@
 #' ---
 #' ## Purpose
 #' Replace a running instance of a container with an instance started from a 
-#' different image.
+#' different image. The replacement is done whenever a container image is 
+#' updated. The script can either be run on a local or on a remote server  
+#' indicated by the option -s <remote_server>. When -s is missing a list of 
+#' pre-defined servers is used.
 #'
 #' ## Description
-#' {Write a paragraph about how the problems are solved.}
-#'
-#' ## Details
-#' {Give some more details here.}
+#' The image running with the name given by -i <image_name> is stopped on the 
+#' specified server. In case there exists a link given by -l <link_name>, 
+#' then it is first deleted and then re-created to point to the new image file 
+#' specified via -n <image_path>. In the last step an instance of running 
+#' the new image is started.
 #'
 #' ## Example
-#' {Specify an example call of the script.}
+#' ```
+#' ./bash/replace_simg_container.sh -i sizws \
+#'                                  -l /home/zws/simg/quagzws.simg \
+#'                                  -n /home/zws/simg/img/ubuntu1804lts/20200113084254_quagzws.simg \
+#'                                  -s 1-htz.quagzws.com
+#' ```
 #'
 #' ## Set Directives
 #' General behavior of the script is driven by the following settings
@@ -121,7 +130,10 @@ replace_instance_local () {
 #+ replace-instance-remote-fun
 replace_instance_remote () {
   local l_HOST=$1
-  ssh zws@$l_HOST "if [ $LINKPATH != '' ];then if [ -e $LINKPATH ];then rm $LINKPATH;fi;ln -s $IMAGEPATH $LINKPATH;fi;singularity instance start --bind $BINDPATH $IMAGEPATH $INSTANCENAME"
+  ssh -t zws@$l_HOST "singularity instance stop $INSTANCENAME;
+if [ $LINKPATH != '' ];then if [ -e $LINKPATH ];then rm $LINKPATH;fi;
+ln -s $IMAGEPATH $LINKPATH;fi;
+singularity instance start --bind $BINDPATH $IMAGEPATH $INSTANCENAME"
 }
 
 #' ### Generic Instance replacement
