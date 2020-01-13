@@ -142,8 +142,9 @@ start_msg
 #' Notice there is no ":" after "h". The leading ":" suppresses error messages from
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
-IMAGEPATH=""
+REMOTESERVERS=(beverin castor niesen speer)
 HOSTSERVER=""
+IMAGEPATH=""
 SHUBURI=""
 QUAGZWSDIR=/home/zws/simg/quagzws-sidef
 PULLSCRIPT=$QUAGZWSDIR/bash/pull_post_simg.sh
@@ -197,7 +198,11 @@ fi
 #+ img-update
 if [ "$HOSTSERVER" == "" ]
 then
-  
+  for s in ${REMOTESERVERS[@]}
+  do
+    update_simg $s
+    sleep 2
+  done  
 else
   update_simg $HOSTSERVER
 fi
