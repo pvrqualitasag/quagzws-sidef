@@ -188,7 +188,7 @@ start_msg
 #' getopts. This is required to get my unrecognized option code to work. Before 
 #' the args parsing loop, default values for the variables are set.
 #+ getopts-parsing, eval=FALSE
-REMOTESERVERS=(beverin castor niesen)
+REMOTESERVERS=(beverin castor niesen speer)
 REMOTESERVERNAME=""
 INSTANCENAME=""
 RLIBDIR="/home/zws/lib/R/library"
