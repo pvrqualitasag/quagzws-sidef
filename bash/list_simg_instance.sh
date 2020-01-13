@@ -12,11 +12,12 @@
 #' running on a given server.
 #'
 #' ## Details
-#' The command works either on local servers or on remote hosts.
+#' The command works either on local servers or on remote hosts. Adding the 
+#' option -t shows the top-output of every instance on the server.
 #'
 #' ## Example
 #' ```
-#' ./bash/list_simg_instance.sh -s 1-htz.quagzws.com
+#' ./bash/list_simg_instance.sh -s 1-htz.quagzws.com -t
 #' ```
 #'
 #' ## Set Directives
@@ -60,9 +61,9 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -s <remote_server> -t <show_top>"
+  $ECHO "Usage: $SCRIPT -s <remote_server> -t "
   $ECHO "  where -s <remote_server>  --  specific server to list instances"
-  $ECHO "        -t <show_top>       --  show topoutput of instance"
+  $ECHO "        -t                  --  show topoutput of instance"
   $ECHO ""
   exit 1
 }
@@ -142,21 +143,19 @@ list_simg_inst () {
   then
     log_msg 'list_simg_inst' "List of singularity instances on server $l_HOST"
     singularity instance list
-    if [ $SHOWTOP == "TRUE" ]
+    if [ "$SHOWTOP" == "TRUE" ]
     then
       show_top_local
     fi
   else
     log_msg 'list_simg_inst' "List of singularity instances on server $l_HOST"
-    ssh -t zws@$l_HOST 'singularity instance list' | tee tmp_sils
-    if [ $SHOWTOP == "TRUE" ]
+    ssh -t zws@$l_HOST 'singularity instance list'
+    if [ "$SHOWTOP" == "TRUE" ]
     then
       show_top_remote $l_HOST
     fi
   fi
   
-  # remove tmp outputfiles
-  rm tmp_sils
 }
 
 
@@ -173,7 +172,7 @@ start_msg
 REMOTESERVERS=(beverin castor niesen speer)
 REMOTESERVERNAME=""
 SHOWTOP=""
-while getopts ":s:h" FLAG; do
+while getopts ":s:th" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
