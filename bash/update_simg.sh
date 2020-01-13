@@ -60,10 +60,12 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -n <image_name> -m <host_machine> -s <shub_uri> -w <image_work_dir>"
-  $ECHO "  where -n <image_path>    --  path to image file where it should be saved"
-  $ECHO "        -m <host_machine>  --  remote host machine where image is updated"
-  $ECHO "        -s <shub_uri>      --  URI on shub from where image is pulled"
+  $ECHO "Usage: $SCRIPT -n <image_path> -m <host_machine> -p <quagzws-pull-script> -q <quagzws-dir> -s <shub_uri> "
+  $ECHO "  where -n <image_path>           --  path to image file where it should be saved"
+  $ECHO "        -m <host_machine>         --  remote host machine where image is updated"
+  $ECHO "        -p <quagzws-pull-script>  --  pull script for image file"
+  $ECHO "        -q <quagzws-dir>          --  directory where this repository is locally"
+  $ECHO "        -s <shub_uri>             --  URI on shub from where image is pulled"
   $ECHO ""
   exit 1
 }
@@ -100,6 +102,35 @@ log_msg () {
   $ECHO "[${l_RIGHTNOW} -- ${l_CALLER}] $l_MSG"
 }
 
+#' ### Directory Existence
+#' check whether the specified directory exists, if not create it
+#+ check-exist-dir-create-fun
+check_exist_dir_create () {
+  local l_check_dir=$1
+  if [ ! -d "$l_check_dir" ]
+  then
+    log_msg check_exist_dir_create "CANNOT find directory: $l_check_dir ==> create it"
+    mkdir -p $l_check_dir    
+  fi  
+
+}
+
+#' ### Update Singularity Image
+#' This function runs the updated on a given server
+#+ update-simg-fun
+update_simg () {
+  local l_HOST=$1
+  # in case, we run this from l_HOST, the script pull_post_simg.sh can just be executed 
+  # otherwise, we have to run it over ssh.
+  if [ "$l_HOST" == "$SERVER" ]
+  then
+    git -C $QUAGZWSDIR pull
+    $PULLSCRIPT -n $IMAGEPATH -s $SHUBURI
+  else
+    ssh zws@$l_HOST "git -C $QUAGZWSDIR pull;$PULLSCRIPT -n $IMAGEPATH -s $SHUBURI"
+  fi
+}
+
 
 #' ## Main Body of Script
 #' The main body of the script starts here.
@@ -114,7 +145,9 @@ start_msg
 IMAGEPATH=""
 HOSTSERVER=""
 SHUBURI=""
-while getopts ":n:m:s:h" FLAG; do
+QUAGZWSDIR=/home/zws/simg/quagzws-sidef
+PULLSCRIPT=$QUAGZWSDIR/bash/pull_post_simg.sh
+while getopts ":n:m:q:s:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
@@ -124,6 +157,12 @@ while getopts ":n:m:s:h" FLAG; do
       ;;
     m)
       HOSTSERVER=$OPTARG
+      ;;
+    p)
+      PULLSCRIPT=$OPTARG
+      ;;
+    q)
+      QUAGZWSDIR=$OPTARG
       ;;
     s)
       SHUBURI=$OPTARG
@@ -139,19 +178,29 @@ done
 
 shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 
-#' ## Checks for Command Line Arguments
-#' The following statements are used to check whether required arguments
+#' ## Checks for Command Line Arguments 
+#' The following statements are used to check whether required arguments 
 #' have been assigned with a non-empty value
 #+ argument-test, eval=FALSE
-if test "$a_example" == ""; then
-  usage "-a a_example not defined"
+if test "$IMAGEPATH" == ""; then
+  usage "-n <image_file_path> variable not defined"
+fi
+if test "$SHUBURI" == ""; then
+  usage "-s <shub_uri> variable not defined"
 fi
 
 
 
-#' ## Your Code
-#' Continue to put your code here
-#+ your-code-here
+#' ## Image Updates
+#' Depending on whether the name of a specific server was given with -m or 
+#' not, the image file is updated on the one given server or on all servers.
+#+ img-update
+if [ "$HOSTSERVER" == "" ]
+then
+  
+else
+  update_simg $HOSTSERVER
+fi
 
 
 

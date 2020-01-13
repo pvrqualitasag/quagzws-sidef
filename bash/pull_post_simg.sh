@@ -316,7 +316,9 @@ shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 if test "$IMAGEPATH" == ""; then
   usage "-n <image_file_path> variable not defined"
 fi
-
+if test "$SHUBURI" == ""; then
+  usage "-s <shub_uri> variable not defined"
+fi
 
 #' ## Image Directory and Image Name
 #' In case when $IMAGEPATH contains a directory path, we use the dirname 
