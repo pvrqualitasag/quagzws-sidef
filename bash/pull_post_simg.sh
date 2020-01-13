@@ -35,9 +35,8 @@
 #' $ git clone https://github.com/pvrqualitasag/quagzws-sidef.git  
 #' $  ./quagzws-sidef/bash/pull_post_simg.sh -b /qualstore03,/qualstorzws01,/qualstorora01,/qualstororatest01 \
 #'                                           -i sidev \
-#'                                           -n `date +"%Y%m%d"`_quagzws.simg \
-#'                                           -s shub://pvrqualitasag/quagzws-sidef \
-#'                                           -w $SIMGDIR/img/ubuntu1804lts \
+#'                                           -n $SIMGDIR/img/ubuntu1804lts/`date +"%Y%m%d"`_quagzws.simg \
+#'                                           -s shub://pvrqualitasag/quagzws-sidef
 #'                                           -c -l -t
 #' ```
 #'
@@ -93,16 +92,15 @@ SIMGLINK=$SIMGROOT/quagzws.simg
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -b <bind_path> -i <instance_name> -n <image_file_name> -s <shub_uri>"
+  $ECHO "Usage: $SCRIPT -b <bind_path> -i <instance_name> -n <image_file_path> -s <shub_uri>"
   $ECHO "  where    -b <bind_path>        --   paths to be bound when starting an instance"
   $ECHO "           -i <instance_name>    --   name of the instance started from the image"
-  $ECHO "           -n <image_file_name>  --   name of the image given after pulling it from shub"
+  $ECHO "           -n <image_file_path>  --   path to the image given after pulling it from shub"
   $ECHO "           -s <shub_uri>         --   URI of image on SHUB"
   $ECHO "  additional option parameters are"
   $ECHO "           -c                    --   Switch to copy config from templates"
   $ECHO "           -l                    --   Switch to indicate whether link to simg file should be added"
   $ECHO "           -t                    --   Start the instance from the pulled image"
-  $ECHO "           -w <image_dir>        --   Specify alternative directory where image is stored"
   $ECHO ""
   exit 1
 }
@@ -267,6 +265,7 @@ start_msg
 BINDPATH=""
 INSTANCENAME=""
 STARTINSTANCE="FALSE"
+IMAGEPATH=""
 IMAGENAME=""
 RLIBDIR="/home/zws/lib/R/library"
 SHUBURI=""
@@ -291,16 +290,13 @@ while getopts ":b:ci:ln:s:tw:h" FLAG; do
       LINKSIMG="TRUE"
       ;;
     n)
-      IMAGENAME=$OPTARG
+      IMAGEPATH=$OPTARG
       ;;
     s)
       SHUBURI=$OPTARG
       ;;
     t)
       STARTINSTANCE="TRUE"
-      ;;
-    w) 
-      IMGDIR=$OPTARG
       ;;
     :)
       usage "-$OPTARG requires an argument"
@@ -317,13 +313,25 @@ shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 #' The following statements are used to check whether required arguments 
 #' have been assigned with a non-empty value
 #+ argument-test, eval=FALSE
-if test "$IMAGENAME" == ""; then
-  usage "variable image_file_name not defined"
+if test "$IMAGEPATH" == ""; then
+  usage "-n <image_file_path> variable not defined"
 fi
-if test "$INSTANCENAME" == ""
+
+
+#' ## Image Directory and Image Name
+#' In case when $IMAGEPATH contains a directory path, we use the dirname 
+#' of that path as IMGDIR. Otherwise the default is used. If $IMAGEPATH is 
+#' just a filename, it is taken as $IMAGENAME, otherwise $IMAGENAME is set 
+#' to the basename of $IMAGEPATH.
+#+ img-dir-img-name
+if [ `dirname $IMAGEPATH` == "." ]
 then
-  usage "variable instance_name not defined"
+  IMAGENAME=$IMAGEPATH
+else
+  IMGDIR=`dirname $IMAGEPATH`
+  IMAGENAME=`basename $IMAGEPATH`
 fi
+
 
 #' ## Change Working Directory
 #' Do everything from where image file is stored
@@ -370,15 +378,17 @@ fi
 #' ## Instance Start
 #' Start an instance of the pulled image, if instance name specified
 #+ instance-start, eval=FALSE
-log_msg $SCRIPT " * Instance start ..."
-INSTANCERUNNING=`singularity instance list | grep "$INSTANCENAME" | wc -l`
-echo "Instance name: $INSTANCENAME"
-log_msg $SCRIPT " * Running status of instance: $INSTANCENAME: $INSTANCERUNNING"
-if [ "$INSTANCERUNNING" == "0" ] && [ "$STARTINSTANCE" == "TRUE" ]
+if [ "$INSTANCENAME" != "" ]
 then
-  start_instance
+  log_msg $SCRIPT " * Instance start ..."
+  INSTANCERUNNING=`singularity instance list | grep "$INSTANCENAME" | wc -l`
+  echo "Instance name: $INSTANCENAME"
+  log_msg $SCRIPT " * Running status of instance: $INSTANCENAME: $INSTANCERUNNING"
+  if [ "$INSTANCERUNNING" == "0" ] && [ "$STARTINSTANCE" == "TRUE" ]
+  then
+    start_instance
+  fi
 fi
-
 
 #' ## End of Script
 #+ end-msg, eval=FALSE
