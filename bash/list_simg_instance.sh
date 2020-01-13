@@ -60,10 +60,9 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -a <a_example> -b <b_example> -c"
-  $ECHO "  where -a <a_example> ..."
-  $ECHO "        -b <b_example> (optional) ..."
-  $ECHO "        -c (optional) ..."
+  $ECHO "Usage: $SCRIPT -s <remote_server> -t <show_top>"
+  $ECHO "  where -s <remote_server>  --  specific server to list instances"
+  $ECHO "        -t <show_top>       --  show topoutput of instance"
   $ECHO ""
   exit 1
 }
@@ -100,6 +99,41 @@ log_msg () {
   $ECHO "[${l_RIGHTNOW} -- ${l_CALLER}] $l_MSG"
 }
 
+#' ### Local Singularity Instance Top Output
+#' Show top output in local singularity instance
+#+ show-top-local-fun
+show_top_local () {
+  # generate list of instances
+  singularity instance list > tmp_sils
+
+  # loop over list of instances instances
+  cat tmp_sils | grep -v DAEMON | grep -v "^[[:space:]]*$" | cut -d ' ' -f1 | while read n
+  do
+    singularity exec instance://"$n" top -n 1 -b
+  done
+  
+  # remove tmp instance list
+  rm tmp_sils
+}
+
+#' ### Remote Singularity Instance Top Output
+#' Show top output in remote singularity instance
+#+ show-top-remote-fun
+show_top_remote () {
+  local l_HOST=$1
+  # generate list of instances
+  ssh -t zws@$l_HOST 'singularity instance list' > tmp_sils
+
+  # loop over list of instances instances
+  cat tmp_sils | grep -v DAEMON | grep -v "^[[:space:]]*$" | cut -d ' ' -f1 | while read n
+  do
+    ssh -t zws@$l_HOST "singularity exec instance://$n top -n 1 -b"
+  done
+  
+  # remove tmp instance list
+  rm tmp_sils
+}
+
 #' ### List Singularity Instances
 #' Show a list of singularity instances
 list_simg_inst () {
@@ -108,10 +142,21 @@ list_simg_inst () {
   then
     log_msg 'list_simg_inst' "List of singularity instances on server $l_HOST"
     singularity instance list
+    if [ $SHOWTOP == "TRUE" ]
+    then
+      show_top_local
+    fi
   else
     log_msg 'list_simg_inst' "List of singularity instances on server $l_HOST"
-    ssh -t zws@$l_HOST 'singularity instance list'
+    ssh -t zws@$l_HOST 'singularity instance list' | tee tmp_sils
+    if [ $SHOWTOP == "TRUE" ]
+    then
+      show_top_remote $l_HOST
+    fi
   fi
+  
+  # remove tmp outputfiles
+  rm tmp_sils
 }
 
 
@@ -127,6 +172,7 @@ start_msg
 #+ getopts-parsing, eval=FALSE
 REMOTESERVERS=(beverin castor niesen speer)
 REMOTESERVERNAME=""
+SHOWTOP=""
 while getopts ":s:h" FLAG; do
   case $FLAG in
     h)
@@ -134,6 +180,9 @@ while getopts ":s:h" FLAG; do
       ;;
     s)
       REMOTESERVERNAME=$OPTARG
+      ;;
+    t)
+      SHOWTOP="TRUE"
       ;;
     :)
       usage "-$OPTARG requires an argument"
