@@ -53,7 +53,7 @@
 #' $ git clone https://github.com/pvrqualitasag/quagzws-sidef.git
 #' $ cd quagzws-sidef.git
 #' $ ./bash/update_quagzws_sidef.sh
-#' $ ./bash/update_rpkg.sh -d -i sizws -l /home/zws/simg/quagzws-sidef/inst/extdata/input/local_pkg.txt
+#' $ ./bash/update_rpkg.sh -i sizws -l /home/zws/simg/quagzws-sidef/inst/extdata/input/local_pkg.txt
 #' ```
 #' 
 #' The above statements runs the installation of the local R-packages on the  
