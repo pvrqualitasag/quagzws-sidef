@@ -13,4 +13,9 @@ knitr
 tinytex
 openxlsx
 LaF
+reshape2
+data.table
+bit64
 tidyverse
+cowplot
+qqman
