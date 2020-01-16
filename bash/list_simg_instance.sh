@@ -61,8 +61,9 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -s <remote_server> -t "
-  $ECHO "  where -s <remote_server>  --  specific server to list instances"
+  $ECHO "Usage: $SCRIPT -i <instance_name> -s <remote_server> -t "
+  $ECHO "  where -i <instance_name>  --  the name of the singularity instance (sizws by default)"
+  $ECHO "        -s <remote_server>  --  specific server to list instances"
   $ECHO "        -t                  --  show topoutput of instance"
   $ECHO ""
   exit 1
@@ -104,17 +105,10 @@ log_msg () {
 #' Show top output in local singularity instance
 #+ show-top-local-fun
 show_top_local () {
-  # generate list of instances
-  singularity instance list > tmp_sils
 
-  # loop over list of instances instances
-  cat tmp_sils | grep -v DAEMON | grep -v "^[[:space:]]*$" | cut -d ' ' -f1 | while read n
-  do
-    singularity exec instance://"$n" top -n 1 -b
-  done
-  
-  # remove tmp instance list
-  rm tmp_sils
+  # show top output of a single instance
+  singularity exec instance://"$INSTANCENAME" top -n 1 -b
+
 }
 
 #' ### Remote Singularity Instance Top Output
@@ -122,17 +116,9 @@ show_top_local () {
 #+ show-top-remote-fun
 show_top_remote () {
   local l_HOST=$1
-  # generate list of instances
-  ssh -t zws@$l_HOST 'singularity instance list' > tmp_sils
+  # show top output of a single instance
+  ssh zws@$l_HOST "singularity exec instance://$INSTANCENAME top -n 1 -b"
 
-  # loop over list of instances instances
-  cat tmp_sils | grep -v DAEMON | grep -v "^[[:space:]]*$" | cut -d ' ' -f1 | while read n
-  do
-    ssh zws@$l_HOST "singularity exec instance://$n top -n 1 -b"
-  done
-  
-  # remove tmp instance list
-  rm tmp_sils
 }
 
 #' ### List Singularity Instances
@@ -172,10 +158,14 @@ start_msg
 REMOTESERVERS=(beverin castor niesen speer)
 REMOTESERVERNAME=""
 SHOWTOP=""
-while getopts ":s:th" FLAG; do
+INSTANCENAME="sizws"
+while getopts ":i:s:th" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
+      ;;
+    i)
+      INSTANCENAME=$OPTARG
       ;;
     s)
       REMOTESERVERNAME=$OPTARG
