@@ -145,7 +145,7 @@ start_msg
 REMOTESERVERS=(beverin castor niesen speer)
 HOSTSERVER=""
 IMAGEPATH=""
-SHUBURI=""
+SHUBURI="shub://pvrqualitasag/quagzws-sidef"
 QUAGZWSDIR=/home/zws/simg/quagzws-sidef
 PULLSCRIPT=$QUAGZWSDIR/bash/pull_post_simg.sh
 while getopts ":n:m:q:s:h" FLAG; do
