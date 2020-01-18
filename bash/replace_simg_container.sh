@@ -68,7 +68,7 @@ usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
   $ECHO "Usage: $SCRIPT -b <bind_path> -i <instance_name> -l <link_path> -n <image_path> -s <remote_server_name>"
-  $ECHO "  where -b <bind_path>           --  bind-path for new instance"
+  $ECHO "  where -b <bind_path>           --  bind-path for new instance (optional)"
   $ECHO "        -i <instance_name>       --  name of the instance to be replaced"
   $ECHO "        -l <link_path>           --  name of the link to the singularity image"
   $ECHO "        -n <image_path>          --  path to the new image file"
@@ -160,7 +160,7 @@ start_msg
 #+ getopts-parsing, eval=FALSE
 BINDPATH="/qualstore03,/qualstorzws01,/qualstorora01,/qualstororatest01"
 INSTANCENAME=""
-LINKPATH=""
+LINKPATH="/home/zws/simg/quagzws.simg"
 IMAGEPATH=""
 REMOTESERVERNAME=""
 REMOTESERVERS=(beverin castor niesen speer)
