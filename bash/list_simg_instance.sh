@@ -61,8 +61,9 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -i <instance_name> -s <remote_server> -t "
-  $ECHO "  where -i <instance_name>  --  the name of the singularity instance (sizws by default)"
+  $ECHO "Usage: $SCRIPT -d <image_dir> -i <instance_name> -s <remote_server> -t "
+  $ECHO "  where -d <image_dir>      --  image directory"
+  $ECHO "        -i <instance_name>  --  the name of the singularity instance (sizws by default)"
   $ECHO "        -s <remote_server>  --  specific server to list instances"
   $ECHO "        -t                  --  show topoutput of instance"
   $ECHO ""
@@ -99,6 +100,18 @@ log_msg () {
   local l_MSG=$2
   local l_RIGHTNOW=`$DATE +"%Y%m%d%H%M%S"`
   $ECHO "[${l_RIGHTNOW} -- ${l_CALLER}] $l_MSG"
+}
+
+
+list_simg_dir () {
+  local l_HOST=$1
+  log_msg 'list_simg_dir' "List singularity image dir on $l_HOST"
+  if [ $l_HOST == $SERVER ]
+  then
+    ls -la $SIMGDIR
+  else
+    ssh zws@$l_HOST "ls -la $SIMGDIR"
+  fi
 }
 
 #' ### Local Singularity Instance Top Output
@@ -159,10 +172,14 @@ REMOTESERVERS=(beverin castor niesen speer)
 REMOTESERVERNAME=""
 SHOWTOP=""
 INSTANCENAME="sizws"
-while getopts ":i:s:th" FLAG; do
+SIMGDIR=/home/zws/simg/img/ubuntu1804lts
+while getopts ":d:i:s:th" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
+      ;;
+    d)
+      SIMGDIR=$OPTARG
       ;;
     i)
       INSTANCENAME=$OPTARG
@@ -190,10 +207,12 @@ shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 #+ list-simg-inst
 if [ "$REMOTESERVERNAME" != "" ]
 then
+  list_simg_dir $REMOTESERVERNAME
   list_simg_inst $REMOTESERVERNAME
 else
   for s in ${REMOTESERVERS[@]}
   do
+    list_simg_dir $s
     list_simg_inst $s
     sleep 2
   done
