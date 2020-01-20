@@ -14,7 +14,7 @@ set -o pipefail   # return value of pipeline is value of last command to exit wi
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 SCRIPT=$(basename ${BASH_SOURCE[0]})
-PWDFILE=$SCRIPT_DIR/.r4tea.pwd
+PWDFILE=$SCRIPT_DIR/.tmp.pwd
 
 # Continue to put your code here
 read -s -p "Password for 1-htz: " password
