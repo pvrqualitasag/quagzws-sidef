@@ -36,7 +36,7 @@ SCRIPT=$(basename ${BASH_SOURCE[0]})
 #+ prep-step
 HOST='ftp.elvadata.ch'
 USER='qualitas'
-PASSWD='DPiv35$!'
+read -s -p "Password for $USER on $HOST: " PASSWD
 FILE='file.txt'
 date > $FILE
 cp $FILE ${FILE}.org
