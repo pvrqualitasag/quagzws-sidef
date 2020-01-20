@@ -58,7 +58,7 @@ pb_keep_src    = TRUE)" &> $GEPLOTREPORTLOG
 #' ## Comparison
 #' Compare original report with generated version.
 #+ comp-rep
-NRLINESDIFF=$(diff $GEPLOTREPORT $CURDIR/$GEPLOTREPORT | wc -l)
+NRLINESDIFF=$(diff $GEPLOTREPORTRMD $CURDIR/$GEPLOTREPORTRMD | wc -l)
 echo "Number of differences in comparison plot report: $NRLINESDIFF"
 
 #' ## Clean Up
