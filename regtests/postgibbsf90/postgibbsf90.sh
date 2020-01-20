@@ -25,6 +25,7 @@ PGF90PATH=/qualstorzws01/data_projekte/projekte/gibbs
 PGF90PROG=postgibbsf90
 PGF90PAR=gibbs1.txt
 PGF90OUTFILES=(fort.456 fort.998 postgibbs_samples postsd postout postmeanCorr postmean postind)
+PGF90LOG=postgibbsf90.log
 
 #' ## Functions
 #' The following definitions of general purpose functions are local to this script.
@@ -78,11 +79,12 @@ cd $SCRIPT_DIR
 #' ## Test
 #' Run the gibbs2f90 program
 #+ run-g2f
-(echo $PGF90PAR;echo 0;echo 10;echo 0) | $PGF90PATH/$PGF90PROG
+(echo $PGF90PAR;echo 0;echo 10;echo 0) | $PGF90PATH/$PGF90PROG &> $PGF90LOG
 
 
 #' ## Comparison
 #' Compare output of current test with stored output
+RUNOK="TRUE"
 if [ "$RUNCOMPARE" == "TRUE" ]
 then
   for f in ${PGF90OUTFILES[@]}
@@ -94,9 +96,18 @@ then
       rm -rf $f
     else
       diff $f.out $f > $f.diff
+      RUNOK="FALSE"
     fi
     sleep 2
   done
+fi
+
+#' ## Clean Up
+#' Remove binary solution file
+#+ rm-bin-sol
+if [ "$RUNOK" == "TRUE" ]
+then
+  rm $PGF90LOG
 fi
 
 #' ## Clean Up
