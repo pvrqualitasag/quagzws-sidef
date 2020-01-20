@@ -42,3 +42,8 @@ knitr::include_graphics(path = './curgel/prev_comp/diff_estimate_tdd_P_P.pdf')
 knitr::include_graphics(path = './curgel/diff_estimate_tdd_P_P.pdf')
 ```
 
+
+```{r}
+ sessioninfo::session_info()
+```
+
