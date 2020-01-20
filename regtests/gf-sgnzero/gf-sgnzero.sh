@@ -36,6 +36,8 @@ SCRIPT=$(basename ${BASH_SOURCE[0]})
 #+ prep-step
 F90PROG=sgnzero.f90
 F90OUT=a.out
+cur_wd=`pwd`
+cd $SCRIPT_DIR
 
 #' ## Main Part
 #' Compile the program and run the executable
@@ -47,3 +49,5 @@ gfortran -fno-sign-zero $F90PROG
 #' Any cleaning up after the test is done here.
 #+ clean-up
 rm $F90OUT
+cd $cur_wd
+
