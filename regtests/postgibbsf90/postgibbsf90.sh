@@ -90,7 +90,7 @@ then
   for f in ${PGF90OUTFILES[@]}
   do
     echo " * Comparing result file $f ..."
-    if [ `diff $f.out $f | wc -l` == "0" ]
+    if [ `diff -b $f.out $f | wc -l` == "0" ]
     then
       echo " ... ok -- clean-up"
       rm -rf $f
