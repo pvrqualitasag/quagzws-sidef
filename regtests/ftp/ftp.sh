@@ -60,6 +60,7 @@ END_SCRIPT
 #' ## Test Statements
 #' The following statements generate the output for the tests.
 #+ run-test
+echo "Testing host: $HOST"
 NRLINEWORKED=$(cat ftp.worked.tmp | grep "$FILE" | wc -l)
 echo "Number of lines containing filename in worked ouput: $NRLINEWORKED"
 NRLINEFAILED=$(cat ftp.failed.tmp | wc -l)
