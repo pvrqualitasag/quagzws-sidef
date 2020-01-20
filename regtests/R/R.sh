@@ -51,7 +51,7 @@ R -e "qgert::create_ge_plot_report(ps_gedir='$CURDIR', \
 ps_archdir='$PREVDIR', \
 ps_trgdir='prev_comp', \
 ps_templ='$TEMPLATE', \
-ps_report_text = '## Plots on the left are from previous evaluation and on the right from current evaluation.', \
+ps_report_text = '## Comparison Of Plots\nPlots on the left are from previous evaluation and on the right from current evaluation.', \
 ps_rmd_report  = '$GEPLOTREPORTRMD', \
 pb_keep_src    = TRUE)" &> $GEPLOTREPORTLOG
 
