@@ -96,7 +96,7 @@ else
   if [ `diff $TESTDIR/$TESTDIR.out $TESTDIR/$TESTDIR.tmp | wc -l` -ne "0" ]; then
     diff $TESTDIR/$TESTDIR.out $TESTDIR/$TESTDIR.tmp | less
   else
-    echo ' OK'
+    echo ' ==> OK'
     rm $TESTDIR/$TESTDIR.tmp
   fi  
 fi	
