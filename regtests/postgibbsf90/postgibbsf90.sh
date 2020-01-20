@@ -96,6 +96,7 @@ then
       rm -rf $f
     else
       diff $f.out $f > $f.diff
+      less $f.diff
       RUNOK="FALSE"
     fi
     sleep 2
