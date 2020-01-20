@@ -1,6 +1,6 @@
 #!/bin/bash
 #' ---
-#' title: Test Ftp Client
+#' title: Ftp Client
 #' date:  2020-01-20 10:59:49
 #' author: Peter von Rohr
 #' ---
