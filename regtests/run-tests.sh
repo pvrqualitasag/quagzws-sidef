@@ -91,11 +91,11 @@ if [ "$TESTDIR" == "" ];then
     done
 
 else
+  echo -n "Test: "`head -3 $TESTDIR/$TESTDIR.sh | tail -1 | cut -d ':' -f2`
   $TESTDIR/$TESTDIR.sh > $TESTDIR/$TESTDIR.tmp
   if [ `diff $TESTDIR/$TESTDIR.out $TESTDIR/$TESTDIR.tmp | wc -l` -ne "0" ]; then
     diff $TESTDIR/$TESTDIR.out $TESTDIR/$TESTDIR.tmp | less
   else
-    echo -n "Test: "`head -2 $TESTDIR/$TESTDIR.sh | tail -1`
     echo ' OK'
     rm $TESTDIR/$TESTDIR.tmp
   fi  
