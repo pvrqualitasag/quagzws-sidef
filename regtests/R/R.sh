@@ -35,9 +35,9 @@ CUR_WD=`pwd`
 #' ## Preparation
 #' Preparatory steps, if any, are added here ...
 #+ prep-step
-PREVDIR=/home/zws/lib/R/library/qgert/extdata/prevgel
-CURDIR=/home/zws/lib/R/library/qgert/extdata/curgel
-TEMPLATE=/home/zws/lib/R/library/qgert/templates/compare_plots.Rmd.template
+PREVDIR=./prevgel
+CURDIR=./curgel
+TEMPLATE=./templates/compare_plots.Rmd.template
 GEPLOTREPORT=ge_plot_report
 GEPLOTREPORTRMD=$GEPLOTREPORT.Rmd
 GEPLOTREPORTLOG=$GEPLOTREPORT.log
@@ -49,7 +49,7 @@ GEPLOTREPORTPDF=$GEPLOTREPORT.pdf
 cd $SCRIPT_DIR
 R -e "qgert::create_ge_plot_report(ps_gedir='$CURDIR', \
 ps_archdir='$PREVDIR', \
-ps_trgdir='trg', \
+ps_trgdir='prev_comp', \
 ps_templ='$TEMPLATE', \
 ps_report_text = '## Comparison Of Plots\nPlots compare estimates ...', \
 ps_rmd_report  = '$GEPLOTREPORTRMD', \
