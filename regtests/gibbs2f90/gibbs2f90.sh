@@ -26,6 +26,7 @@ G2F90PROG=gibbs2f90
 G2F90PAR=gibbs1.txt
 G2F90OUTFILES=(fort.99 gibbs_samples last_solutions)
 G2F90BINSOL=binary_final_solutions
+G2F90LOG=gibbs2f90.log
 
 #' ## Functions
 #' The following definitions of general purpose functions are local to this script.
@@ -79,11 +80,12 @@ cd $SCRIPT_DIR
 #' ## Test
 #' Run the gibbs2f90 program
 #+ run-g2f
-(echo $G2F90PAR;echo '5000 1000';echo 10) | $G2F90PATH/$G2F90PROG
+(echo $G2F90PAR;echo '5000 1000';echo 10) | $G2F90PATH/$G2F90PROG &> $G2F90LOG
 
 
 #' ## Comparison
 #' Compare output of current test with stored output
+RUNOK="TRUE"
 if [ "$RUNCOMPARE" == "TRUE" ]
 then
   for f in ${G2F90OUTFILES[@]}
@@ -94,6 +96,7 @@ then
       echo " ... ok -- clean-up"
       rm -rf $f
     else
+      RUNOK="FALSE"
       diff $f.out $f > $f.diff
     fi
     sleep 2
@@ -103,7 +106,10 @@ fi
 #' ## Clean Up
 #' Remove binary solution file
 #+ rm-bin-sol
-rm $G2F90BINSOL
+if [ "$RUNOK" == "TRUE" ]
+then
+  rm $G2F90BINSOL $G2F90LOG
+fi
 
 #' Go back to original wd
 #+ cd-back
