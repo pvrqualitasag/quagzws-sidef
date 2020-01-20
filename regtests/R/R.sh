@@ -38,9 +38,10 @@ CUR_WD=`pwd`
 PREVDIR=/home/zws/lib/R/library/qgert/extdata/prevgel
 CURDIR=/home/zws/lib/R/library/qgert/extdata/curgel
 TEMPLATE=/home/zws/lib/R/library/qgert/templates/compare_plots.Rmd.template
-GEPLOTREPORT=ge_plot_report.Rmd
-GEPLOTREPORTLOG=ge_plot_report.log
-
+GEPLOTREPORT=ge_plot_report
+GEPLOTREPORTRMD=$GEPLOTREPORT.Rmd
+GEPLOTREPORTLOG=$GEPLOTREPORT.log
+GEPLOTREPORTPDF=$GEPLOTREPORT.pdf
 
 #' ## Main Part
 #' Main part of the scripts comes here ...
@@ -51,7 +52,7 @@ ps_archdir='$PREVDIR', \
 ps_trgdir='trg', \
 ps_templ='$TEMPLATE', \
 ps_report_text = '## Comparison Of Plots\nPlots compare estimates ...', \
-ps_rmd_report  = '$GEPLOTREPORT', \
+ps_rmd_report  = '$GEPLOTREPORTRMD', \
 pb_keep_src    = TRUE)" &> $GEPLOTREPORTLOG
 
 #' ## Comparison
@@ -63,6 +64,9 @@ echo "Number of differences in comparison plot report: $NRLINESDIFF"
 #' ## Clean Up
 #' Any cleaning up after the test is done here.
 #+ clean-up
-rm -rf $GEPLOTREPORT $GEPLOTREPORTLOG
+if [ "$NRLINESDIFF" == "0" ]
+then
+  rm -rf $GEPLOTREPORTRMD $GEPLOTREPORTLOG $GEPLOTREPORTPDF
+fi
 
 cd $CUR_WD
