@@ -130,7 +130,7 @@ update_rprofile () {
     # use '#' as delimiters for sed, because $RLIBDIR contains a path
     cat $RPROFILETMPL | sed -e "s#{RLIBDIR}#$RLIBDIR#" > $RPROFILETRG
   else
-    ssh zws@$l_HOST "git -C $QUAGZWSDIR pull;$QUAGZWSDIR/bash/update_rprofile -m $l_HOST"
+    ssh zws@$l_HOST "git -C $QUAGZWSDIR pull;$QUAGZWSDIR/bash/update_rprofile.sh -m $l_HOST"
   fi
   
 }
