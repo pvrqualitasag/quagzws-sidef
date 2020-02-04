@@ -14,10 +14,18 @@
 #' the specified servers.
 #'
 #' ## Details
-#' {Give some more details here.}
+#' The only command-line option is the image_path specified after -n. When running 
+#' the script w/out -m, then it is run on all the servers from a list specified in 
+#' the script. Hence use the example below for testing. 
 #'
 #' ## Example
-#' {Specify an example call of the script.}
+#' The following example runs the default pull-script and saves the image file under 
+#' the path given after -n for the server 1-htz.quagzws.com.
+#'
+#' ```
+#' ./quagzws-sidef/bash/update_simg.sh -n /home/zws/simg/img/ubuntu1804lts/`date +"%Y%m%d"`_quagzws.simg \
+#'                                     -m 1-htz.quagzws.com
+#' ```
 #'
 #' ## Set Directives
 #' General behavior of the script is driven by the following settings
