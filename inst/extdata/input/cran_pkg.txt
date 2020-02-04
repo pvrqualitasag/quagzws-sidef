@@ -19,3 +19,4 @@ bit64
 tidyverse
 cowplot
 qqman
+svglite
