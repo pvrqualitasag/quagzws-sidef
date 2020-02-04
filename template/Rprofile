@@ -1,2 +1,2 @@
 .libPaths("{RLIBDIR}")
-Sys.setenv(JAVA_HOME = '/qualstorzws01/data_projekte/linuxLib/jdk1.8.0_191')
+Sys.setenv(JAVA_HOME = '/opt/openjdk/jdk8u222-b10')
