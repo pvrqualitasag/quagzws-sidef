@@ -1,0 +1,67 @@
+---
+title: "Sockets, Cores und Threads"
+author: "Peter von Rohr"
+date: "4/7/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# rmdhelp::show_knit_hook_call()
+knitr::knit_hooks$set(hook_convert_odg = rmdhelp::hook_convert_odg)
+```
+
+## Hintergrund
+Die grundlegenden Zusammenhänge zwischen gewissen Hardwareelementen in einem Prozessor sollen einfach erklärt werden. Die Erklärungen sollen für die Anwenderin / den Anwender verständlich sein. Gewisse technische Details werden vernachlässigt.
+
+
+## Ursprüngliche Rechnerarchitektur
+Grundsätzlich sind die von uns verwendeten Computer nach der sogenannten **Von-Neumann-Architektur** (https://de.wikipedia.org/wiki/Von-Neumann-Architektur) aufgebaut. Ein Von-Neumann-Rechner (VNR) besteht aus den folgenden Komponenten:
+
+* ALU (Arithmetic Logic Unit) - Rechenwerk
+* Control Unit - Steuerwerk
+* BUS - dient zur Kommunikation zwischen den Elementen
+* Memory (RAM) - Arbeitsspeicher für Programme und Daten
+* I/O Unit - Eingabe/Ausgabe-Elemente
+
+Häufig werden ALU und Control Unit zur CPU (Central Processing Unit, auch als Prozessor bezeichnet) zusammengefasst. Die folgende Darstellung gibt eine Übersicht über die Komponenten eines VNR.
+
+```{r vnr-diagram, echo=FALSE, hook_convert_odg=TRUE, fig_path="odg"}
+#rmdhelp::use_odg_graphic(ps_path = "odg/vnr-diagram.odg")
+knitr::include_graphics(path = "odg/vnr-diagram.png")
+```
+ 
+
+## Entwicklung
+Durch die gesteigerten Anforderungen an Rechenkapazität wurde die Von-Neumann-Architektur weiterentwickelt. Während früher der Prozessor aus einer ALU und einer Control Unit bestanden, spricht man bei aktuellen Rechnern nicht mehr von Prozessoren sondern von sogenannten **Sockets** (Sockel). Ein solcher Sockel beinhaltet mehrere CPU-Cores (CPU-Kern) und auf jedem Kern können wieder mehrere logische Recheneinheiten ("Threads") vereinigt sein. Die folgende Darstellung soll diese Unterteilung verdeutlichen.
+
+```{r multi-core-diagram, echo=FALSE, hook_convert_odg=TRUE, fig_path="odg"}
+#rmdhelp::use_odg_graphic(ps_path = "odg/multi-core-diagram.odg")
+knitr::include_graphics(path = "odg/multi-core-diagram.png")
+```
+ 
+Aus Sicht der Benutzerin / des Benutzers kann man sich vorstellen, dass auf jedem Thread ein Prozess oder Job ausgeführt werden kann. 
+
+
+## Beispiel eines Rechner
+Die im obigen Diagramm gezeigten Grössen wollen wir bei einem konkreten Beispiel sehen. Dazu verwenden wir den ZWS-Server `niesen`. Diese Informationen erhalten wir mit dem Befehl `lscpu`. Der Output sieht wie folgt aus:
+
+```{r lscpu-niesen, echo=FALSE, hook_convert_odg=TRUE, fig_path="odg"}
+#rmdhelp::use_odg_graphic(ps_path = "odg/lscpu-niesen.odg")
+knitr::include_graphics(path = "odg/lscpu-niesen.png")
+```
+ 
+Die Zahlen, welche mit den roten Pfeilen markiert sind bedeuten von unten nach oben gelesen, dass unser Server
+
+1. 2 Sockets auf dem Motherboard hat
+2. Pro Socket finden wir 8 Cores (Kerne)
+3. Pro Kern gibt es zwei Threads
+4. Somit resultieren aus 2 Sockets * 8 * Kerne / Socket * 2 Threads / Kern = 32 Threads, welche auch als logische Cores bezeichnet werden.
+
+Die Anzahl logische Cores entspricht auch dem Resultat des Befehls `nproc`. 
+
+
+```{r echo=FALSE, results='asis'}
+cat(rmdhelp::get_latest_change())
+```
+

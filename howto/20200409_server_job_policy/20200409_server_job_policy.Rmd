@@ -1,0 +1,94 @@
+---
+title: "Server-Job-Start Policy"
+author: "Peter von Rohr"
+date: "4/9/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# rmdhelp::show_knit_hook_call()
+knitr::knit_hooks$set(hook_convert_odg = rmdhelp::hook_convert_odg)
+```
+
+
+# Erklärung
+Es werden ein paar Regeln formuliert, die beim Start von Jobs auf den ZWS-Servern befolgt werden sollen. Durch die Einhaltung dieser Regeln soll ein gewisses Mass an Fairness erreicht werden.
+
+
+# Angebot und Nachfrage nach Rechenressourcen
+Rechenressourcen sind immer knapp, weil es gibt immer Projekte, welche neu entwickelt,  getestet oder ausprobiert werden können. Dazu kommt, dass die Menge an verfügbaren Daten in der Regel exponentiell steigt. Die Menge an verfügbaren Ressourcen steigt aber, wenn überhaupt im besten Fall linear an. Daraus resultiert eine gewisse Schere zwischen der Nachfrage nach und dem Angebot an Rechenressourcen.In Fall des FB-ZWS kommt hinzu, dass die Nachfrage nach Rechenressourcen aufgrund der periodisch gemachten Routinen (Imputation, Prediction und traditionelle ZWS-Routine) gewisse Nachfragespitzen auftreten. 
+
+
+# Wozu eine Policy?
+Das Ziel der Policy ist, dass anhand von ein paar einfachen Regeln die beschränkten Rechenressourcen möglichst fair aufzuteilen. Die Regeln sind als `best practices` und als `gentle-woman / gentle-man - agreements` zu verstehen. Aktuell werden diese Regeln auch nicht durch technische Mittel durchgesetzt. 
+
+
+# Alternativen 
+Als gibt es technische Hilfsmittel, wie Batch-Queuing-Systeme (BQS), welche die Auslastung der Rechenleistungen managen. Bei diesen Systemen muss jeder Rechen-Job in eine Warteschlange (Queue) eingegeben werden. Das BQS arbeitet dann die Jobs in der Warteschlange ab. 
+
+Da wir aber auf den ZWS-Servern alle unter dem gleichen Benutzer arbeiten, würde der alleinige Einsatz eines BQS keine Lösung des Problems der knappen Rechenressourcen bringen. 
+
+
+# Technische Aspekte
+Gewisse hier verwendete Fachbegriffe sind unter https://qualitasag.atlassian.net/wiki/spaces/ZWS/pages/787185789/Sockets+Cores+und+Threads erklärt.
+
+Aus technischer Sicht sind beim Starten von neuen Rechenjobs zwei Aspekte zu berücksichtigen. 
+
+1. Load nicht höher als Anzahl logischer Cores
+2. Maschine soll nicht swappen
+
+
+## Load
+Auf der ersten Zeile (siehe Diagramm) des Outputs von `top` stehen drei Zahlen, welche den sogenannten `Load` der Maschine angeben. Für eine optimale Performance kann die folgende Faustregel angewendet werden. Die Load sollte nicht höher sein als die Anzahl logischer Cores der Maschine. Die Anzahl logischer Cores einer Maschine erhalten wir mit dem Befehl `nproc`. 
+
+```{r load-diagram, echo=FALSE, hook_convert_odg=TRUE, fig_path="odg"}
+#rmdhelp::use_odg_graphic(ps_path = "odg/load-diagram.odg")
+knitr::include_graphics(path = "odg/load-diagram.png")
+```
+
+
+## Arbeitsspeicher (RAM)
+Wichtiger als die Load ist, dass der durch die gestarteten Rechenjobs benötigte Arbeitsspeicher (RAM) den verfügbaren Arbeitsspeicher nicht überschreitet. Weil wenn dies der Fall ist, setzt ein Prozess ein, der als Swappen bekannt ist. Swappen bedeutet, dass gewissen Daten aus dem Arbeitsspeicher auf die Swap-Partition auf der Disk ausgelagert werden. Sobald eine Maschine mit Swappen beginnt, dann verlängern sich die Rechenzeiten der laufenden Jobs um einen Faktor in der Grössenordnung von $1000$. Dann sollen die zuletzt gestarteten Rechenjobs wieder gekillt werden, bis die Maschine nicht mehr swappt. Ob ein bestimmter Rechner am Swappen ist, erkennen wir wieder am Output von Top (siehe rotes Quadrat im nachfolgendes Diagramm).
+
+```{r swap-diagram, echo=FALSE, hook_convert_odg=TRUE, fig_path="odg"}
+#rmdhelp::use_odg_graphic(ps_path = "odg/swap-diagram.odg")
+knitr::include_graphics(path = "odg/swap-diagram.png")
+```
+
+Falls sich die Zahlen im roten Quadrat im oben gezeigten Top-Output entsprechend ändern (free nimmt ab und used nimmt zu), dann beginnt der Rechner zu swappen.
+
+
+# Regeln
+Bei den Regeln unterscheiden wir zwei verschiedene Prioritätsstufen unterscheiden. 
+
+
+## Prioritäten
+Die Rechenjobs im Rahmen der periodischen Routinen haben erste Priorität. Darunter fallen die Imputationen, die Predictions und die traditionellen ZWS-Routinen. Alle anderen Rechenjobs werden mit einer tieferen Prioritätsstufe versehen. 
+
+
+## Regeln für Routine-Jobs 
+Diese Rechenjobs erhalten eine höhere Priorität, da diese an fixe Zeitpläne gebunden sind. Aus diesem Grund soll es den verantwortlichen Leuten für diese Routinen bei Bedarf erlaubt sein alle anderen Rechenjobs auf den ZWS-Servern auf eine tiefere Priorität zu setzen. Idealerweise geschieht dies in Absprache mit den Leuten, welche die Nicht-Routine-Jobs gestartet haben. Andernfalls soll diese Massnahme in slack-channel #zws angekündigt werden. 
+
+Für die Imputation und die Prediction sollen mindestens zwei der FB-ZWS-Rechner reserviert sein. Aufgrund der Ressourcenbedürfnisse für diese Jobs ist es sinnvoll die beiden neuesten Rechner (aktuell `niesen` und `speer`) dafür zur reservieren. Während der Zeit der Prediction und der Imputation soll auf diesen zwei Rechner keine Nicht-Routine-Jobs neu gestartet werden. Alle schon laufenden Jobs können bei Bedarf auf eine tiefere Priorität zu setzen. 
+
+Während der traditionellen ZWS-Routine gibt es 
+
+1. für die Schätzung der P-Zuchtwerte, 
+2. für die Effektschätzung und 
+3. für zwei Prediction-Runs erhöhte Rechenbedürfnisse. 
+
+Während der Effektschätzung sollen mindestens vier ZWS-Rechner für die Routine reserviert sein. Das bedeutet, dass keine Nicht-Routine Jobs gestartet werden sollen. Bei Bedarf können Nicht-Routine Jobs auf eine tiefere Priorität gesetzt werden. 
+
+Die Jobs für die Schätzung der P-Zuchtwerte und auch Teile der Prediction-Runs sind eher als sequentielle Jobs umgesetzt. Das bedeutet, dass neben diesen Jobs noch andere Nicht-Routine Jobs gestartet werden können. Aber dies soll unter Berücksichtigung der technischen Aspekte gemacht werden und so, dass die Routine-Jobs nicht behindert werden.
+
+
+## Regeln für Nicht-Routine-Jobs
+Zu Zeiten ausserhalb der periodischen Routine sollen möglichst alle Mitglieder des FB-ZWS die gleichen Chancen haben Rechenjobs zu starten. Wenn wir annehmen, dass rund fünf bis sechs Mitglieder aus dem FB gleichzeitig Rechenjobs starten möchten und dass unsere ZWS-Rechner alle zwischen 30-40 logische Cores haben, dann bedeutet das dass alle die Jobs starten wollen, 5 Jobs auf jedem Rechner ohne Absprache starten können. 
+
+Sollten diese Kapazitäten für jemanden nicht ausreichend sein, dann soll es erlaubt sein in Rücksprache mit allen anderen Mitgliedern (Anfrage über slack-channel #zws) für ein gewisses endliches Zeitfenster mehr als die 5 Jobs pro Rechner zu starten. Dabei muss aber damit gerechnet werden, dass diese auf eine tiefere Priorität gesetzt werden, sobald Jobs von höherer Priorität gestartet werden müssen.
+
+```{r echo=FALSE, results='asis'}
+cat(rmdhelp::get_latest_change())
+```
+

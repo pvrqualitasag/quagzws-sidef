@@ -1,0 +1,35 @@
+---
+title: "Running Singularity Container on MBP"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Background
+
+
+## Docker as Pre-Requisites
+Docker on MacOs runs as hypervisor and can be downloaded from https://www.docker.com/get-started. An ubuntu container image can be run using
+
+```
+docker run ubuntu
+```
+
+When running the above command for the first time, an image of an ubuntu docker container is pulled from docker-hub and the container is run. The list of available docker containers is obtained by
+
+```
+docker ps -a
+```
+
+Starting a shell in that container can be done using
+
+```
+docker exec -it 9d8a4cd06026 bash
+```
+
+The above command opens a root-shell into an ubuntu container.
+
+The only software program that is used in the ubuntu docker container is the singularity-host-container. 
+
