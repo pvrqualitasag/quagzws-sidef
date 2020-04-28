@@ -109,6 +109,32 @@ update_repo () {
   fi
 }
 
+#' ### Update repository on local server
+#' In the case, where this script is called from the local server, 
+#' then we do not need to use ssh. Furthermore it might be important to check
+#' whether we are inside of the container or not.
+#+ local-update-repo
+local_update_repo () {
+  log_msg 'local_update_repo' "Running update on $SERVER"
+  # check whether we are inside of a singularity container
+  if [ `env | grep SINGULARITY | wc -l` == "0" ]
+  then
+    if [ "$REFERENCE" != "" ]
+    then
+      singularity exec instance://sizws git -C /home/zws/simg/quagzws-sidef pull -b $REFERENCE
+    else
+      singularity exec instance://sizws git -C /home/zws/simg/quagzws-sidef pull
+    fi
+  else
+    if [ "$REFERENCE" != "" ]
+    then
+      git -C /home/zws/simg/quagzws-sidef pull -b $REFERENCE
+    else
+      git -C /home/zws/simg/quagzws-sidef pull
+    fi  
+  fi
+}
+
 #' ## Main Body of Script
 #' The main body of the script starts here.
 #+ start-msg, eval=FALSE
@@ -149,11 +175,22 @@ shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 #' Decide whether to run the update on one server or on all servers on the list
 if [ "$SERVERNAME" != "" ]
 then
-  update_repo $SERVERNAME
+  # if this script is called from $SERVERNAME, do local update
+  if [ "$SERVERNAME" == "$SERVER" ]
+  then
+    local_update_repo
+  else
+    update_repo $SERVERNAME
+  fi  
 else
   for s in ${SERVERS[@]}
   do
-    update_repo $s
+    if [ "$s" == "$SERVER" ]
+    then
+      local_update_repo
+    else
+      update_repo $s
+    fi  
     sleep 2
   done
 fi
