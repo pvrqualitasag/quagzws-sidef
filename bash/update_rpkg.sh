@@ -166,9 +166,17 @@ install_rpkg () {
       log_msg 'install_rpkg' " ** Lib-dir $RLIBDIR not found ==> create it ..."
       mkdir -p $RLIBDIR
     fi
-    # install packages
-    log_msg 'install_rpkg' " ** Install R packages to $RLIBDIR ..."
-    singularity exec instance://$INSTANCENAME R -e ".libPaths('$RLIBDIR');cran_pkg<-'$CRANPKG';ghub_pkg<-'$GHUBPKG';local_pkg<-'$LOCALPKG';source( '$RPKGSCRIPT' )" --vanilla --no-save
+    # check whether we are inside of a singularity container
+    if [ `env | grep SINGULARITY | wc -l` == "0" ]
+    then
+      # install packages from outside of container
+      log_msg 'install_rpkg' " ** simg exec install R packages to $RLIBDIR ..."
+      singularity exec instance://$INSTANCENAME R -e ".libPaths('$RLIBDIR');cran_pkg<-'$CRANPKG';ghub_pkg<-'$GHUBPKG';local_pkg<-'$LOCALPKG';source( '$RPKGSCRIPT' )" --vanilla --no-save
+    else
+      # install packages from inside of container
+      log_msg 'install_rpkg' " ** install R packages to $RLIBDIR ..."
+      R -e ".libPaths('$RLIBDIR');cran_pkg<-'$CRANPKG';ghub_pkg<-'$GHUBPKG';local_pkg<-'$LOCALPKG';source( '$RPKGSCRIPT' )" --vanilla --no-save
+    fi
   else
     ssh zws@$l_REMOTESERVER "if [ ! -d \"$RLIBDIR\" ];then  echo \" * r-lib-dir: $RLIBDIR not found ==> create it ...\";mkdir -p $RLIBDIR;fi"
     log_msg 'install_rpkg' " ** Install R packages to $RLIBDIR on server $l_REMOTESERVER ..."
