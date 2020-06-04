@@ -2,3 +2,4 @@ tidyverse/multidplyr
 pvrqualitasag/qgert
 pvrqualitasag/qgengroup
 pvrqualitasag/rvcetools
+sknqualitasag/ModelSelection
