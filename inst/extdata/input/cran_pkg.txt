@@ -7,6 +7,7 @@ foreach
 gridExtra
 MASS
 plyr
+dplyr
 stringdist
 rmarkdown
 knitr
@@ -21,3 +22,8 @@ cowplot
 qqman
 svglite
 olsrr
+formatR
+pedigreemm
+xtable
+glmnet
+ISLR
