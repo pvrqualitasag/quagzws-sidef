@@ -109,6 +109,7 @@ usage () {
   $ECHO "Usage: $SCRIPT -c <cran_pkg_input> -d -g <github_pkg_input> -i <instance_name> -l <local_pkg_input> -p <pkg_install_script> -r <r_lib_dir> -s <remote_server>"
   $ECHO "  where -c <cran_pkg_input>      --  names of cran packages"
   $ECHO "        -d                       --  use defaults for input files"
+  $ECHO "        -f                       --  force r-pkg update"
   $ECHO "        -g <github_pkg_input>    --  names of github packages"
   $ECHO "        -i <instance_name>       --  instance name"
   $ECHO "        -l <local_pkg_input>     --  directories of local packages"
@@ -171,16 +172,16 @@ install_rpkg () {
     then
       # install packages from outside of container
       log_msg 'install_rpkg' " ** simg exec install R packages to $RLIBDIR ..."
-      singularity exec instance://$INSTANCENAME R -e ".libPaths('$RLIBDIR');cran_pkg<-'$CRANPKG';ghub_pkg<-'$GHUBPKG';local_pkg<-'$LOCALPKG';source( '$RPKGSCRIPT' )" --vanilla --no-save
+      singularity exec instance://$INSTANCENAME R -e "force_update<-${FORCEUPDATE};.libPaths('$RLIBDIR');cran_pkg<-'$CRANPKG';ghub_pkg<-'$GHUBPKG';local_pkg<-'$LOCALPKG';source( '$RPKGSCRIPT' )" --vanilla --no-save
     else
       # install packages from inside of container
       log_msg 'install_rpkg' " ** install R packages to $RLIBDIR ..."
-      R -e ".libPaths('$RLIBDIR');cran_pkg<-'$CRANPKG';ghub_pkg<-'$GHUBPKG';local_pkg<-'$LOCALPKG';source( '$RPKGSCRIPT' )" --vanilla --no-save
+      R -e "force_update<-${FORCEUPDATE};.libPaths('$RLIBDIR');cran_pkg<-'$CRANPKG';ghub_pkg<-'$GHUBPKG';local_pkg<-'$LOCALPKG';source( '$RPKGSCRIPT' )" --vanilla --no-save
     fi
   else
     ssh zws@$l_REMOTESERVER "if [ ! -d \"$RLIBDIR\" ];then  echo \" * r-lib-dir: $RLIBDIR not found ==> create it ...\";mkdir -p $RLIBDIR;fi"
     log_msg 'install_rpkg' " ** Install R packages to $RLIBDIR on server $l_REMOTESERVER ..."
-    ssh zws@$l_REMOTESERVER "singularity exec instance://$INSTANCENAME R -e \".libPaths('$RLIBDIR');cran_pkg<-'$CRANPKG';ghub_pkg<-'$GHUBPKG';local_pkg<-'$LOCALPKG';source( '$RPKGSCRIPT' )\" --vanilla --no-save"
+    ssh zws@$l_REMOTESERVER "singularity exec instance://$INSTANCENAME R -e \"force_update<-${FORCEUPDATE};.libPaths('$RLIBDIR');cran_pkg<-'$CRANPKG';ghub_pkg<-'$GHUBPKG';local_pkg<-'$LOCALPKG';source( '$RPKGSCRIPT' )\" --vanilla --no-save"
   fi
 }
 
@@ -206,7 +207,8 @@ CRANPKG=""
 GHUBPKG=""
 LOCALPKG=""
 USEDEFAULT=""
-while getopts ":c:dg:i:l:p:r:s:h" FLAG; do
+FORCEUPDATE="FALSE"
+while getopts ":c:dfg:i:l:p:r:s:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
@@ -216,6 +218,9 @@ while getopts ":c:dg:i:l:p:r:s:h" FLAG; do
       ;;
     d)
       USEDEFAULT="TRUE"
+      ;;
+    f)
+      FORCEUPDATE="TRUE"
       ;;
     g)  
       GHUBPKG=$OPTARG
