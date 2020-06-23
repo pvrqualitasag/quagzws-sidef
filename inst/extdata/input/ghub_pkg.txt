@@ -3,3 +3,6 @@ pvrqualitasag/qgert
 pvrqualitasag/qgengroup
 pvrqualitasag/rvcetools
 sknqualitasag/ModelSelection
+sknqualitasag/WeaningWeightPrepare
+sknqualitasag/CarcassStep1Prepare
+pvrqualitasag/MergePedigree
