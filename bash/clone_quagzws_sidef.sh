@@ -104,7 +104,8 @@ log_msg () {
 #+ clone-repo-fun
 clone_repo () {
   local l_SERVER=$1
-  log_msg 'clone_repo' "Cloning repo on $l_SERVER"
+  log_msg 'clone_repo' " ** Cloning repo on $l_SERVER ..."
+  log_msg 'clone_repo' " ** Repourl: $REPOURL ..."
   SSHCMD="QSRCDIR=$REPOROOT; 
 QHTZDIR=$REPOPATH;"' 
 if [ ! -d "$QSRCDIR" ];then mkdir -p ${QSRCDIR};fi;'
@@ -123,6 +124,7 @@ if [ ! -d "$QSRCDIR" ];then mkdir -p ${QSRCDIR};fi;'
    echo "$QHTZDIR already exists, run updated_quagzws_htz.sh";
  fi'
    fi
+  log_msg 'clone_repo' " ** ssh-cmd: $SSHCMD ..."
   ssh $REMOTEUSER@$l_SERVER $SSHCMD
 }
 
@@ -195,7 +197,7 @@ shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 #' ## Define User-dependent Variables
 #' Repository root and repository path depend on the user, hence they are 
 #' specified after commandline parsing
-REPONAME='quagzws_sidef'
+REPONAME='quagzws-sidef'
 REPOROOT=/home/${REMOTEUSER}/simg
 REPOPATH=$REPOROOT/$REPONAME
 REPOURL="https://github.com/pvrqualitasag/${REPONAME}.git"
