@@ -39,9 +39,10 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -d <simg_definition> -w <work_dir>"
+  $ECHO "Usage: $SCRIPT -d <simg_definition> -l <simg_label> -w <work_dir>"
   $ECHO "  where    <simg_definition>     --  singularity definition file"
-  $ECHO "           <work_dir> (optional) -- work directory where image is build"
+  $ECHO "           <simg_label>          --  label of image file"
+  $ECHO "           <work_dir> (optional) --  work directory where image is build"
   $ECHO ""
   exit 1
 }
@@ -69,6 +70,19 @@ log_msg () {
   $ECHO "[${l_RIGHTNOW} -- ${l_CALLER}] $l_MSG"
 }
 
+#' ### Check Directory Existence
+#' Passed directory is checked for existence, if it is not found it is created
+#+ check-exist-dir-create-fun
+check_exist_dir_create () {
+  local l_check_dir=$1
+  if [ ! -d "$l_check_dir" ]
+  then
+    log_msg check_exist_dir_create "CANNOT find directory: $l_check_dir ==> create it"
+    $MKDIR -p $l_check_dir    
+  fi  
+
+}
+
 
 ### # ====================================================================== #
 ### # Main part of the script starts here ...
@@ -80,14 +94,18 @@ start_msg
 ### # Notice there is no ":" after "h". The leading ":" suppresses error messages from
 ### # getopts. This is required to get my unrecognized option code to work.
 SIMGDEF=""
-SWORKDIR=/home/quagadmin/simg/img/ubuntu1804lts
-while getopts ":d:w:h" FLAG; do
+SIMGLABEL=tsp-sa
+SWORKDIR=${HOME}/simg/img/$SIMGLABEL
+while getopts ":d:l:w:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
       ;;
     d)
       SIMGDEF=$OPTARG
+      ;;
+    l)
+      SIMGLABEL=$OPTARG
       ;;
     w)
       SWORKDIR=$OPTARG
@@ -110,11 +128,8 @@ fi
 
 
 ### # check whether working directory exists
-if [ ! -d "$SWORKDIR" ]
-then
-  log_msg $SCRIPT " * ERROR: Cannot find working directory: $SWORKDIR"
-  exit 1
-fi
+check_exist_dir_create $SWORKDIR
+
 
 ### # change to work directory
 CURRWD=`pwd`
@@ -128,15 +143,15 @@ then
 fi
 
 
-
 ### # create the image file
-SIMGFN=`date +"%Y%m%d%H%M%S"`_quagzws_ubuntu1804lts.img
-log_msg $SCRIPT " * Creating image file: $SIMGFN ..."
-sudo singularity image.create --size 1024 $SIMGFN
+SIMGFN=`date +"%Y%m%d%H%M%S"`_${SIMGLABEL}.img
+SIMGLOG=${SIMGFN}.log
+
 
 ### # start installation
 log_msg $SCRIPT " * Installing based on definition: $SIMGDEF ..."
-sudo singularity build $SIMGFN $SIMGDEF &> `date +"%Y%m%d%H%M%S"`_quagzws_ubuntu1804lts_build.log
+sudo singularity build --writable $SIMGFN $SIMGDEF &> $SIMGLOG
+
 
 ### # change back to original directory
 cd $CURRWD
