@@ -104,22 +104,21 @@ log_msg () {
 #+ clone-repo-fun
 clone_repo () {
   local l_SERVER=$1
-  log_msg 'clone_repo' "Running update on $l_SERVER"
-  SSHCMD="REPOURL=$REPOURL;
-QSRCDIR=$REPOROOT; 
+  log_msg 'clone_repo' "Cloning repo on $l_SERVER"
+  SSHCMD="QSRCDIR=$REPOROOT; 
 QHTZDIR=$REPOPATH;"' 
 if [ ! -d "$QSRCDIR" ];then mkdir -p ${QSRCDIR};fi;'
   # distinguish between cloning the master or a branch, where the branch is given by $REFERENCE
    if [ "$REFERENCE" != "" ]
    then
      SSHCMD="${SSHCMD}"'if [ ! -d "$QHTZDIR" ];then 
-   git -C "$QSRCDIR" clone "$REPOURL" -b '"$REFERENCE"';
+   git -C "$QSRCDIR" clone '"$REPOURL"' -b '"$REFERENCE"';
  else 
    echo "$QHTZDIR already exists, run updated_quagzws_htz.sh";
  fi'
    else
      SSHCMD="${SSHCMD}"'if [ ! -d "$QHTZDIR" ];then 
-   git -C "$QSRCDIR" clone "$REPOURL"; 
+   git -C "$QSRCDIR" clone '"$REPOURL"'; 
  else 
    echo "$QHTZDIR already exists, run updated_quagzws_htz.sh";
  fi'
