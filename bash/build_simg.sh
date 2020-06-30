@@ -78,7 +78,7 @@ check_exist_dir_create () {
   if [ ! -d "$l_check_dir" ]
   then
     log_msg check_exist_dir_create "CANNOT find directory: $l_check_dir ==> create it"
-    $MKDIR -p $l_check_dir    
+    mkdir -p $l_check_dir    
   fi  
 
 }
