@@ -94,7 +94,7 @@ start_msg
 ### # Notice there is no ":" after "h". The leading ":" suppresses error messages from
 ### # getopts. This is required to get my unrecognized option code to work.
 SIMGDEF=""
-SIMGLABEL=tsp-sa
+SIMGLABEL=sizws
 SWORKDIR=${HOME}/simg/img/$SIMGLABEL
 while getopts ":d:l:w:h" FLAG; do
   case $FLAG in
