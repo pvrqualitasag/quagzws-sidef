@@ -54,9 +54,10 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -b <branch_reference> -s <server_name>"
+  $ECHO "Usage: $SCRIPT  -b <branch_reference> -s <server_name> -u <remote_user>"
   $ECHO "  where -s <server_name>     --  optional, run package update on single server"
   $ECHO "        -b <repo_reference>  --  optional, update to a branch reference"
+  $ECHO "        -u <remote_user>     --  optional, username of remote user"
   $ECHO ""
   exit 1
 }
@@ -98,15 +99,24 @@ log_msg () {
 #' The following function runs the package update on a
 #' specified server.
 #+ update-pkg-fun
-update_repo () {
+#' ### Update For a Given Server
+#' The following function runs the package update on a
+#' specified server.
+#+ update-pkg-fun
+pull_repo () {
   local l_SERVER=$1
-  log_msg 'update_repo' "Running update on $l_SERVER"
+  log_msg 'pull_repo' " ** Running update on $l_SERVER"
   if [ "$REFERENCE" != "" ]
   then
-    $ECHO "singularity exec instance://sizws git -C /home/zws/simg/quagzws-sidef pull -b $REFERENCE" | ssh zws@$l_SERVER
+    SSHCMD="cd $REPOPATH;"'
+git fetch;    
+git checkout origin/'"$REFERENCE"
   else
-    $ECHO "singularity exec instance://sizws git -C /home/zws/simg/quagzws-sidef pull" | ssh zws@$l_SERVER
+    SSHCMD="QTSPDIR=$REPOPATH;"' \
+git -C "$QTSPDIR" pull '"$REPOURL"
   fi
+  log_msg 'pull_repo' " ** SSHCMD: $SSHCMD"
+  ssh $REMOTEUSER@$l_SERVER "$SSHCMD"
 }
 
 #' ### Update repository on local server
@@ -114,25 +124,17 @@ update_repo () {
 #' then we do not need to use ssh. Furthermore it might be important to check
 #' whether we are inside of the container or not.
 #+ local-update-repo
-local_update_repo () {
-  log_msg 'local_update_repo' "Running update on $SERVER"
+local_pull_repo () {
+  log_msg 'local_pull_repo' "Running update on $SERVER"
+  QTSPDIR=$REPOPATH
+
   # check whether we are inside of a singularity container
-  if [ `env | grep SINGULARITY | wc -l` == "0" ]
+  if [ "$REFERENCE" != "" ]
   then
-    if [ "$REFERENCE" != "" ]
-    then
-      singularity exec instance://sizws git -C /home/zws/simg/quagzws-sidef pull -b $REFERENCE
-    else
-      singularity exec instance://sizws git -C /home/zws/simg/quagzws-sidef pull
-    fi
+    git -C "$QTSPDIR" pull "$REPOURL" -b "$REFERENCE"
   else
-    if [ "$REFERENCE" != "" ]
-    then
-      git -C /home/zws/simg/quagzws-sidef pull -b $REFERENCE
-    else
-      git -C /home/zws/simg/quagzws-sidef pull
-    fi  
-  fi
+    git -C "$QTSPDIR" pull "$REPOURL"
+  fi  
 }
 
 #' ## Main Body of Script
@@ -148,7 +150,7 @@ start_msg
 SERVERS=(beverin castor niesen speer)
 SERVERNAME=""
 REFERENCE=""
-while getopts ":b:s:h" FLAG; do
+while getopts ":b:s:u:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
@@ -158,6 +160,9 @@ while getopts ":b:s:h" FLAG; do
       ;;
     s)
       SERVERNAME=$OPTARG
+      ;;
+    u)
+      REMOTEUSER=$OPTARG
       ;;
     :)
       usage "-$OPTARG requires an argument"
@@ -171,6 +176,12 @@ done
 shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 
 
+REPONAME='quagzws-sidef'
+REPOROOT=/home/${REMOTEUSER}/simg
+REPOPATH=$REPOROOT/$REPONAME
+REPOURL="https://github.com/pvrqualitasag/${REPONAME}.git"
+
+
 #' ## Run Updates
 #' Decide whether to run the update on one server or on all servers on the list
 if [ "$SERVERNAME" != "" ]
@@ -178,18 +189,18 @@ then
   # if this script is called from $SERVERNAME, do local update
   if [ "$SERVERNAME" == "$SERVER" ]
   then
-    local_update_repo
+    local_pull_repo
   else
-    update_repo $SERVERNAME
+    pull_repo $SERVERNAME
   fi  
 else
   for s in ${SERVERS[@]}
   do
     if [ "$s" == "$SERVER" ]
     then
-      local_update_repo
+      local_pull_repo
     else
-      update_repo $s
+      pull_repo $s
     fi  
     sleep 2
   done
