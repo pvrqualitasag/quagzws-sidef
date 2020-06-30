@@ -17,7 +17,9 @@ if (!exists("force_update")) force_update <- FALSE
 #' The following chunk reads the list of cran packages to be installed, if any and installs the packages.
 #+ cran-pkg-def
 if (exists("cran_pkg") && file.exists(cran_pkg)){
-  vec_pinst_cran <- readLines(con = file(cran_pkg))
+  cran_con <- file(cran_pkg)
+  vec_pinst_cran <- readLines(con = cran_con)
+  close(cran_con)
   # exclude that packages already installed from the list, if update is not forced
   if (!force_update)
     vec_pinst_cran <- vec_pinst_cran[!vec_pinst_cran %in% installed.packages()]
@@ -33,12 +35,34 @@ if (exists("cran_pkg") && file.exists(cran_pkg)){
   
 }
 
+#' ### CRAN-Archives
+#' Packages to be installed from cran-archives
+#+ cran-archive-pkg-def
+if (exists("carch_pkg") && file.exists(carch_pkg)){
+  carch_con <- file(carch_pkg)
+  vec_pinst_carch <- readlines(con = carch_con)
+  close(carch_con)
+  # exclude packages which are already installed, except, force_update is specified
+  if (!force_update)
+    vec_pinst_carch <- vec_pinst_carch[!vec_pinst_carch %in% installed.packages()]
+  
+  # installation
+  if (length(vec_pinst_carch) > 0){
+    for (p in vec_pinst_carch){
+      remotes::install_url(url = p, upgrade = 'never')
+    }
+  }
+    
+    
+}
 
 #' ### Github
 #' Packages from gitgub are read from a file and are installed
 #+ ghub-pkg-def
 if (exists("ghub_pkg") && file.exists(ghub_pkg)){
-  vec_repo_ghub <- readLines(con = file(ghub_pkg))
+  con_repo_ghub <- file(ghub_pkg)
+  vec_repo_ghub <- readLines(con = con_repo_ghub)
+  close(con_repo_ghub)
   vec_pkg_ghub <- basename(vec_repo_ghub)
   # check whether update is forced
   if (!force_update)
@@ -52,7 +76,9 @@ if (exists("ghub_pkg") && file.exists(ghub_pkg)){
 #' Local packages are read from a file and installed
 #+ local-pkg
 if (exists("local_pkg") && file.exists(local_pkg)){
-  vec_repo_local <- readLines(con = file(local_pkg))
+  con_repo_local <- file(local_pkg)
+  vec_repo_local <- readLines(con = con_repo_local)
+  close(con_repo_local)
   vec_pkg_local <- basename(vec_repo_local)
   # check whether update is forced
   if (!force_update)

@@ -58,7 +58,14 @@
 #' 
 #' The above statements runs the installation of the local R-packages on the  
 #' remote servers specified in the script by default.
-#' 
+#'
+#' In case, a package is already installed and should be updated, then the commandline 
+#' option -f can specified.
+#'
+#' ```
+#' $ ./bash/update_rpkg.sh -i sizws -l /home/zws/simg/quagzws-sidef/inst/extdata/input/local_pkg.txt -f
+#' ```
+#'
 #' ## Set Directives
 #' General behavior of the script is driven by the following settings
 #+ bash-env-setting, eval=FALSE
@@ -93,6 +100,7 @@ SERVER=`hostname`                          # put hostname of server in variable 
 SIMGROOT=/home/zws/simg
 RPKGSCRIPTDEFAULT=$SIMGROOT/quagzws-sidef/R/pkg_install_simg.R
 CRANPKGDEFAULT=$SIMGROOT/quagzws-sidef/inst/extdata/input/cran_pkg.txt
+CARCHPKGDEFAULT=$SIMGROOT/quagzws-sidef/inst/extdata/input/carch_pkg.txt
 GHUBPKGDEFAULT=$SIMGROOT/quagzws-sidef/inst/extdata/input/ghub_pkg.txt
 LOCALPKGDEFAULT=$SIMGROOT/quagzws-sidef/inst/extdata/input/local_pkg.txt
 
@@ -106,16 +114,17 @@ LOCALPKGDEFAULT=$SIMGROOT/quagzws-sidef/inst/extdata/input/local_pkg.txt
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -c <cran_pkg_input> -d -g <github_pkg_input> -i <instance_name> -l <local_pkg_input> -p <pkg_install_script> -r <r_lib_dir> -s <remote_server>"
-  $ECHO "  where -c <cran_pkg_input>      --  names of cran packages"
-  $ECHO "        -d                       --  use defaults for input files"
-  $ECHO "        -f                       --  force r-pkg update"
-  $ECHO "        -g <github_pkg_input>    --  names of github packages"
-  $ECHO "        -i <instance_name>       --  instance name"
-  $ECHO "        -l <local_pkg_input>     --  directories of local packages"
-  $ECHO "        -p <pkg_install_script>  --  package install script"
-  $ECHO "        -r <r_lib_dir>           --  R library directory"
-  $ECHO "        -s <remote_server>       --  hostname of remote server"
+  $ECHO "Usage: $SCRIPT -c <cran_pkg_input> -d -g <github_pkg_input> -i <instance_name> -k <cran_archive_pkg_input> -l <local_pkg_input> -p <pkg_install_script> -r <r_lib_dir> -s <remote_server>"
+  $ECHO "  where -c <cran_pkg_input>          --  names of cran packages"
+  $ECHO "        -d                           --  use defaults for input files"
+  $ECHO "        -f                           --  force r-pkg update"
+  $ECHO "        -g <github_pkg_input>        --  names of github packages"
+  $ECHO "        -i <instance_name>           --  instance name"
+  $ECHO "        -k <cran_archive_pkg_input>  --  url of packages from cran-archives to install old versions"
+  $ECHO "        -l <local_pkg_input>         --  directories of local packages"
+  $ECHO "        -p <pkg_install_script>      --  package install script"
+  $ECHO "        -r <r_lib_dir>               --  R library directory"
+  $ECHO "        -s <remote_server>           --  hostname of remote server"
   $ECHO ""
   exit 1
 }
@@ -172,16 +181,15 @@ install_rpkg () {
     then
       # install packages from outside of container
       log_msg 'install_rpkg' " ** simg exec install R packages to $RLIBDIR ..."
-      singularity exec instance://$INSTANCENAME R -e "force_update<-${FORCEUPDATE};.libPaths('$RLIBDIR');cran_pkg<-'$CRANPKG';ghub_pkg<-'$GHUBPKG';local_pkg<-'$LOCALPKG';source( '$RPKGSCRIPT' )" --vanilla --no-save
+      singularity exec instance://$INSTANCENAME R -e "force_update<-${FORCEUPDATE};.libPaths('$RLIBDIR');cran_pkg<-'$CRANPKG';carch_pkg<-'$CARCHPKG';ghub_pkg<-'$GHUBPKG';local_pkg<-'$LOCALPKG';source( '$RPKGSCRIPT' )" --vanilla --no-save
     else
       # install packages from inside of container
       log_msg 'install_rpkg' " ** install R packages to $RLIBDIR ..."
-      R -e "force_update<-${FORCEUPDATE};.libPaths('$RLIBDIR');cran_pkg<-'$CRANPKG';ghub_pkg<-'$GHUBPKG';local_pkg<-'$LOCALPKG';source( '$RPKGSCRIPT' )" --vanilla --no-save
+      R -e "force_update<-${FORCEUPDATE};.libPaths('$RLIBDIR');cran_pkg<-'$CRANPKG';carch_pkg<-'$CARCHPKG';ghub_pkg<-'$GHUBPKG';local_pkg<-'$LOCALPKG';source( '$RPKGSCRIPT' )" --vanilla --no-save
     fi
   else
-    ssh zws@$l_REMOTESERVER "if [ ! -d \"$RLIBDIR\" ];then  echo \" * r-lib-dir: $RLIBDIR not found ==> create it ...\";mkdir -p $RLIBDIR;fi"
     log_msg 'install_rpkg' " ** Install R packages to $RLIBDIR on server $l_REMOTESERVER ..."
-    ssh zws@$l_REMOTESERVER "singularity exec instance://$INSTANCENAME R -e \"force_update<-${FORCEUPDATE};.libPaths('$RLIBDIR');cran_pkg<-'$CRANPKG';ghub_pkg<-'$GHUBPKG';local_pkg<-'$LOCALPKG';source( '$RPKGSCRIPT' )\" --vanilla --no-save"
+    ssh zws@$l_REMOTESERVER "singularity exec instance://$INSTANCENAME R -e \"force_update<-${FORCEUPDATE};.libPaths('$RLIBDIR');cran_pkg<-'$CRANPKG';carch_pkg<-'$CARCHPKG';ghub_pkg<-'$GHUBPKG';local_pkg<-'$LOCALPKG';source( '$RPKGSCRIPT' )\" --vanilla --no-save"
   fi
 }
 
@@ -204,11 +212,12 @@ RLIBDIR="/home/zws/lib/R/library"
 SIMGROOT=/home/zws/simg
 RPKGSCRIPT=$RPKGSCRIPTDEFAULT
 CRANPKG=""
+CARCHPKG=""
 GHUBPKG=""
 LOCALPKG=""
 USEDEFAULT=""
 FORCEUPDATE="FALSE"
-while getopts ":c:dfg:i:l:p:r:s:h" FLAG; do
+while getopts ":c:dfg:i:k:l:p:r:s:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
@@ -227,6 +236,9 @@ while getopts ":c:dfg:i:l:p:r:s:h" FLAG; do
       ;;
     i) 
       INSTANCENAME=$OPTARG
+      ;;
+    k)
+      CARCHPKG=$OPTARG
       ;;
     l)
       LOCALPKG=$OPTARG
@@ -275,6 +287,11 @@ then
   then
     log_msg $SCRIPT " * Using default values for cran package input ..."
     CRANPKG=$CRANPKGDEFAULT
+  fi
+  if [ "$CARCHPKG" == "" ]
+  then
+    log_msg $SCRIPT " * Using default values for cran-archive package input ..."
+    CARCHPKG=$CARCHPKGDEFAULT
   fi
   if [ "$GHUBPKG" == "" ]
   then

@@ -7,7 +7,6 @@ foreach
 gridExtra
 MASS
 plyr
-dplyr
 stringdist
 rmarkdown
 knitr
@@ -17,7 +16,6 @@ LaF
 reshape2
 data.table
 bit64
-tidyverse
 cowplot
 qqman
 svglite
@@ -27,3 +25,10 @@ pedigreemm
 xtable
 glmnet
 ISLR
+ggplot2
+tidyr
+readr
+purrr
+tibble
+stringr
+forcats
