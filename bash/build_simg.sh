@@ -149,7 +149,7 @@ SIMGLOG=${SIMGFN}.log
 
 
 ### # start installation
-log_msg $SCRIPT " * Installing based on definition: $SIMGDEF ..."
+log_msg $SCRIPT " * Creating image $SIMGFN based on definition: $SIMGDEF ..."
 sudo singularity build --writable $SIMGFN $SIMGDEF &> $SIMGLOG
 
 
