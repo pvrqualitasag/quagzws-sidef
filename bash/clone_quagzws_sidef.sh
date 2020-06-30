@@ -14,6 +14,9 @@
 #' exec statement takes as argument a shell command which is executed on the singularity instance. 
 #' The shell command contains the `git clone` statement.
 #'
+#' ## Example
+#' ./clone_quagzws_sidef.sh -s 2-htz.quagzws.com -u quagadmin
+#'
 #' ## Bash Settings
 #+ bash-env-setting, eval=FALSE
 set -o errexit    # exit immediately, if single command exits with non-zero status
