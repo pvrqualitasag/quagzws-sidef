@@ -199,7 +199,7 @@ shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 REPONAME='quagzws_sidef'
 REPOROOT=/home/${REMOTEUSER}/simg
 REPOPATH=$REPOROOT/$REPONAME
-REPOURL=https://github.com/pvrqualitasag/${REPONAME}.git
+REPOURL="https://github.com/pvrqualitasag/${REPONAME}.git"
 
 
 #' ## Run clones
