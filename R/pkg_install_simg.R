@@ -40,7 +40,7 @@ if (exists("cran_pkg") && file.exists(cran_pkg)){
 #+ cran-archive-pkg-def
 if (exists("carch_pkg") && file.exists(carch_pkg)){
   carch_con <- file(carch_pkg)
-  vec_pinst_carch <- readlines(con = carch_con)
+  vec_pinst_carch <- readLines(con = carch_con)
   close(carch_con)
   # exclude packages which are already installed, except, force_update is specified
   if (!force_update)
