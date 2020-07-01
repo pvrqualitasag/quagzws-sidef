@@ -13,8 +13,9 @@
 #' Three types of packages are distinguished: 
 #' 
 #' 1. cran-packages
-#' 2. github packages and 
-#' 3. local packages. 
+#' 2. cran-archive packages
+#' 3. github packages and 
+#' 4. local packages. 
 #' 
 #' For each class of packages, an input file with a list 
 #' of packages of the respective class can be specified. 
@@ -42,7 +43,7 @@
 #' are installed on the singularity instance sizws running on 1-htz.
 #' 
 #' ```
-#' $ ./bash/update_rpkg.sh -d -i sizws -s 1-htz.quagzws.com
+#' $ ./bash/update_rpkg.sh -d -i sizws -s 1-htz.quagzws.com -u zws
 #' ```
 #'
 #' The above example assumes that a clone of the `quagzws-sidef` repository 
@@ -114,7 +115,7 @@ LOCALPKGDEFAULT=$SIMGROOT/quagzws-sidef/inst/extdata/input/local_pkg.txt
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -c <cran_pkg_input> -d -g <github_pkg_input> -i <instance_name> -k <cran_archive_pkg_input> -l <local_pkg_input> -p <pkg_install_script> -r <r_lib_dir> -s <remote_server>"
+  $ECHO "Usage: $SCRIPT -c <cran_pkg_input> -d -g <github_pkg_input> -i <instance_name> -k <cran_archive_pkg_input> -l <local_pkg_input> -p <pkg_install_script> -r <r_lib_dir> -s <remote_server> -u <remote_user>"
   $ECHO "  where -c <cran_pkg_input>          --  names of cran packages"
   $ECHO "        -d                           --  use defaults for input files"
   $ECHO "        -f                           --  force r-pkg update"
@@ -125,6 +126,7 @@ usage () {
   $ECHO "        -p <pkg_install_script>      --  package install script"
   $ECHO "        -r <r_lib_dir>               --  R library directory"
   $ECHO "        -s <remote_server>           --  hostname of remote server"
+  $ECHO "        -u <remote_user>             --  username on remote server"
   $ECHO ""
   exit 1
 }
@@ -189,7 +191,7 @@ install_rpkg () {
     fi
   else
     log_msg 'install_rpkg' " ** Install R packages to $RLIBDIR on server $l_REMOTESERVER ..."
-    ssh zws@$l_REMOTESERVER "singularity exec instance://$INSTANCENAME R -e \"force_update<-${FORCEUPDATE};.libPaths('$RLIBDIR');cran_pkg<-'$CRANPKG';carch_pkg<-'$CARCHPKG';ghub_pkg<-'$GHUBPKG';local_pkg<-'$LOCALPKG';source( '$RPKGSCRIPT' )\" --vanilla --no-save"
+    ssh ${REMOTEUSER}@${l_REMOTESERVER} "singularity exec instance://$INSTANCENAME R -e \"force_update<-${FORCEUPDATE};.libPaths('$RLIBDIR');cran_pkg<-'$CRANPKG';carch_pkg<-'$CARCHPKG';ghub_pkg<-'$GHUBPKG';local_pkg<-'$LOCALPKG';source( '$RPKGSCRIPT' )\" --vanilla --no-save"
   fi
 }
 
@@ -208,8 +210,9 @@ start_msg
 REMOTESERVERS=(beverin castor niesen speer)
 REMOTESERVERNAME=""
 INSTANCENAME=""
-RLIBDIR="/home/zws/lib/R/library"
-SIMGROOT=/home/zws/simg
+REMOTEUSER=zws
+RLIBDIR="/home/${REMOTEUSER}/lib/R/library"
+SIMGROOT=/home/${REMOTEUSER}/simg
 RPKGSCRIPT=$RPKGSCRIPTDEFAULT
 CRANPKG=""
 CARCHPKG=""
@@ -217,7 +220,7 @@ GHUBPKG=""
 LOCALPKG=""
 USEDEFAULT=""
 FORCEUPDATE="FALSE"
-while getopts ":c:dfg:i:k:l:p:r:s:h" FLAG; do
+while getopts ":c:dfg:i:k:l:p:r:s:u:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
@@ -256,6 +259,9 @@ while getopts ":c:dfg:i:k:l:p:r:s:h" FLAG; do
       ;;
     s)
       REMOTESERVERNAME=$OPTARG
+      ;;
+    u)
+      REMOTEUSER=$OPTARG
       ;;
     :)
       usage "-$OPTARG requires an argument"
