@@ -316,9 +316,7 @@ shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 if test "$IMAGEPATH" == ""; then
   usage "-n <image_file_path> variable not defined"
 fi
-if test "$SHUBURI" == ""; then
-  usage "-s <shub_uri> variable not defined"
-fi
+
 
 #' ## Image Directory and Image Name
 #' In case when $IMAGEPATH contains a directory path, we use the dirname 
@@ -348,10 +346,14 @@ cd $IMGDIR
 #' At some point, we had difficulties when $IMAGENAME contained also a path.
 #' Most likely it is safer to just give an name of the image file. 
 #+ image-pull, eval=FALSE
-if [ -f "$IMAGENAME" ]
+if [ -f "$IMAGEPATH" ]
 then
-  log_msg $SCRIPT " * Found image: $IMAGENAME ..."
+  log_msg $SCRIPT " * Found image: $IMAGEPATH ..."
 else
+  # if $IMAGEPATH is not found, then it must be pulled from shub
+  if test "$SHUBURI" == ""; then
+    usage "-s <shub_uri> variable not defined"
+  fi
   simg_pull
 fi
 
