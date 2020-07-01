@@ -1,20 +1,20 @@
 #!/bin/bash
 #' ---
-#' title: Init Local R-Package Directory Structure
-#' date:  2020-07-01 15:30:06
+#' title: Move Local R-Packages
+#' date:  2020-07-01 15:59:10
 #' author: Peter von Rohr
 #' ---
 #' ## Purpose
-#' Make a deployment of local R-packages as seamless as possible.
+#' Local R-packages should be deployed via copying the sources to remote servers.
 #'
 #' ## Description
-#' Some R-packages exist only as source code in a given directory. From these directories the packages are installed. To be able to move the source code from a given source onto a new server this script is used to create the empty directory structure. 
+#' Local R-packages built from sources that are available from local sources are deployed by moving the sources to remote servers.
 #'
 #' ## Details
-#' The information where the source code will be stored is taken from the input file local_pkg.txt.
+#' The deployment is done by copying the sources via scp.
 #'
 #' ## Example
-#' ./init_local_rpkg.sh -l <local_rpkg_input>
+#' ./move_local_rpkg_source.sh -l <local_rpkg> 
 #'
 #' ## Set Directives
 #' General behavior of the script is driven by the following settings
@@ -45,13 +45,14 @@ INSTALLDIR=`$DIRNAME ${BASH_SOURCE[0]}`    # installation dir of bashtools on ho
 #' trace back which output was produced by which script and on which server.
 #+ script-files, eval=FALSE
 SCRIPT=`$BASENAME ${BASH_SOURCE[0]}`       # Set Script Name variable                #
-SERVER=`hostname --fqdn`                   # put hostname of server in variable      #
+SERVER=`hostname`                          # put hostname of server in variable      #
 
 #' ### Defaults
 #' Default values for variables
 #+ default-values
 SIMGROOT=/home/zws/simg
 LOCALPKGDEFAULT=$SIMGROOT/quagzws-sidef/inst/extdata/input/local_pkg.txt
+
 
 
 #' ## Functions
@@ -63,8 +64,10 @@ LOCALPKGDEFAULT=$SIMGROOT/quagzws-sidef/inst/extdata/input/local_pkg.txt
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -l <local_rpkg_input>"
+  $ECHO "Usage: $SCRIPT -l <local_rpkg_input> -s <remote_server> -u <remote_user>"
   $ECHO "  where -l <local_rpkg_input>  --  input file with paths to local R-packages"
+  $ECHO "        -s <remote_server>     --  remote server"
+  $ECHO "        -u <remote_user>       --  user on remote server"
   $ECHO ""
   exit 1
 }
@@ -101,19 +104,6 @@ log_msg () {
   $ECHO "[${l_RIGHTNOW} -- ${l_CALLER}] $l_MSG"
 }
 
-#' ### Directory Existence
-#' check whether the specified directory exists, if not create it
-#+ check-exist-dir-create-fun
-check_exist_dir_create () {
-  local l_check_dir=$1
-  if [ ! -d "$l_check_dir" ]
-  then
-    log_msg check_exist_dir_create "CANNOT find directory: $l_check_dir ==> create it"
-    mkdir -p $l_check_dir    
-  fi  
-
-}
-
 
 #' ## Main Body of Script
 #' The main body of the script starts here.
@@ -126,13 +116,21 @@ start_msg
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
 LOCALPKG=""
-while getopts ":l:h" FLAG; do
+REMOTESERVER=""
+REMOTEUSER="zws"
+while getopts ":l:s:u:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
       ;;
     l)
       LOCALPKG=$OPTARG
+      ;;
+    s)
+      REMOTESERVER=$OPTARG
+      ;;
+    u)
+      REMOTEUSER=$OPTARG
       ;;
     :)
       usage "-$OPTARG requires an argument"
@@ -145,24 +143,37 @@ done
 
 shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 
-#' ## Use Defaults
-#' If local_pkg was not specified, take the default value
-#+ argument-default, eval=FALSE
+#' ## Checks for Command Line Arguments
+#' The following statements are used to check whether required arguments
+#' have been assigned with a non-empty value
+#+ argument-test, eval=FALSE
+if test "$REMOTESERVER" == ""; then
+  usage "-s <remote_server> not defined"
+fi
+if test "$REMOTEUSER" == ""; then
+  usage "-u <remote_user> not defined"
+fi
+
+#' ## Default Replacements
+#' Check whether default values must be used
+#+ default-replacements
 if [ "$LOCALPKG" == "" ]
 then
   LOCALPKG=$LOCALPKGDEFAULT
 fi
 
 
-#' ## Create Directory Structure
-#' In a loop over all entries of local_pkg create directories
-#+ create dir
+
+#' ## Move Local R-pkg Source 
+#' In a loop over the entries in local_rpkg, copy the directories
+#+ move-local-rpkg
 cat $LOCALPKG | while read line
 do
   REPODIR=$(dirname $line)
-  log_msg "$SCRIPT" " * Checking repository dirctory: $REPODIR ..."
-  check_exist_dir_create $REPODIR
+  log_msg "$SCRIPT" " * Moving repository sources from: $line to ${REMOTEUSER}@${REMOTESERVER}:${REPODIR} ..."
+  scp -r $line ${REMOTEUSER}@${REMOTESERVER}:${REPODIR}
 done
+
 
 
 
