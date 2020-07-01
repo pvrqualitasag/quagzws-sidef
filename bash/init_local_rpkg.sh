@@ -156,7 +156,7 @@ fi
 #+ create dir
 cat $LOCALPKG | while read line
 do
-  REPODIR=$(basename $line)
+  REPODIR=$(dirname $line)
   log_msg "$SCRIPT" " * Checking repository dirctory: $REPODIR ..."
   check_exist_dir_create $REPODIR
 done
