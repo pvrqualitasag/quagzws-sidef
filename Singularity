@@ -40,7 +40,7 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   apt-get update
   
   # Install R-packages
-  R -e "cran_con<-file('/root/cran_pkg.txt');vec_cran<-readLines(cran_con);close(cran_con);install.packages(pkgs = vec_pinst_cran, repos = 'https://stat.ethz.ch/CRAN/', dependencies = TRUE)"
+  R -e "cran_con<-file('/root/cran_pkg.txt');vec_cran<-readLines(cran_con);close(cran_con);install.packages(pkgs = vec_cran, repos = 'https://stat.ethz.ch/CRAN/', dependencies = TRUE)"
   R -e "carch_con<-file('/root/carch_pkg.txt');vec_carch<-readLines(carch_con);close(carch_con);for (p in vec_carch) remotes::install_url(url = p, upgrade = 'never')"
   rm -rf /root/cran_pkg.txt /root/carch_pkg.txt
 
