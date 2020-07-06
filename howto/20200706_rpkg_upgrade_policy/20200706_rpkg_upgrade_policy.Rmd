@@ -1,0 +1,34 @@
+---
+title: "R-Package Upgrade Policy"
+author: "Peter von Rohr"
+date: "7/6/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Disclaimer
+A policy for the upgrade process of R-packages is defined. 
+
+
+## Current Status
+A set of R-packages (Rpkgs) is installed during the post-installation step of the installation process of a container image on the server. The packages are installed by user 'zws' into the library directory which is local to every server in '/home/zws/lib/R/library'. The advantage of this configuration is that packages can be installed just in time when they are required. The problem is that it is almost impossible to prevent unwanted updates of such packages.
+
+
+## Problem
+One of the problem of the above configuration is that it is impossible to enforce that packages are kept at their initial version of their first installation. An instance of this problem occurred in the SNP-preparation process. As it turned out, the SNP-preparation process has an increased run-time when the R-package 'dplyr' is updated from version '0.8.4' to version '1.0.0'. As a consequence, we want to temporarily freeze the version of the R-package 'dplyr' to '0.8.4'. This means that any attempt of updating R-packages must leave the R-package 'dplyr' at version '0.8.4'. 
+
+
+## Solution
+The solution uses different features of the R-package system. A good reference for the R-package system is http://r-pkgs.had.co.nz/. 
+
+When running R interactively or when running a R-script, the R-system is looking for installed R-packages in different places. These places are defined by a vector of different directories. This vector is obtained by the R-command
+
+```{r, eval=FALSE}
+.libPaths()
+```
+
+
+
