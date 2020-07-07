@@ -2,7 +2,13 @@
 # setting library search path depending on container name
 senv <- Sys.getenv()
 name_sc <- 'SINGULARITY_CONTAINER'
+# check whether simg container name was found
 ldir <- ifelse(name_sc %in% names(senv), tools::file_path_sans_ext(senv[[name_sc]]), '')
-if (ldir != '') .libPaths(c(.libPaths, file.path({RLIBDIR}, ldir)))
+# if simg container name exists, use it in lib search path
+if (ldir != '') {
+  lpath <- file.path({RLIBDIR}, ldir)
+  if (! dir.exists(lpath)) dir.create(lpath, recursive = TRUE)
+  .libPaths(c(.libPaths, lpath))
+}  
 # setting environment variable JAVA_HOME
 Sys.setenv(JAVA_HOME = '/opt/openjdk/jdk8u222-b10')
