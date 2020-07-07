@@ -122,6 +122,7 @@ rename_file_on_exist () {
 #+ update-rprofile-fun
 update_rprofile () {
   local l_HOST=$1
+  log_msg ' * update_rprofile' " * Running update on server: $l_HOST"
   # in case, we run this from l_HOST, the update can be done locally, 
   # otherwise, we have to run it over ssh.
   if [ "$l_HOST" == "$SERVER" ]
