@@ -27,7 +27,6 @@
 #' 
 #' ## Example
 #' The following call does just a pull of a new container image
-#' 
 #' ```
 #' $ SIMGDIR=/home/zws/simg
 #' $ if [ ! -d "$SIMGDIR" ]; then mkdir -p $SIMGDIR;fi
@@ -37,8 +36,10 @@
 #'                                           -i sidev \
 #'                                           -n $SIMGDIR/img/ubuntu1804lts/`date +"%Y%m%d"`_quagzws.simg \
 #'                                           -s shub://pvrqualitasag/quagzws-sidef
-#'                                           -c -l -t
 #' ```
+#'
+#' Adding the options -c -l and -t to the above call, copies the configuration files .bash_aliases, .bashrc, .Rprofile 
+#' and ssmtp.conf from the template directory to their respective directory locations.
 #'
 #' ## Set Directives
 #' General behavior of the script is driven by the following settings
