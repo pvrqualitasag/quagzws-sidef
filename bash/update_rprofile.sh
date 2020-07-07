@@ -63,7 +63,7 @@ usage () {
   $ECHO "        -r <r_lib_dir>            --  r library directory"
   $ECHO "        -s <rprofile_tmpl_source> --  template file for .Rprofile"
   $ECHO "        -t <rprofile_target>      --  target path to .Rprofile"
-  $ECHO "        -f                        --  force update, even if .Rprofile exists"
+  $ECHO "        -f <force_update>         --  force update, even if .Rprofile exists"
   $ECHO "        -b <branch>               --  branch reference"
   $ECHO ""
   exit 1
@@ -145,9 +145,9 @@ update_rprofile () {
   else
     if [ "$BRANCHREF" == '' ]
     then
-      ssh $REMOTEUSER@$l_HOST "$QUAGZWSDIR/bash/update_rprofile.sh -m $l_HOST -u $REMOTEUSER"
+      ssh $REMOTEUSER@$l_HOST "$QUAGZWSDIR/bash/update_rprofile.sh -m $l_HOST -u $REMOTEUSER -f $FORCEUPDATE"
     else
-      ssh $REMOTEUSER@$l_HOST "$QUAGZWSDIR/bash/update_rprofile.sh -m $l_HOST -u $REMOTEUSER -b $BRANCHREF"
+      ssh $REMOTEUSER@$l_HOST "$QUAGZWSDIR/bash/update_rprofile.sh -m $l_HOST -u $REMOTEUSER -f $FORCEUPDATE -b $BRANCHREF"
     fi
   fi
   
@@ -173,7 +173,7 @@ RPROFILETMPL=$QUAGZWSDIR/template/Rprofile
 RPROFILETRG=/home/${REMOTEUSER}/.Rprofile
 FORCEUPDATE=''
 BRANCHREF=''
-while getopts ":b:fm:u:q:r:s:t:h" FLAG; do
+while getopts ":b:f:m:u:q:r:s:t:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
@@ -182,7 +182,7 @@ while getopts ":b:fm:u:q:r:s:t:h" FLAG; do
       BRANCHREF=$OPTARG
       ;;
     f)
-      FORCEUPDATE='true'
+      FORCEUPDATE=$OPTARG
       ;;
     m)
       HOSTSERVER=$OPTARG
