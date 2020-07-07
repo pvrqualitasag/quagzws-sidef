@@ -161,7 +161,7 @@ RLIBDIR="/home/${REMOTEUSER}/lib/R/library"
 RPROFILETMPL=$QUAGZWSDIR/template/Rprofile
 RPROFILETRG=/home/${REMOTEUSER}/.Rprofile
 FORCEUPDATE=''
-while getopts ":f:m:u:q:r:s:t:h" FLAG; do
+while getopts ":fm:u:q:r:s:t:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
