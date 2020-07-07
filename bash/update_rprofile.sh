@@ -44,7 +44,7 @@ INSTALLDIR=`$DIRNAME ${BASH_SOURCE[0]}`    # installation dir of bashtools on ho
 #' trace back which output was produced by which script and on which server.
 #+ script-files, eval=FALSE
 SCRIPT=`$BASENAME ${BASH_SOURCE[0]}`       # Set Script Name variable                #
-SERVER=`hostname`                          # put hostname of server in variable      #
+SERVER=`hostname --fqdn`                          # put hostname of server in variable      #
 
 
 #' ## Functions
@@ -56,7 +56,7 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -m <host_machine>  -u <remote_user> -q <quag_zws_dir> -r <r_lib_dir> -s <rprofile_tmpl_source> -t <rprofile_target> -f"
+  $ECHO "Usage: $SCRIPT -m <host_machine>  -u <remote_user> -q <quag_zws_dir> -r <r_lib_dir> -s <rprofile_tmpl_source> -t <rprofile_target> -f -b <branch>"
   $ECHO "  where -m <host_machine>         --  remote host machine where image is updated"
   $ECHO "        -u <remote_user>          --  remote user on host machine"
   $ECHO "        -q <quag_zws_dir>         --  quagzws source dir"
@@ -64,6 +64,7 @@ usage () {
   $ECHO "        -s <rprofile_tmpl_source> --  template file for .Rprofile"
   $ECHO "        -t <rprofile_target>      --  target path to .Rprofile"
   $ECHO "        -f                        --  force update, even if .Rprofile exists"
+  $ECHO "        -b <branch>               --  branch reference"
   $ECHO ""
   exit 1
 }
@@ -127,7 +128,12 @@ update_rprofile () {
   then
     if [ ! -f "$RPROFILETRG" ] || [ "$FORCEUPDATE" == 'true' ]
     then
-      git -C $QUAGZWSDIR pull
+      if [ "$BRANCHREF" == '' ]
+      then
+        git -C $QUAGZWSDIR pull
+      else
+        git -C $QUAGZWSDIR pull origin $BRANCHREF
+      fi
       # Rprofile
       log_msg 'copy_config' " * Copy Rprofile ..."
       rename_file_on_exist $RPROFILETRG
@@ -137,7 +143,12 @@ update_rprofile () {
      log_msg 'copy_config' " * FOUND $RPROFILETRG ... use -f for forcing an update ..."
     fi
   else
-    ssh $REMOTEUSER@$l_HOST "git -C $QUAGZWSDIR pull;$QUAGZWSDIR/bash/update_rprofile.sh -m $l_HOST"
+    if [ "$BRANCHREF" == '' ]
+    then
+      ssh $REMOTEUSER@$l_HOST "$QUAGZWSDIR/bash/update_rprofile.sh -m $l_HOST -u $REMOTEUSER"
+    else
+      ssh $REMOTEUSER@$l_HOST "$QUAGZWSDIR/bash/update_rprofile.sh -m $l_HOST -u $REMOTEUSER -b $BRANCHREF"
+    fi
   fi
   
 }
@@ -161,10 +172,14 @@ RLIBDIR="/home/${REMOTEUSER}/lib/R/library"
 RPROFILETMPL=$QUAGZWSDIR/template/Rprofile
 RPROFILETRG=/home/${REMOTEUSER}/.Rprofile
 FORCEUPDATE=''
-while getopts ":fm:u:q:r:s:t:h" FLAG; do
+BRANCHREF=''
+while getopts ":b:fm:u:q:r:s:t:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
+      ;;
+    b)
+      BRANCHREF=$OPTARG
       ;;
     f)
       FORCEUPDATE='true'
