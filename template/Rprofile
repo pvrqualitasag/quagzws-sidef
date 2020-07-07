@@ -6,7 +6,7 @@ name_sc <- 'SINGULARITY_CONTAINER'
 ldir <- ifelse(name_sc %in% names(senv), tools::file_path_sans_ext(senv[[name_sc]]), '')
 # if simg container name exists, use it in lib search path
 if (ldir != '') {
-  lpath <- file.path({RLIBDIR}, ldir)
+  lpath <- file.path('{RLIBDIR}', ldir)
   if (! dir.exists(lpath)) dir.create(lpath, recursive = TRUE)
   .libPaths(c(.libPaths, lpath))
 }  
