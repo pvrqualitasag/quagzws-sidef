@@ -1,2 +1,8 @@
-.libPaths("{RLIBDIR}")
+#.libPaths("{RLIBDIR}")
+# setting library search path depending on container name
+senv <- Sys.getenv()
+name_sc <- 'SINGULARITY_CONTAINER'
+ldir <- ifelse(name_sc %in% names(senv), tools::file_path_sans_ext(senv[[name_sc]]), '')
+if (ldir != '') .libPaths(c(.libPaths, file.path({RLIBDIR}, ldir)))
+# setting environment variable JAVA_HOME
 Sys.setenv(JAVA_HOME = '/opt/openjdk/jdk8u222-b10')
