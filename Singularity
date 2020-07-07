@@ -20,13 +20,6 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   apt-get install -y r-base r-base-core r-recommended python python-pip python-numpy python-pandas python-dev python3-pip pandoc gnuplot 
   apt-get update
   
-<<<<<<< HEAD
-  # Install R-packages
-  R -e "cran_con<-file('/root/cran_pkg.txt');vec_cran<-readLines(cran_con);close(cran_con);install.packages(pkgs = vec_cran, repos = 'https://stat.ethz.ch/CRAN/', dependencies = TRUE)"
-  R -e "carch_con<-file('/root/carch_pkg.txt');vec_carch<-readLines(carch_con);close(carch_con);for (p in vec_carch) remotes::install_url(url = p, upgrade = 'never')"
-  rm -rf /root/cran_pkg.txt /root/carch_pkg.txt
-=======
->>>>>>> parent of e887f88... Updated recipe to new version of installing R-packages into the image.
 
   # Install jula from git
   curl -sSL "https://julialang-s3.julialang.org/bin/linux/x64/1.1/julia-1.1.1-linux-x86_64.tar.gz" > julia.tar.gz 
