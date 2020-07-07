@@ -39,7 +39,8 @@
 #' ```
 #'
 #' Adding the options -c -l and -t to the above call, copies the configuration files .bash_aliases, .bashrc, .Rprofile 
-#' and ssmtp.conf from the template directory to their respective directory locations.
+#' and ssmtp.conf from the template directory to their respective directory locations. The option -f forces the copying 
+#' of config files, even if they exist.
 #'
 #' ## Set Directives
 #' General behavior of the script is driven by the following settings
@@ -100,6 +101,7 @@ usage () {
   $ECHO "           -s <shub_uri>         --   URI of image on SHUB"
   $ECHO "  additional option parameters are"
   $ECHO "           -c                    --   Switch to copy config from templates"
+  $ECHO "           -f                    --   Force copy config file, even if they exist"
   $ECHO "           -l                    --   Switch to indicate whether link to simg file should be added"
   $ECHO "           -t                    --   Start the instance from the pulled image"
   $ECHO ""

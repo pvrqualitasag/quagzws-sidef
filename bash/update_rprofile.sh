@@ -14,7 +14,7 @@
 #' When starting up R the statements in .Rprofile are executed. This allows for a configuration of the R-system.
 #'
 #' ## Example
-#' ./update_rprofile -m 1-htz.quagzws.com
+#' ./update_rprofile -m 1-htz.quagzws.com -u zws
 #'
 #' ## Set Directives
 #' General behavior of the script is driven by the following settings
@@ -56,12 +56,14 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -m <host_machine> -q <quag_zws_dir> -r <r_lib_dir> -s <rprofile_tmpl_source> -t <rprofile_target>"
+  $ECHO "Usage: $SCRIPT -m <host_machine>  -u <remote_user> -q <quag_zws_dir> -r <r_lib_dir> -s <rprofile_tmpl_source> -t <rprofile_target> -f"
   $ECHO "  where -m <host_machine>         --  remote host machine where image is updated"
+  $ECHO "        -u <remote_user>          --  remote user on host machine"
   $ECHO "        -q <quag_zws_dir>         --  quagzws source dir"
   $ECHO "        -r <r_lib_dir>            --  r library directory"
   $ECHO "        -s <rprofile_tmpl_source> --  template file for .Rprofile"
   $ECHO "        -t <rprofile_target>      --  target path to .Rprofile"
+  $ECHO "        -f                        --  force update, even if .Rprofile exists"
   $ECHO ""
   exit 1
 }
@@ -123,14 +125,19 @@ update_rprofile () {
   # otherwise, we have to run it over ssh.
   if [ "$l_HOST" == "$SERVER" ]
   then
-    git -C $QUAGZWSDIR pull
-    # Rprofile
-    log_msg 'copy_config' " * Copy Rprofile ..."
-    rename_file_on_exist $RPROFILETRG
-    # use '#' as delimiters for sed, because $RLIBDIR contains a path
-    cat $RPROFILETMPL | sed -e "s#{RLIBDIR}#$RLIBDIR#" > $RPROFILETRG
+    if [ ! -f "$RPROFILETRG" ] || [ "$FORCEUPDATE" == 'true' ]
+    then
+      git -C $QUAGZWSDIR pull
+      # Rprofile
+      log_msg 'copy_config' " * Copy Rprofile ..."
+      rename_file_on_exist $RPROFILETRG
+      # use '#' as delimiters for sed, because $RLIBDIR contains a path
+      cat $RPROFILETMPL | sed -e "s#{RLIBDIR}#$RLIBDIR#" > $RPROFILETRG
+    else
+     log_msg 'copy_config' " * FOUND $RPROFILETRG ... use -f for forcing an update ..."
+    fi
   else
-    ssh zws@$l_HOST "git -C $QUAGZWSDIR pull;$QUAGZWSDIR/bash/update_rprofile.sh -m $l_HOST"
+    ssh $REMOTEUSER@$l_HOST "git -C $QUAGZWSDIR pull;$QUAGZWSDIR/bash/update_rprofile.sh -m $l_HOST"
   fi
   
 }
@@ -147,18 +154,26 @@ start_msg
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
 REMOTESERVERS=(beverin castor niesen speer)
+REMOTEUSER=zws
 HOSTSERVER=""
-QUAGZWSDIR=/home/zws/simg/quagzws-sidef
-RLIBDIR="/home/zws/lib/R/library"
+QUAGZWSDIR=/home/${REMOTEUSER}/simg/quagzws-sidef
+RLIBDIR="/home/${REMOTEUSER}/lib/R/library"
 RPROFILETMPL=$QUAGZWSDIR/template/Rprofile
-RPROFILETRG=/home/zws/.Rprofile
-while getopts ":m:q:r:s:t:h" FLAG; do
+RPROFILETRG=/home/${REMOTEUSER}/.Rprofile
+FORCEUPDATE=''
+while getopts ":f:m:u:q:r:s:t:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
       ;;
+    f)
+      FORCEUPDATE='true'
+      ;;
     m)
       HOSTSERVER=$OPTARG
+      ;;
+    u)
+      REMOTEUSER=$OPTARG
       ;;
     q)
       QUAGZWSDIR=$OPTARG
