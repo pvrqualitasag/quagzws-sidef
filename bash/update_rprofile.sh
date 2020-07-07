@@ -145,9 +145,9 @@ update_rprofile () {
   else
     if [ "$BRANCHREF" == '' ]
     then
-      ssh $REMOTEUSER@$l_HOST "$QUAGZWSDIR/bash/update_rprofile.sh -m $l_HOST -u $REMOTEUSER -f $FORCEUPDATE"
+      ssh ${REMOTEUSER}@$l_HOST "$QUAGZWSDIR/bash/update_rprofile.sh -m $l_HOST -u $REMOTEUSER -f $FORCEUPDATE"
     else
-      ssh $REMOTEUSER@$l_HOST "$QUAGZWSDIR/bash/update_rprofile.sh -m $l_HOST -u $REMOTEUSER -f $FORCEUPDATE -b $BRANCHREF"
+      ssh ${REMOTEUSER}@$l_HOST "$QUAGZWSDIR/bash/update_rprofile.sh -m $l_HOST -u $REMOTEUSER -f $FORCEUPDATE -b $BRANCHREF"
     fi
   fi
   
