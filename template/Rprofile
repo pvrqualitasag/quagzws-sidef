@@ -8,7 +8,7 @@ ldir <- ifelse(name_sc %in% names(senv), tools::file_path_sans_ext(senv[[name_sc
 if (ldir != '') {
   lpath <- file.path('{RLIBDIR}', ldir)
   if (! dir.exists(lpath)) dir.create(lpath, recursive = TRUE)
-  .libPaths(c(.libPaths, lpath))
+  .libPaths(c(.libPaths(), lpath))
 }  
 # setting environment variable JAVA_HOME
 Sys.setenv(JAVA_HOME = '/opt/openjdk/jdk8u222-b10')
