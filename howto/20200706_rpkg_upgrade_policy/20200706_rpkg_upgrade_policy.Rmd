@@ -40,7 +40,7 @@ On an R-system as it comes out of the box, the above commands returns
 
 The library search path as obtained by the above command, can be changed by the same command '.libPaths(new)' by giving the new search path as argument 'new'. This mechanism is by specifying a library search path in the '.Rprofile' startup file. 
 
-In case, we want to run different images on the same host, we have to specify for each image a different local R library search path. This can be done by including the name of the container image into the local R library search path. This must already be setup in the container post-installation step.
+In case, we want to run different images on the same host, we have to specify for each image a different local R library search path. This can be done by including the name of the container image into the local R library search path. This must already be setup in the container post-installation step. The definition of the R library search path is included in the '.Rprofile' startup file. The '.Rprofile' file can automatically be generated using the script 'update_rprofile.sh'. 
 
 
 ## Solution

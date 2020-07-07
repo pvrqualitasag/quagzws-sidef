@@ -109,8 +109,7 @@ pull_repo () {
   if [ "$REFERENCE" != "" ]
   then
     SSHCMD="cd $REPOPATH;"'
-git fetch;    
-git checkout origin/'"$REFERENCE"
+git pull origin '"$REFERENCE"
   else
     SSHCMD="QTSPDIR=$REPOPATH;"' \
 git -C "$QTSPDIR" pull '"$REPOURL"

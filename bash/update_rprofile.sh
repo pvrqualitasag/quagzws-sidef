@@ -56,7 +56,7 @@ SERVER=`hostname -f`                          # put hostname of server in variab
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -m <host_machine>  -u <remote_user> -q <quag_zws_dir> -r <r_lib_dir> -s <rprofile_tmpl_source> -t <rprofile_target> -f -b <branch>"
+  $ECHO "Usage: $SCRIPT -m <host_machine>  -u <remote_user> -q <quag_zws_dir> -r <r_lib_dir> -s <rprofile_tmpl_source> -t <rprofile_target> -f <force_update>"
   $ECHO "  where -m <host_machine>         --  remote host machine where image is updated"
   $ECHO "        -u <remote_user>          --  remote user on host machine"
   $ECHO "        -q <quag_zws_dir>         --  quagzws source dir"
@@ -64,7 +64,6 @@ usage () {
   $ECHO "        -s <rprofile_tmpl_source> --  template file for .Rprofile"
   $ECHO "        -t <rprofile_target>      --  target path to .Rprofile"
   $ECHO "        -f <force_update>         --  force update, even if .Rprofile exists"
-  $ECHO "        -b <branch>               --  branch reference"
   $ECHO ""
   exit 1
 }
@@ -129,12 +128,6 @@ update_rprofile () {
   then
     if [ ! -f "$RPROFILETRG" ] || [ "$FORCEUPDATE" == 'true' ]
     then
-      if [ "$BRANCHREF" == '' ]
-      then
-        git -C $QUAGZWSDIR pull
-      else
-        git -C $QUAGZWSDIR pull origin $BRANCHREF
-      fi
       # Rprofile
       log_msg 'copy_config' " * Copy Rprofile ..."
       rename_file_on_exist $RPROFILETRG
@@ -144,12 +137,7 @@ update_rprofile () {
      log_msg 'copy_config' " * FOUND $RPROFILETRG ... use -f for forcing an update ..."
     fi
   else
-    if [ "$BRANCHREF" == '' ]
-    then
-      ssh ${REMOTEUSER}@$l_HOST "$QUAGZWSDIR/bash/update_rprofile.sh -m $l_HOST -u $REMOTEUSER -f $FORCEUPDATE"
-    else
-      ssh ${REMOTEUSER}@$l_HOST "$QUAGZWSDIR/bash/update_rprofile.sh -m $l_HOST -u $REMOTEUSER -f $FORCEUPDATE -b $BRANCHREF"
-    fi
+    ssh ${REMOTEUSER}@$l_HOST "$QUAGZWSDIR/bash/update_rprofile.sh -m $l_HOST -u $REMOTEUSER -f $FORCEUPDATE"
   fi
   
 }
@@ -173,14 +161,10 @@ RLIBDIR="/home/${REMOTEUSER}/lib/R/library"
 RPROFILETMPL=$QUAGZWSDIR/template/Rprofile
 RPROFILETRG=/home/${REMOTEUSER}/.Rprofile
 FORCEUPDATE=''
-BRANCHREF=''
-while getopts ":b:f:m:u:q:r:s:t:h" FLAG; do
+while getopts ":f:m:u:q:r:s:t:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
-      ;;
-    b)
-      BRANCHREF=$OPTARG
       ;;
     f)
       FORCEUPDATE=$OPTARG
