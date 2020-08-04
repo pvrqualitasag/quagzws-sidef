@@ -36,6 +36,8 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   # numpy and pandas for py3
   /usr/bin/pip3 install pandas
   /usr/bin/pip3 install numpy
+  /usr/bin/pip3 install xlrd
+  /usr/bin/pip3 install openpyxl
 
   # dconf and gnuplot problem
   mkdir -p /run/user/501
