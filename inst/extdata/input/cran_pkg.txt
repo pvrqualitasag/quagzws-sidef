@@ -32,3 +32,5 @@ purrr
 tibble
 stringr
 forcats
+pryr
+
