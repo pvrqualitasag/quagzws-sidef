@@ -36,7 +36,8 @@ if (! require(biomaRt))
 library("biomaRt")
 
 #' Other servers
-for s in beverin ßcastor dom niesen speer
+#for s in beverin castor dom niesen speer
+for s in castor
 do
   echo " * Running on server $s"
   ssh zws@$s 'singularity exec instance://sizws R -e "if (! require(BiocManager)) install.packages(\"BiocManager\", dependencies = TRUE, repos = \"https://cran.rstudio.com\")"'
