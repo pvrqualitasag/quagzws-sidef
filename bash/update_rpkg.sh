@@ -115,7 +115,8 @@ LOCALPKGDEFAULT=$SIMGROOT/quagzws-sidef/inst/extdata/input/local_pkg.txt
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -c <cran_pkg_input> -d -g <github_pkg_input> -i <instance_name> -k <cran_archive_pkg_input> -l <local_pkg_input> -p <pkg_install_script> -r <r_lib_dir> -s <remote_server> -u <remote_user>"
+  $ECHO "Usage: $SCRIPT -a -c <cran_pkg_input> -d -g <github_pkg_input> -i <instance_name> -k <cran_archive_pkg_input> -l <local_pkg_input> -p <pkg_install_script> -r <r_lib_dir> -s <remote_server> -u <remote_user>"
+  $ECHO "  where -a                           --  flag to run script on all servers"
   $ECHO "  where -c <cran_pkg_input>          --  names of cran packages"
   $ECHO "        -d                           --  use defaults for input files"
   $ECHO "        -f                           --  force r-pkg update"
@@ -125,7 +126,7 @@ usage () {
   $ECHO "        -l <local_pkg_input>         --  directories of local packages"
   $ECHO "        -p <pkg_install_script>      --  package install script"
   $ECHO "        -r <r_lib_dir>               --  R library directory"
-  $ECHO "        -s <remote_server>           --  hostname of remote server"
+  $ECHO "        -s <remote_server>           --  hostname of remote server (required, if -a is not specified)"
   $ECHO "        -u <remote_user>             --  username on remote server"
   $ECHO ""
   exit 1
@@ -207,7 +208,7 @@ start_msg
 #' getopts. This is required to get my unrecognized option code to work. Before 
 #' the args parsing loop, default values for the variables are set.
 #+ getopts-parsing, eval=FALSE
-REMOTESERVERS=(beverin castor niesen speer)
+REMOTESERVERS=(beverin castor dom niesen speer)
 REMOTESERVERNAME=""
 INSTANCENAME=""
 REMOTEUSER=zws
@@ -220,10 +221,14 @@ GHUBPKG=""
 LOCALPKG=""
 USEDEFAULT=""
 FORCEUPDATE="FALSE"
-while getopts ":c:dfg:i:k:l:p:r:s:u:h" FLAG; do
+ALLSERVERS="FALSE"
+while getopts ":ac:dfg:i:k:l:p:r:s:u:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
+      ;;
+    a)
+      ALLSERVERS="TRUE"
       ;;
     c)
       CRANPKG=$OPTARG
@@ -315,15 +320,20 @@ fi
 #' R-packages specified via different input files are installed on
 #' either just one server or on a collection of servers.
 #+ install-rpack, eval=FALSE
-if [ "$REMOTESERVERNAME" != "" ]
+if [ "$ALLSERVERS" == "TRUE" ]
 then
-  install_rpkg $REMOTESERVERNAME
-else
   for s in ${REMOTESERVERS[@]}
   do
     install_rpkg $s
     sleep 2
   done
+else
+  if [ "$REMOTESERVERNAME" != "" ]
+  then
+    install_rpkg $REMOTESERVERNAME
+  else
+    log_msg "$SCRIPT" " * Option -a for running the script on all servers was not specified and no server name specified ==> stop here ..."
+  fi
 fi
 
 
