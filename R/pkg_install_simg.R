@@ -26,7 +26,7 @@ if (exists("cran_pkg") && file.exists(cran_pkg)){
   
   # installation
   if (length(vec_pinst_cran) > 0) 
-    install.packages(pkgs = vec_pinst_cran, repos = 'https://stat.ethz.ch/CRAN/', dependencies = TRUE)
+    install.packages(pkgs = vec_pinst_cran, repos = 'https://stat.ethz.ch/CRAN/', dependencies = FALSE)
   
   # installation of tinytex
   if ('tinytex' %in% vec_pinst_cran){
@@ -49,7 +49,7 @@ if (exists("carch_pkg") && file.exists(carch_pkg)){
   # installation
   if (length(vec_pinst_carch) > 0){
     for (p in vec_pinst_carch){
-      remotes::install_url(url = p, upgrade = 'never')
+      remotes::install_url(url = p, dependencies = FALSE, upgrade = 'never')
     }
   }
     
@@ -68,7 +68,7 @@ if (exists("ghub_pkg") && file.exists(ghub_pkg)){
   if (!force_update)
     vec_repo_ghub <- vec_repo_ghub[!vec_pkg_ghub %in% installed.packages()]
   if (length(vec_repo_ghub) > 0) 
-    remotes::install_github(vec_repo_ghub, upgrade = 'always')
+    remotes::install_github(vec_repo_ghub, dependencies = FALSE, upgrade = 'never')
 }
 
 
@@ -86,7 +86,7 @@ if (exists("local_pkg") && file.exists(local_pkg)){
   # loop over local packages
   for (p in seq_along(vec_repo_local)){
     pkg <- vec_repo_local[p]
-    remotes::install_local(path = pkg, build_vignettes = FALSE)
+    remotes::install_local(path = pkg, dependencies = FALSE, upgrade = 'never', force = force_update, build_vignettes = FALSE)
   }
 }
   
