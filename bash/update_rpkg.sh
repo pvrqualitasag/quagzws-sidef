@@ -95,8 +95,12 @@ INSTALLDIR=`$DIRNAME ${BASH_SOURCE[0]}`    # installation dir of bashtools on ho
 #' trace back which output was produced by which script and on which server.
 #+ script-files, eval=FALSE
 SCRIPT=`$BASENAME ${BASH_SOURCE[0]}`       # Set Script Name variable                #
-SERVER=`hostname --fqdn`                   # put hostname of server in variable      #
-
+if [ "$OSTYPE" == 'linux-gnu' ]
+then
+  SERVER=`hostname --fqdn`                   # put hostname of server in variable      #
+else
+  SERVER=`hostname`
+fi
 
 SIMGROOT=/home/zws/simg
 RPKGSCRIPTDEFAULT=$SIMGROOT/quagzws-sidef/R/pkg_install_simg.R
