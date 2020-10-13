@@ -14,6 +14,10 @@
 #' exec statement takes as argument a shell command which is executed on the singularity instance. 
 #' The shell command contains the `git pull` statement.
 #'
+#' ## Details
+#' For security reasons, the update is only done on all servers, if the -a option is 
+#' specified.
+#'
 #' ## Bash Settings
 #+ bash-env-setting, eval=FALSE
 set -o errexit    # exit immediately, if single command exits with non-zero status
@@ -54,10 +58,11 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT  -b <branch_reference> -s <server_name> -u <remote_user>"
+  $ECHO "Usage: $SCRIPT  -b <branch_reference> -s <server_name> -u <remote_user> -a"
   $ECHO "  where -s <server_name>     --  optional, run package update on single server"
   $ECHO "        -b <repo_reference>  --  optional, update to a branch reference"
   $ECHO "        -u <remote_user>     --  optional, username of remote user"
+  $ECHO "        -a                   --  optional, run script on all servers specified"
   $ECHO ""
   exit 1
 }
@@ -147,13 +152,17 @@ start_msg
 #' Notice there is no ":" after "h". The leading ":" suppresses error messages from
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
-SERVERS=(beverin castor niesen speer)
-SERVERNAME=""
-REFERENCE=""
-while getopts ":b:s:u:h" FLAG; do
+SERVERS=(beverin castor dom niesen speer)
+SERVERNAME=''
+REFERENCE=''
+ALLSERVERS='false'
+while getopts ":ab:s:u:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
+      ;;
+    a)
+      ALLSERVERS='true'
       ;;
     b)
       REFERENCE=$OPTARG
@@ -194,16 +203,21 @@ then
     pull_repo $SERVERNAME
   fi  
 else
-  for s in ${SERVERS[@]}
-  do
-    if [ "$s" == "$SERVER" ]
-    then
-      local_pull_repo
-    else
-      pull_repo $s
-    fi  
-    sleep 2
-  done
+  if [ "$ALLSERVERS" == 'true' ]
+  then
+    for s in ${SERVERS[@]}
+    do
+      if [ "$s" == "$SERVER" ]
+      then
+        local_pull_repo
+      else
+        pull_repo $s
+      fi  
+      sleep 2
+    done
+  else
+    log_msg "$SCRIPT" ' * No server name is given and option -a was not specified, hence do nothing ...'
+  fi
 fi
 
 
