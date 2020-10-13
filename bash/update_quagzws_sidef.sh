@@ -153,6 +153,7 @@ start_msg
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
 SERVERS=(beverin castor dom niesen speer)
+REMOTEUSER=zws
 SERVERNAME=''
 REFERENCE=''
 ALLSERVERS='false'
