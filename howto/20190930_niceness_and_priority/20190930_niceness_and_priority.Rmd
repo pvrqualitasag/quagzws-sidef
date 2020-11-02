@@ -1,8 +1,8 @@
 ---
 title: "Priority and Niceness of Linux Processes"
 output: 
-  github_document: default
   html_document: default
+  github_document: default
 ---
 
 ```{r setup, include=FALSE}
