@@ -146,7 +146,7 @@ else
   if [ "$VERBOSE" == 'TRUE' ];then log_msg $SCRIPT "Running on singularity system ...";fi
   # check whether config exists
   if [ ! -f "$SSMTPCONF" ];then usage "CANNOT FIND ssmtp-config: $SSMTPCONF";fi
-  ssmtp -C $SSMTPCONF $1
+  /usr/sbin/ssmtp -C $SSMTPCONF $1
 fi
 
 
