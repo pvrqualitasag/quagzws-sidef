@@ -147,7 +147,6 @@ done
 shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 
 
-
 #' ## Copy Template To Config Path
 #' Template is taken and copied to conf
 #+ ssmtp, $SSMTPCONFTRG is a directory
@@ -160,7 +159,6 @@ SSMTPCONFPATH=$SSMTPCONFTRG/`basename $SSMTPCONFTMPL`
 rename_file_on_exist $SSMTPCONFPATH
 cat $SSMTPCONFTMPL | sed -e "s/{hostname}/$SERVER/" > $SSMTPCONFPATH
   
-
 
 #' ## End of Script
 #+ end-msg, eval=FALSE
