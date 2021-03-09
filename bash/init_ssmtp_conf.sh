@@ -58,10 +58,9 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -a <a_example> -b <b_example> -c"
-  $ECHO "  where -a <a_example> ..."
-  $ECHO "        -b <b_example> (optional) ..."
-  $ECHO "        -c (optional) ..."
+  $ECHO "Usage: $SCRIPT -s <ssmtp_conf_template> -t <ssmtp_conf_trg_dir>"
+  $ECHO "  where -s <ssmtp_conf_template>  --  (optional) path to the ssmtp config template"
+  $ECHO "        -t <ssmtp_conf_trg_dir>   --  (optional) target installation directory for ssmtp.conf"
   $ECHO ""
   exit 1
 }
