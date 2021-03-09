@@ -154,7 +154,7 @@ do
   log_msg $SCRIPT " * Current test e-mail: $m ..."
   CURADDR=$(head -1 ${TESTDIR}/$m | cut -d ' ' -f2)
   log_msg $SCRIPT " * Sending e-mail to address: $CURADDR ..."
-  cat ${TESTDIR}/$m | $SISSMTP $CURADDR
+  (cat ${TESTDIR}/$m;echo;echo "Host: $SERVER") | $SISSMTP $CURADDR
   sleep 2
 done
 
